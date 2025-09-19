@@ -1,0 +1,23 @@
+{
+  "start_time": 1758127116,
+  "end_time": 1758127121,
+  "messages": [
+    {
+      "timestamp": 1758127116,
+      "user_id": "1272883915",
+      "nickname": "065536",
+      "text": ".log new mob是baka",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758127117,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": "应该就不会覆盖了",
+      "images": [],
+      "isDice": false
+    }
+  ],
+  "finished": true
+}

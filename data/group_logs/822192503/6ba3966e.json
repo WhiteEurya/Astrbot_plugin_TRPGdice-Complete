@@ -1,0 +1,35 @@
+{
+  "start_time": 1758121474,
+  "end_time": 1758121487,
+  "messages": [
+    {
+      "timestamp": 1758121474,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".log new",
+      "images": []
+    },
+    {
+      "timestamp": 1758121477,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试1",
+      "images": []
+    },
+    {
+      "timestamp": 1758121483,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".log on",
+      "images": []
+    },
+    {
+      "timestamp": 1758121485,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试3",
+      "images": []
+    }
+  ],
+  "finished": true
+}

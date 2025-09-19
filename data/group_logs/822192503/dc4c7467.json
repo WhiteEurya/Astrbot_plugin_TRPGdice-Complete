@@ -1,0 +1,58 @@
+{
+  "start_time": 1758121419,
+  "end_time": 1758121452,
+  "messages": [
+    {
+      "timestamp": 1758121419,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".log new",
+      "images": []
+    },
+    {
+      "timestamp": 1758121424,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试语句",
+      "images": []
+    },
+    {
+      "timestamp": 1758121432,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试图片",
+      "images": [
+        "https://multimedia.nt.qq.com.cn/download?appid=1407&fileid=EhQf7E0jTVM9ogLiCshmAfzHmpDRZBiWsmEg_woowpKH24jgjwMyBHByb2RQgL2jAVoQ_UDm1mVAM9WbyBsqjl1jJHoC1B2CAQJneg&rkey=CAESMO7GuXUqg_2MmUYo8a8aQ_lvKnNoanaaS_8hhLVSuDlpIDCR8XDMMwcefGw7UISVeQ"
+      ]
+    },
+    {
+      "timestamp": 1758121437,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试暂停",
+      "images": []
+    },
+    {
+      "timestamp": 1758121443,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".log on",
+      "images": []
+    },
+    {
+      "timestamp": 1758121447,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试恢复",
+      "images": []
+    },
+    {
+      "timestamp": 1758121449,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "结束",
+      "images": []
+    }
+  ],
+  "finished": true
+}

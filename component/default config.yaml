@@ -1,0 +1,126 @@
+output:
+  # ---------- 技能判定 ----------
+  skill_check:
+    # 普通技能判定结果
+    normal: |
+      最后的结果是 {roll_result}/{skill_value} : {result}
+    penalty: |
+      惩罚骰的结果是 {new_tens_digits} → 最后的结果是 {final_y}/{skill_value} : {result}
+    bonus: |
+      奖励骰结果是 {new_tens_digits} → 最后的结果是 {final_y}/{skill_value} : {result}
+    error:
+      normal: "属性错误：无法解析技能 {skill_name} 的数值"
+      penalty: "惩罚骰参数错误：技能 {skill_name}"
+      bonus: "奖励骰参数错误：技能 {skill_name}"
+    grow_up:
+      success: "技能 [{skill_name}] 成长！原值 {skill_value}，提升 {en_value} 点！"
+      failure: "技能没有成长的迹象..。"
+      boost_result: "进行技能成长检定：{skill_name} 现在的点数是 {skill_value} → 投掷出的结果是 {roll_result}\n结果：{result}"
+
+  # ---------- 运势 ----------
+  rp:
+    today: "今日运势：{rp}/100"
+
+  # ---------- 火球术 ----------
+  fireball:
+    result: |
+      # 火球术伤害
+      明亮的闪光从你的指间飞驰向施法距离内你指定的一点，并随着一声低吼迸成一片烈焰。
+      {ring} 环火球术的伤害投掷: {breakdown} = 🔥{total}🔥 点伤害！
+    low: "法术失败：火球环数不足。"
+
+  # ---------- COC判定 ----------
+  coc_roll:
+    set_rule: "已将大成功/大失败规则设置为 {rule}"
+    results:
+      great_success: |
+        大成功！
+      extreme_success: "极难成功！"
+      hard_success: "困难成功。"
+      success: "成功。"
+      great_failure: "大失败..."
+      failure: "失败..."
+      error: "判定失败：{error}"
+      reset: "系统：判定规则已重置为 {rule}"
+
+  # ---------- 人格卡操作 ----------
+  pc:
+    create:
+      duplicate: "「{name}」已存在"
+      success: "「{name}」(ID: {id})已创建"
+    show:
+      no_active: "请先使用 .pc change 指令选择人物卡。"
+      load_fail: "ID {id}不存在..."
+      attr_missing: "人物卡中没有 [{attribute}] 属性"
+      attr: "{attr} 值为: {value}"
+      all: "**{name}**\n{attributes}"
+    list:
+      empty: "不存在人物卡"
+      result: "{list}"
+    change:
+      missing: "人物卡「{name}」不存在！"
+      success: "已切换到「{name}」"
+    update:
+      no_active: "请先使用 .pc change 指令选择人物卡"
+      error_format: "格式校验失败！正确输入例：.pc update 幸运+1"
+      success: "已将【{attr}】从 {old} 更新为 {new}！"
+      batch_success: "已批量更新 {count} 条数据~"
+    delete:
+      fail: "不存在「{name}」"
+      success: "正在永久删除「{name}」...抹除完成。"
+    grow:
+      success: "技能 [{skill_name}] 成长！原值 {skill_value}，提升 {en_value} 点！"
+      failure: "技能没有成长的迹象..。"
+      boost_result: "进行技能成长检定：{skill_name} 现在的点数是 {skill_value} → 投掷出的结果是 {roll_result}\n结果：{result}"
+
+  # ---------- 群昵称 ----------
+  nick:
+    platform_unsupported: "当前平台不支持设置群名片！"
+    no_character: "！ID {id} 已被未知黑洞吞噬..."
+    success: "新称呼加载完毕～"
+
+  # ---------- 掷骰 ----------
+  dice:
+    normal:
+      success: "{result}"
+      error: "掷骰出错：{error}"
+    vampire:
+      success: "{result}"
+      error: "吸血鬼掷骰参数错误：{error}"
+    hidden:
+      success: "{result}"
+      error: "私聊掷骰出错：{error}"
+      group: "正在进行私聊掷骰！"
+    detail: "掷骰详情: {detail}"
+    expression_error: "{error}"
+
+  # ---------- SAN 理智 ----------
+  san:
+    check_result: |
+      ━━━━━━⚠[WARNING]━━━━━━
+      【{name}】精神系统遭到袭击！
+      检定结果: {roll_result} / {san_value}, {result_msg}
+      主人损失了: {loss} 点理智
+      ━━━━━━SYSTEM STABILITY LOW━━━━━━
+    temporary_insanity: "🎲 疯狂发作 - 临时症状（1D10）\n{result}"
+    long_term_insanity: "🎲 疯狂发作 - 总结症状（1D10）\n{result}"
+
+  # ---------- 先攻 ----------
+  initiative:
+    add: "已添加/更新 {name} 的先攻：{value}"
+    remove_name: "已删除角色 {name} 的先攻"
+    clear: "已清空先攻表"
+    empty: "先攻列表为空"
+    list: "当前先攻列表：\n{content}"
+    next_turn: "轮到 {name} 的回合 (先攻: {value})"
+
+  # ---------- 角色生成模板 ----------
+  character_list:
+    coc: |
+      系统提示：角色数据生成协议(协议代号：CoC)启动——
+      {characters}
+    dnd: |
+      系统提示：角色数据生成协议(协议代号：DnD)启动——
+      {characters}
+  # ---------- 名字生成 ----------
+  generated_names: "已为您生成{num}个名字：{names}"

@@ -1,0 +1,3 @@
+# config.yaml
+# 指定你外部存放 JSON 的绝对路径或相对项目根的路径
+export_root: ../../data/group_logs/exports

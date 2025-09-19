@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:46:03",
+      "message": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:46:10",
+      "message": ".rh",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "风铃Velinithra",
+      "IMUserId": "Bot",
+      "time": "2025/09/19 00:46:11",
+      "message": "[Private Roll Result]嘘…这是只有我们知道的秘密结果哦：1d100=58 [58] = 58",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:46:14",
+      "message": "测试完毕，开摆",
+      "images": [],
+      "isDice": false
+    }
+  ]
+}

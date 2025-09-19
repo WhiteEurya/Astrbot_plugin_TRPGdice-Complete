@@ -1,0 +1,39 @@
+{
+  "start_time": 1758185042,
+  "end_time": 1758185060,
+  "messages": [
+    {
+      "timestamp": 1758185042,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758185045,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": ".rh",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758185045,
+      "user_id": "Bot",
+      "nickname": "风铃Velinithra",
+      "text": "[Private Roll Result]嘘…这是只有我们知道的秘密结果哦：1d100=65 [65] = 65",
+      "images": [],
+      "isDice": true
+    },
+    {
+      "timestamp": 1758185058,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": "我觉得可以结束了",
+      "images": [],
+      "isDice": false
+    }
+  ],
+  "finished": true
+}

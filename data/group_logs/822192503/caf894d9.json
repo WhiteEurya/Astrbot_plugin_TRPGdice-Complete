@@ -1,0 +1,31 @@
+{
+  "start_time": 1758123147,
+  "end_time": 1758123153,
+  "messages": [
+    {
+      "timestamp": 1758123147,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758123149,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".r",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758123149,
+      "user_id": "Bot",
+      "nickname": "风铃Velinithra",
+      "text": "呼~风停下来啦！<小神> 的结果是：1d100=75 [75] = 75 哦！——我才没有偷偷给骰子翻面呢！",
+      "images": [],
+      "isDice": true
+    }
+  ],
+  "finished": true
+}

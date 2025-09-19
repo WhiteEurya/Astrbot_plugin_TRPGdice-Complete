@@ -1,0 +1,47 @@
+{
+  "start_time": 1758184905,
+  "end_time": 1758184932,
+  "messages": [
+    {
+      "timestamp": 1758184905,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758184917,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": "让我测测",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758184918,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": ".ra",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758184925,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": "哦",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758184930,
+      "user_id": "2995186695",
+      "nickname": "MOB",
+      "text": "坏了",
+      "images": [],
+      "isDice": false
+    }
+  ],
+  "finished": true
+}

@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:44:02",
+      "message": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:44:05",
+      "message": ".rh",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "风铃Velinithra",
+      "IMUserId": "Bot",
+      "time": "2025/09/19 00:44:05",
+      "message": "[Private Roll Result]嘘…这是只有我们知道的秘密结果哦：1d100=65 [65] = 65",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:44:18",
+      "message": "我觉得可以结束了",
+      "images": [],
+      "isDice": false
+    }
+  ]
+}

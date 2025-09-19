@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:32:27",
+      "message": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:32:29",
+      "message": ".r",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "风铃Velinithra",
+      "IMUserId": "Bot",
+      "time": "2025/09/18 07:32:29",
+      "message": "呼~风停下来啦！<小神> 的结果是：1d100=75 [75] = 75 哦！——我才没有偷偷给骰子翻面呢！",
+      "images": [],
+      "isDice": false
+    }
+  ]
+}

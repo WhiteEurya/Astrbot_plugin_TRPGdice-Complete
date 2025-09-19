@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:41:45",
+      "message": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:41:57",
+      "message": "让我测测",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:41:58",
+      "message": ".ra",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:42:05",
+      "message": "哦",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "MOB",
+      "IMUserId": "2995186695",
+      "time": "2025/09/19 00:42:10",
+      "message": "坏了",
+      "images": [],
+      "isDice": false
+    }
+  ]
+}

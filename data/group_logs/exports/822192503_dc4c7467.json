@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:03:39",
+      "message": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:03:44",
+      "message": "测试语句",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:03:52",
+      "message": "测试图片",
+      "images": [
+        "https://multimedia.nt.qq.com.cn/download?appid=1407&fileid=EhQf7E0jTVM9ogLiCshmAfzHmpDRZBiWsmEg_woowpKH24jgjwMyBHByb2RQgL2jAVoQ_UDm1mVAM9WbyBsqjl1jJHoC1B2CAQJneg&rkey=CAESMO7GuXUqg_2MmUYo8a8aQ_lvKnNoanaaS_8hhLVSuDlpIDCR8XDMMwcefGw7UISVeQ"
+      ],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:03:57",
+      "message": "测试暂停",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:04:03",
+      "message": ".log on",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:04:07",
+      "message": "测试恢复",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:04:09",
+      "message": "结束",
+      "images": [],
+      "isDice": false
+    }
+  ]
+}

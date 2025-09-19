@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:04:34",
+      "message": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:04:37",
+      "message": "测试1",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:04:43",
+      "message": ".log on",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "nickname": "小神",
+      "IMUserId": "1211945550",
+      "time": "2025/09/18 07:04:45",
+      "message": "测试3",
+      "images": [],
+      "isDice": false
+    }
+  ]
+}

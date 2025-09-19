@@ -1,0 +1,119 @@
+{
+  "start_time": 1758122959,
+  "end_time": 1758123011,
+  "messages": [
+    {
+      "timestamp": 1758122959,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".log new",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122962,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122965,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试骰子",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122966,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".r",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122970,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".ra摸鱼",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122975,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".r 火球术8d6",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122980,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "搞反了说是",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122984,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".r 8d6 火球术",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122990,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".rab 摸鱼50",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758122994,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".rap摸鱼60",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758123002,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".sc1/1d6",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758123004,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".ti",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758123006,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": ".li",
+      "images": [],
+      "isDice": false
+    },
+    {
+      "timestamp": 1758123010,
+      "user_id": "1211945550",
+      "nickname": "小神",
+      "text": "测试完成",
+      "images": [],
+      "isDice": false
+    }
+  ],
+  "finished": true
+}
