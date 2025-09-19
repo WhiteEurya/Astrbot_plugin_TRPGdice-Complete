@@ -1,7 +1,7 @@
 import yaml
 import os
 
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), "default_config.yaml")
 
 def load_config():
     if not os.path.exists(CONFIG_PATH):

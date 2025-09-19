@@ -1,126 +1,138 @@
 output:
   # ---------- 技能判定 ----------
   skill_check:
-    # 普通技能判定结果
-    normal: |
-      最后的结果是 {roll_result}/{skill_value} : {result}
-    penalty: |
-      惩罚骰的结果是 {new_tens_digits} → 最后的结果是 {final_y}/{skill_value} : {result}
-    bonus: |
-      奖励骰结果是 {new_tens_digits} → 最后的结果是 {final_y}/{skill_value} : {result}
+    normal: "<{name}> 的【{skill_name}】检定: {roll_result}/{skill_value} → {result}"
+    penalty: "<{name}> 惩罚骰: {new_tens_digits} → 最终结果: {final_y}/{skill_value} → {result}"
+    bonus: "<{name}> 奖励骰: {new_tens_digits} → 最终结果: {final_y}/{skill_value} → {result}"
     error:
-      normal: "属性错误：无法解析技能 {skill_name} 的数值"
-      penalty: "惩罚骰参数错误：技能 {skill_name}"
-      bonus: "奖励骰参数错误：技能 {skill_name}"
+      normal: "技能 {skill_name} 未找到"
+      penalty: "惩罚骰参数错误: 技能 {skill_name}"
+      bonus: "奖励骰参数错误: 技能 {skill_name}"
     grow_up:
-      success: "技能 [{skill_name}] 成长！原值 {skill_value}，提升 {en_value} 点！"
-      failure: "技能没有成长的迹象..。"
-      boost_result: "进行技能成长检定：{skill_name} 现在的点数是 {skill_value} → 投掷出的结果是 {roll_result}\n结果：{result}"
+      success: "技能 [{skill_name}] 成长: {skill_value} → {skill_value + en_value} (+{en_value})"
+      failure: "技能 [{skill_name}] 未成长"
+      boost_result: "成长检定: {roll_result} / {skill_value} → {result}"
 
   # ---------- 运势 ----------
   rp:
-    today: "今日运势：{rp}/100"
+    today: "今日运势: {rp}/100"
 
   # ---------- 火球术 ----------
   fireball:
-    result: |
-      # 火球术伤害
-      明亮的闪光从你的指间飞驰向施法距离内你指定的一点，并随着一声低吼迸成一片烈焰。
-      {ring} 环火球术的伤害投掷: {breakdown} = 🔥{total}🔥 点伤害！
-    low: "法术失败：火球环数不足。"
+    result: "{ring} 环火球术伤害: {breakdown} = {total}"
+    low: "火球术失败: 环数不足"
 
   # ---------- COC判定 ----------
   coc_roll:
-    set_rule: "已将大成功/大失败规则设置为 {rule}"
+    set_rule: "已设置大成功/大失败规则: {rule}"
     results:
-      great_success: |
-        大成功！
-      extreme_success: "极难成功！"
-      hard_success: "困难成功。"
-      success: "成功。"
-      great_failure: "大失败..."
-      failure: "失败..."
-      error: "判定失败：{error}"
-      reset: "系统：判定规则已重置为 {rule}"
+      great_success: "大成功"
+      extreme_success: "极难成功"
+      hard_success: "困难成功"
+      success: "成功"
+      great_failure: "大失败"
+      failure: "失败"
+      error: "错误: {error}"
+      reset: "判定规则已重置为 {rule}"
 
   # ---------- 人格卡操作 ----------
   pc:
     create:
-      duplicate: "「{name}」已存在"
-      success: "「{name}」(ID: {id})已创建"
+      duplicate: "人物卡 [{name}] 已存在"
+      success: "人物卡 [{name}] 已创建 (ID: {id})"
     show:
-      no_active: "请先使用 .pc change 指令选择人物卡。"
-      load_fail: "ID {id}不存在..."
-      attr_missing: "人物卡中没有 [{attribute}] 属性"
-      attr: "{attr} 值为: {value}"
-      all: "**{name}**\n{attributes}"
+      no_active: "未选择人物卡 (.pc change)"
+      load_fail: "人物卡 ID {id} 不存在"
+      attr_missing: "属性 [{attribute}] 未找到"
+      attr: "{attr} = {value}"
+      all: "{name}: {attributes}"
     list:
-      empty: "不存在人物卡"
+      empty: "无人物卡"
       result: "{list}"
     change:
-      missing: "人物卡「{name}」不存在！"
-      success: "已切换到「{name}」"
+      missing: "人物卡 [{name}] 不存在"
+      success: "已切换到人物卡 [{name}]"
     update:
-      no_active: "请先使用 .pc change 指令选择人物卡"
-      error_format: "格式校验失败！正确输入例：.pc update 幸运+1"
-      success: "已将【{attr}】从 {old} 更新为 {new}！"
-      batch_success: "已批量更新 {count} 条数据~"
+      no_active: "未选择人物卡 (.pc change)"
+      error_format: "格式错误，示例: 力量+1"
+      success: "[{attr}] {old} → {new}"
+      batch_success: "已更新 {count} 项属性"
     delete:
-      fail: "不存在「{name}」"
-      success: "正在永久删除「{name}」...抹除完成。"
+      fail: "人物卡 [{name}] 不存在"
+      success: "人物卡 [{name}] 已删除"
     grow:
-      success: "技能 [{skill_name}] 成长！原值 {skill_value}，提升 {en_value} 点！"
-      failure: "技能没有成长的迹象..。"
-      boost_result: "进行技能成长检定：{skill_name} 现在的点数是 {skill_value} → 投掷出的结果是 {roll_result}\n结果：{result}"
+      success: "技能 [{skill_name}] 成长: {skill_value} → {new_value} (+{en_value})"
+      failure: "技能 [{skill_name}] 未成长"
+      boost_result: "成长检定: {roll_result} / {skill_value} → {result}"
 
   # ---------- 群昵称 ----------
   nick:
-    platform_unsupported: "当前平台不支持设置群名片！"
-    no_character: "！ID {id} 已被未知黑洞吞噬..."
-    success: "新称呼加载完毕～"
+    platform_unsupported: "该平台不支持修改群昵称"
+    no_character: "人物卡 ID {id} 未找到"
+    success: "昵称修改成功"
 
   # ---------- 掷骰 ----------
   dice:
     normal:
-      success: "{result}"
-      error: "掷骰出错：{error}"
+      success: "{name} 的结果: {result}"
+      success_remark: "{name} 的 {remark} 结果: {result}"
+      error: "掷骰错误: {error}"
     vampire:
-      success: "{result}"
-      error: "吸血鬼掷骰参数错误：{error}"
+      success: "{name} 的结果: {result}"
+      error: "吸血鬼掷骰错误: {error}"
     hidden:
-      success: "{result}"
-      error: "私聊掷骰出错：{error}"
-      group: "正在进行私聊掷骰！"
+      success: "隐藏掷骰结果: {result}"
+      error: "隐藏掷骰错误: {error}"
+      group: "已进行隐藏掷骰"
     detail: "掷骰详情: {detail}"
-    expression_error: "{error}"
+    expression_error: "表达式错误: {error}"
 
   # ---------- SAN 理智 ----------
   san:
-    check_result: |
-      ━━━━━━⚠[WARNING]━━━━━━
-      【{name}】精神系统遭到袭击！
-      检定结果: {roll_result} / {san_value}, {result_msg}
-      主人损失了: {loss} 点理智
-      ━━━━━━SYSTEM STABILITY LOW━━━━━━
-    temporary_insanity: "🎲 疯狂发作 - 临时症状（1D10）\n{result}"
-    long_term_insanity: "🎲 疯狂发作 - 总结症状（1D10）\n{result}"
+    check_result:
+      loss: "{name} 理智检定: {roll_result}/{san_value} {result_msg} → -{loss}, 当前 {new_san}"
+      no_loss: "{name} 理智检定: {roll_result}/{san_value} {result_msg} → 无损失"
+      great_loss: "{name} 理智检定: {roll_result}/{san_value} {result_msg} → -{loss}, 当前 {new_san} (重大损失)"
+      zero: "{name} 理智归零"
+    temporary_insanity: "临时疯狂: {result}"
+    long_term_insanity: "长期疯狂: {result}"
 
   # ---------- 先攻 ----------
   initiative:
-    add: "已添加/更新 {name} 的先攻：{value}"
-    remove_name: "已删除角色 {name} 的先攻"
-    clear: "已清空先攻表"
+    add: "{name} 的先攻 = {value}"
+    remove_name: "已移除 {name} 的先攻"
+    clear: "先攻列表已清空"
     empty: "先攻列表为空"
-    list: "当前先攻列表：\n{content}"
-    next_turn: "轮到 {name} 的回合 (先攻: {value})"
+    list: "先攻列表:\n{content}"
+    next_turn: "轮到 {name} (先攻 {value})"
 
   # ---------- 角色生成模板 ----------
   character_list:
-    coc: |
-      系统提示：角色数据生成协议(协议代号：CoC)启动——
-      {characters}
-    dnd: |
-      系统提示：角色数据生成协议(协议代号：DnD)启动——
-      {characters}
+    coc: "{characters}"
+    dnd: "{characters}"
+
   # ---------- 名字生成 ----------
-  generated_names: "已为您生成{num}个名字：{names}"
+  generated_names: "生成 {num} 个名字: {names}"
+
+    # ---------- log 相关指令 ----------#
+  log:
+    no_active_session: "当前没有正在进行的日志会话。"
+    message_added: "消息已记录到当前日志。"
+    unfinished_session: "检测到未完成的日志『{session_name}』，是否继续？"
+    new_session: "新日志『{session_name}』已创建。"
+    session_not_found: "日志『{session_name}』不存在。"
+    session_finished: "日志『{session_name}』已结束并归档。"
+    session_active: "日志『{session_name}』仍在进行中。"
+    session_resumed: "日志『{session_name}』已恢复。"
+    no_paused_session: "没有已暂停的日志。"
+    session_paused: "日志『{session_name}』已暂停。"
+    no_unfinished_session: "没有未完成的日志。"
+    session_halted: "日志『{session_name}』已中止。"
+    session_line: "▸ {session_name} · {start_time} · {status} · {message_count} 条记录"
+    no_sessions: "尚无任何日志记录。"
+    session_deleted: "日志『{session_name}』已删除。"
+    session_exported: "日志『{session_name}』已导出，文件名：{file_name}\n导出结果地址：{result_website}"
+    delete_error: "删除日志失败。正确用法：.log del <日志名>"
+
+  setting : 
+    website : ...

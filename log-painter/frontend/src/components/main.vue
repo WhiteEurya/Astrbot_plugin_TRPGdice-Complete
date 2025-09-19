@@ -684,7 +684,6 @@ onMounted(() => {
     store.pcList = buildPcList(logMan.curItems)
     showPreview()
     rebuildSwatches()
-    console.log('[parsed] rebuild pcList -> first few pc:', store.pcList.slice(0,5))
   })
 
   offTextSet = logMan.ev.on('textSet', (_txt: string) => { /* 不回写 */ })
@@ -824,7 +823,6 @@ function recomputePreview() {
   const out: LogItem[] = []
   let idx = 0
 
-  console.log('curItems:', logMan.curItems)
 
   for (const it of logMan.curItems) {
     if ((it as any).isRaw) continue
@@ -843,7 +841,6 @@ function recomputePreview() {
   }
 
   previewItems.value = out
-  console.log(out)
 }
 
 const refreshCanvas = debounce(() => {
@@ -965,7 +962,7 @@ function exportPreviewToWord() {
   const previewLines = getPreviewText() // 拿到过滤后的数组
 
   const doc = new Document({
-    creator: "风铃Velinithra",
+    creator: "TRPG DICE BOT",
     title: "记录导出",
     sections: [] // 先传空数组或者直接 addSection 后再生成
   });
@@ -976,8 +973,6 @@ function exportPreviewToWord() {
 
     // 组装文本
     const lineText = item.line
-
-    console.log(lineText)
 
     // 根据 nickname 获取颜色
     const pc = store.pcList.find((p: any) => p.name === item.nickname)
@@ -1102,7 +1097,6 @@ const nameChanged = async (i: CharItem, idx?: number) => {
     const pushObj: CharItem = { name: newName, IMUserId: id, role: '角色', color: keptColor } as CharItem
     store.pcList = (store.pcList || []).concat(pushObj)
     store.pcNameColorMap.set(newName, keptColor)
-    console.warn('[nameChanged] oldName not found in pcList; pushed new object')
   }
 
   store.colorMapSave?.()
