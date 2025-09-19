@@ -1,6 +1,6 @@
 # TRPGdice-Complete
 
-为 Astrbot 设计的 TRPG 骰子插件（参考 Dice! 与 海豹 的实现），提供掷骰、技能判定、人物卡管理与日志导出等常用功能，便于在群聊中进行跑团玩法支持。
+为 Astrbot 设计的 TRPG 骰子插件（参考 [Dice!](https://forum.kokona.tech/) 与 [海豹](https://dice.weizaima.com/) 的实现），提供掷骰、技能判定、人物卡管理与日志导出等常用功能，便于在群聊中进行跑团玩法支持。
 
 为所有使用astrbot平台但想要有与其他骰娘相同体验的骰主设计。
 
@@ -100,7 +100,7 @@
 
 ## 染色器搭建
 
-本插件提供了类似 海豹LOG染色器 的染色功能，保存在 `/log-painter`下，感谢海豹LOG染色器提供的模板与思路。
+本插件提供了类似 [海豹LOG染色器](https://log.weizaima.com/) 的染色功能，保存在 `/log-painter`下，感谢海豹LOG染色器提供的模板与思路。
 如果要使用染色器，需要通过npm和fastapi在本地进行搭建。
 若您不方便配置域名、没有合适的服务器，可以直接使用我的染色器网址: [https://painter.atritrpg.chat/](https://painter.atritrpg.chat/)
 
