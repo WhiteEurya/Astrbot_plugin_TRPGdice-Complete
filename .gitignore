@@ -31,5 +31,5 @@ log-painter/frontend/.env*
 old_version/
 **/__pycache__/
 *.log
-diff/
+plan/
 temp_*.png
