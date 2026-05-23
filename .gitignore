@@ -1,18 +1,21 @@
 # --- 1. 自动生成的动态数据 (绝对核心) ---
 # 忽略所有层级的角色数据文件夹
 **/chara_data/
+**/chara_data_/
 **/user_metadata/
 # 忽略跑团日志和导出文件
 **/group_logs/
 **/exports/
+data/settings/
 
 # --- 2. 数据库文件 (全局清理) ---
 # 无论在根目录、data 还是 V20 目录下的 .db 都要排除
 **/*.db
-!V20_char_sheet/setup.sql  # 唯独保留 SQL 模板，别人建表要用
+!V20_char_sheet/setup.sql
 
 # --- 3. 配置文件与隐私 (防泄漏) ---
 **/config.yaml
+!**/config.default.yaml
 # 排除前端的开发环境变量
 log-painter/frontend/.env*
 
@@ -28,3 +31,5 @@ log-painter/frontend/.env*
 old_version/
 **/__pycache__/
 *.log
+diff/
+temp_*.png

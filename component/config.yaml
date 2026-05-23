@@ -2,280 +2,328 @@ output:
   # ---------- 技能判定 ----------
   skill_check:
     normal: 
-      head : "进行技能检定：<{name}> 的 【{skill_name}】"
-      detail : "投掷结果：{roll_result}/{skill_value} —— {result}"
+      head : |
+        来，把骰子给我。为了 <{name}> 的【{skill_name}】，这一把我会很认真地帮你扔哦！
+      detail : | 
+        风停下的数字是 {roll_result}/{skill_value} : {result}
     penalty:
-      head : "进行惩罚骰检定：<{name}> 的 【{skill_name}】"
-      detail : "惩罚骰：{new_tens_digits} → 最终结果：{final_y}/{skill_value} —— {result}"
+      head : |
+        一阵不听话的逆风吹乱了骰子！关于 <{name}> 的【{skill_name}】的预测都歪掉了！
+      detail : |
+        惩罚骰的结果是 {new_tens_digits} → 最后的结果是 {final_y}/{skill_value} : {result}。抱歉，没能救回来...
     bonus:
-      head : "进行奖励骰检定：<{name}> 的 【{skill_name}】"
-      detail : "奖励骰：{new_tens_digits} → 最终结果：{final_y}/{skill_value} —— {result}"
+      head : |
+        嘿嘿，这可是好机会！看我给你加一点“顺风”的小魔法，让 <{name}> 的【{skill_name}】更听话一点！
+      detail : |
+        好耶！看到没？奖励骰生效啦！ {new_tens_digits} → 最后的结果是 {final_y}/{skill_value} : {result}。我厉不厉害？快夸我！
 
     pistol_check:
-      head: "<{name}> 使用 【{skill_name}】 进行射击 [{mode}]："
-      detail: "第 {i} 发({p}P)：投掷结果 {roll}{p_info}/{skill_value} —— {result}"
+      head: |
+        <{name}> 紧握着手中的【{skill_name}】，屏住呼吸扣下了扳机……在 [{mode}] 的火光中：
+      detail: |
+        第 {i} 发({p}P)：风停下的数字是 {roll}{p_info}/{skill_value} —— {result}
 
     error:
-      normal: "未在人物卡中找到技能：【{skill_name}】。"
-      penalty: "指令错误：请指定惩罚骰的数量。"
-      bonus: "指令错误：请指定奖励骰的数量。"
+      normal: "咦？我对着人物卡看了半天，没找到【{skill_name}】这个技能呀。是不是名字记错啦？"
+      penalty: "等一下，要扔惩罚骰是没问题，但……你要我扔几个呀？指令里没写数量，我没法动手嘛！"
+      bonus: "好机会！我想给你扔奖励骰来着，但……是扔一个还是两个？快告诉我，别把好运气放跑了！"
     grow_up:
-      success: "技能成长成功：【{skill_name}】增加 {en_value} 点，当前数值为 {new_value}。"
-      failure: "技能成长失败：【{skill_name}】数值保持 {new_value} 不变。"
-      boost_result: "成长检定：{roll_result} / {skill_value} —— {result}"
+      success: "哇！有了！【{skill_name}】成长 {en_value} 点！现在是 {new_value} 啦。果然，像上升的气流一样，你一直在变强呢。"
+      failure: "唔……【{skill_name}】这次风平浪静，没有变化呢。没关系，有时候停下来吹吹风，沉淀一下也是好事嘛。"
+      boost_result: "让我听听命运的风向变了吗？\n成长检定…… {roll_result} / {skill_value}：{result}"
+
+
 
   # ---------- 运势 ----------
   rp:
-    today: "今日运势指数为：{rp}。"
+    today: "嘘…… 让我帮你听听今天的风声。……嗯，捕捉到了！今天的运势指数是 {rp}。怎么样，准备好乘着这股风出发了吗？"
 
   # ---------- 火球术 ----------
   fireball:
     result: |
-      # 火球术检定
-      施法环数：{ring} 环
-      伤害投掷：{breakdown}
-      最终伤害值：🔥 {total} 🔥
-    low: "施法失败：火球术环数不足。"
+      # 火球术伤害
+      明亮的闪光从你的指间飞驰向施法距离内你指定的一点，并随着一声低吼迸成一片烈焰。
+      {ring} 环火球术的伤害投掷: {breakdown} = 🔥{total}🔥 点伤害！
+    low: "法术失败：火球环数不足。"
 
   # ---------- COC判定 ----------
   coc_roll:
-    set_rule: "成功。COC检定规则已调整为：「{rule}」。"
+    set_rule: "明白啦！已经把命运之风的规则调整为「{rule}」了哦！"
     results:
-      great_success: "大成功"
-      extreme_success: "极难成功"
-      hard_success: "困难成功"
-      success: "成功"
-      great_failure: "大失败"
-      failure: "失败"
-      error: "算式解析错误：{error}"
-      reset: "重置成功。检定规则已恢复为：「{rule}」。"
+      great_success: "大成功。真好...感觉就像一阵非常舒服的风吹过来了。"
+      extreme_success: "极难成功。你做到了。你的表现如此轻盈，又那么坚定."
+      hard_success: "困难成功。看，风轻轻一推就过去了吧~"
+      success: "成功！看，很顺利呀，就像一阵和煦的风。"
+      great_failure: "大失败...别难过。先静一静，让风把坏心情吹走，好吗？"
+      failure: "失败了...没关系的。风有时候也会迷路呀，我们下次再试试。"
+      error: "诶？等一下，这个算式好像卡住了... {error}。是不是哪里写错了？"
+      reset: "好了，一切归位。规则重置回最初的「{rule}」啦。准备好开始新的一轮了吗？"
 
   # ---------- 人格卡操作 ----------
   pc:
     create:
-      duplicate: "创建失败：档案中已存在名为‘<{name}>’的角色。"
-      success: "创建成功：角色‘<{name}>’已登记，编号：{id}。"
+      duplicate: "等一下……稍微往前翻一翻……你看，档案里已经有一个叫‘<{name}>’的记录了哦。重名的话我会搞混的，换个新名字好不好？"
+      success: "好啦，写完收工！一张崭新的人物卡诞生了。我已经把‘<{name}>’的名字牢牢记在风的档案里了，绝不会弄丢的。给，这是编号 {id}。"
     show:
-      no_active: "未绑定角色。请先使用 .pc tag <名字|序号> 绑定人物卡。"
-      load_fail: "读取失败：未找到编号为 {id} 的档案。"
-      attr_missing: "属性缺失：当前卡片未找到‘{attribute}’字段。"
-      attr: "查询结果：【{attr}】数值为 {value}。"
-      all: "角色 <{name}> 完整属性列表：\n{attributes}"
-      none_above : "查询结果：未找到高于 【{num}】 的数值。"
-      above : "查询结果：数值高于 【{num}】 的属性如下："
+      no_active: "唔……你现在想看谁的数据呀？桌上空空的，还没放人物卡呢。先用 .pc tag 告诉我你要扮演谁，我才能帮你找呀。"
+      load_fail: "奇怪……我翻遍了风里的每一页档案，怎么都没找到编号 {id} 的记录呢？是不是记错了，或者是被大风吹走了？"
+      attr_missing: "哎呀，这张卡上怎么没写‘{attribute}’这一栏？是刚才忘记填了吗？"
+      attr: "我看看哦……嗯，找到了！这里写的【{attr}】数值是 {value}。"
+      all: "喏，给你。这是 <{name}> 的全部资料，我都整理得整整齐齐的，你仔细检查一下有没有漏掉的：\n{attributes}"
+      none_above : "扫了一遍，好像没有比【{num}】更高的数值了呢。"
+      above : "哇，比【{num}】高的有这些！"
+      above_threshold_header : "哇，比【{num}】高的有这些！"
+      invalid_value: "咦，‘{value}’看起来不像能写进卡里的数字呀。你再确认一下，好吗？"
     list:
-      empty: "记录为空：当前尚未保存任何角色档案。"
-      result: "当前已保存的角色列表：\n{list}"
+      empty: "这里空荡荡的……风里还没传来任何人的名字呢。快用 .pc new 创造我们的第一个伙伴吧！"
+      result: "让我找找……嗯，我们现在保存了这些名字，你听听看：\n{list}"
     change:
-      missing: "切换失败：未找到名为 <{name}> 的角色。"
-      success: "切换成功：当前活动角色已变更为 <{name}>。"
+      missing: "诶？可是我的记忆里没有叫 <{name}> 的人呀……你是不是偷偷去跑其他团了？（盯...)"
+      success: "收到！旧的这张先收好……当当！现在的聚光灯属于 <{name}> 啦！我们继续吧。"
     update:
-      no_active: "操作失败：当前未绑定任何角色。"
-      error_format: "格式错误：请使用‘属性+数值’或‘属性 数值’格式。"
-      success: "更新成功：【{attr}】已由 {old} 变更至 {new}。"
-      batch_success: "批量更新成功：已完成 {count} 项属性修改。"
-      attr_missing: "更新失败：未在卡面上找到属性 【{attr}】。"
+      no_active: "等等，桌上现在没放卡呀，我没法下笔。你得先用 .pc tag 告诉我你要改谁的数据，我才能帮你记嘛。"
+      error_format: "诶？你这句指令我看不太懂……是要改成‘力量+1’或者‘外貌80’这样吗？你再说清楚一点，不然我怕记错了。"
+      error_format_no_value: "诶？你写了加减号，却没告诉我要加减多少呀。风铃的笔已经悬在纸上了，快把数字补给我吧。"
+      success: "好，擦掉旧的……写上新的。把【{attr}】从 {old} 改成 {new} 啦。看，改好了，笔迹还清楚着呢。"
+      batch_success: "稍微等一下哦……沙沙沙……好了！一口气帮你更新了 {count} 个地方。呼，怎么样，我的手速还是很快的吧？"
+      attr_missing: "我对着卡面找了半天，没看到有【{attr}】这一栏呀。是不是名字写得不对，还是根本没这个属性？"
     delete:
-      fail: "删除失败：未找到名为‘<{name}>’的角色档案。"
-      success: "删除成功：角色‘<{name}>’的档案已从数据库移除。"
+      fail: "这就奇怪了……我翻遍了文件夹，根本没有叫‘<{name}>’的档案呀。你是不是记错名字了？"
+      success: "明白了。那就把 <{name}> 的这张卡……交还给风吧。虽然档案删除了，但只要我们还记得，他就没有真正消失。对吧？"
     grow:
-      no_active : "操作失败：请先绑定角色再进行成长检定。"
-      success: "成长检定成功：【{skill_name}】增加 {en_value} 点，当前数值为 {new_value}。"
-      failure: "成长检定失败：【{skill_name}】没有变化。"
-      boost_result: "成长检定详情：{roll_result} / {skill_value} —— {result}"
+      no_active : "等等，桌上现在没放卡呀，没有你的技能点数，我怎么帮你计算成长有没有成功嘛。"
+      success: "哇！有了！【{skill_name}】成长 {en_value} 点！现在是 {new_value} 啦。果然，像上升的气流一样，你一直在变强呢。"
+      failure: "唔……【{skill_name}】这次风平浪静，没有变化呢。没关系，有时候停下来吹吹风，沉淀一下也是好事嘛。"
+      boost_result: "让我听听命运的风向变了吗？\n成长检定…… {roll_result} / {skill_value}：{result}"
     export :
-      success: "角色 <{name}> 录入表达式导出：\n{data}"
+      success: "我把<{name}>的数据都写在纸上啦...给你！\n{data}"
     uni :
-      no_pc : "同步中心：未发现关联的角色档案。"
+      no_pc : "唔...似乎没有找到任何角色呢。"
       success: |
-        已发现全域角色档案：
+        让我翻翻...找到了，这是你用过所有的人物卡：
         {msg}
-        提示：使用 .pc pull <序号> 可将其同步至本地。
+        我的记忆还不错吧！输入 .pc pull <序号> 就可以把卡拿到这里来用哦。
     push :
-      no_pc : "上传失败：当前未绑定角色。"
-      success : "上传成功：本地数据已同步至全域档案。"
-      fail : "上传失败：云端连接异常。"
+      no_pc : "唔……你现在想上传谁的数据呀？桌上空空的，还没放人物卡呢。"
+      success : "搞定，这张卡的数据我帮你更新好咯！"
+      global_success : "叮铃！这张卡已经回到全局风里啦。以后无论在哪张桌子上改它，都会写到同一份档案里。"
+      global_sync : "收到，当前这张全局卡的数据已经顺着风同步好了。"
+      local_success : "好，我给当前这张桌子留了一份本地副本。之后这里只会改自己的这张卡，不会影响其他地方的全局档案。"
+      fail : "哎呀...好像出现了一点问题..."
     pull :
-      no_pc : "同步失败：未在档案库中找到该角色。"
-      exist : "提示：该角色已在当前群组活动中，可直接使用 .pc tag 切换。"
-      success : "同步成功：已拉取全域档案 <{name}> 并绑定。"
-      sync : "同步更新：已完成 <{name}> 的版本同步。"
-      fail : "同步失败：文件写入异常。"
+      no_pc : "我的记忆里没有这个人呀……你是不是偷偷去跑其他团了？（盯...)"
+      exist : "你是不是忘了，这张卡已经在桌面上了，直接用.pc tag切换过去就行了呀。"
+      success : "嗯...找到了，喏，这是你要的卡，名字叫 <{name}>——真好听，难怪你要把它找过来呢。"
+      global_success : "找到了！<{name}> 是系着全局风铃的卡，我已经把它放到这张桌子上了。以后改动都会吹回同一份档案哦。"
+      sync : "我把 <name> 的风向同步好了哦！"
+      fail : "完了...对不起——我好像把卡弄丢了——（哭哭）"
+    del:
+      no_args: "你想擦掉哪一项呀？告诉我属性名，我才敢拿橡皮哦。"
 
   st :
+    show :
+      no_active: "唔……你现在想看谁的数据呀？桌上空空的，还没放人物卡呢。先用 .pc tag 告诉我你要扮演谁，我才能帮你找呀。"
+      load_fail: "奇怪……我翻遍了风里的每一页档案，怎么都没找到编号 {id} 的记录呢？是不是记错了，或者是被大风吹走了？"
     del :
-      success : "已删除属性：【{attr}】。"
-      not_found: "删除失败：未找到属性 【{attr}】。"
-      protected: "权限拒绝：【{attr}】属于核心保护属性，不可删除。"
+      success : "行，那我就把【{attr}】这一行擦掉咯……好，擦得干干净净。有时候忘掉一些多余的东西，包袱也会轻一点吧？"
+      not_found: "奇怪……我在卡面上找了半天，本来就没有【{attr}】这一项呀。是不是你记错了，还是本来就没写上去？"
+      protected: "等一下！【{attr}】可是基础属性，你把它删了，我们的故事要怎么进行下去呀。"
     clr :
-      success: "重置成功：角色 <{name}> 的非核心属性已全部清空。"
-      nothing: "重置结束：该角色当前没有可清除的额外属性。"
+      success: "诶？要全部清空吗？好吧……让我拿个大一点的橡皮擦。呼——搞定！现在的 <{name}> 就像刚出生一样，彻底变回一张白纸啦。"
+      nothing: "不用擦啦，这张卡本来就是干干净净的，一点墨迹都没有。你是打算重新填什么新东西上去吗？"
 
   # ---------- 群昵称 ----------
   nick:
-    platform_unsupported: "操作失败：当前平台协议不支持修改群名片。"
-    no_character: "操作失败：未找到编号为 {id} 的角色卡，无法生成名片。"
-    success: "修改成功：群名片已根据角色数据自动更新。"
+    platform_unsupported: "呜…这个世界的规则好像不允许我改变这里的名片呢…"
+    no_character: "诶？你要给谁起昵称呀？我也没找到编号 {id} 的这张卡……找不到人我没法贴标签嘛。你是不是报错号了？"
+    success: "叮铃~好了！现在风儿会记得用新的名字呼唤你了！"
 
   # ---------- 掷骰 ----------
   dice:
     normal:
       success: |
-        检定结果：<{name}> 
-        结果：{result}
+       呼~风停下来啦！ <{name}> 的结果是：
+       {result} 哦！
+       ——我才没有偷偷给骰子翻面呢！"
       success_remark : |
-        项目：<{name}> 的 【{remark}】
-        结果：{result}
-      error: "掷骰系统错误：{error}"
+        呼~风停下来啦！<{name}> 的 【{remark}】 结果是：
+        {result} 哦！
+        ——我才没有偷偷给骰子翻面呢！"
+      error: "嗯…风魔法好像出了一点小问题：{error}"
     vampire:
-      success: "吸血鬼规则检定：<{name}> 的结果为 {result}"
-      error: "规则解析错误：{error}"
+      success: "血...血魔法？！我我姑且还是会一些... <{name}> 得到的结果是 {result}"
+      error: "关于这种魔法的咒语，我好像有点念不准确…：{error}"
     hidden:
-      success: "暗骰结果：{result}。该结果已通过私聊发送。"
-      error: "私聊发送失败：请检查是否已添加机器人为好友。错误：{error}"
-      group: "进行了一次暗骰，结果仅发起者可见。"
-    detail: "出目详情：{detail}"
-    expression_error: "算式错误：{error}"
+      success: 嘘…… 别让别人听见。这个秘密检定的结果是：{result}。记好了吗？
+      error: "哎呀，我想悄悄递小纸条告诉你的，结果好像递不过去……是不是信号被风吹断了？报错是：{error}"
+      group: "（张开手挡住骰子）嘘——！这是一个秘密检定！其他人把头转过去，不许偷看！"
+    detail: "骰子落地时候结果是: {detail}哦！我才没有偷偷给骰子翻面呢！"
+    expression_error: "{error}"
 
   # ---------- SAN 理智 ----------
   san:
     check_result:
       loss : |
-        理智检定：<{name}>
-        详情：{roll_result}/{san_value}，{result_msg}
-        理智值扣除：{expr}
-        剩余理智：{new_san}
+        <{name}>，你触碰到了世界的一点重量…来自它的狂风向你袭来。
+        检定结果：{roll_result}/{san_value}，{result_msg}
+        这阵狂风让心灵的烛火摇曳了 {expr} 分，现在的烛火还有 {new_san} 分...到我身边来，我的光芒虽小，但足以分享。
       no_loss : |
-        理智检定：<{name}>
-        详情：{roll_result}/{san_value}，{result_msg}
-        理智值未变动（扣除 {expr} 点）。
+        <{name}>，你触碰到了世界的一点重量…来自它的狂风向你袭来。
+        检定结果：{roll_result}/{san_value}，{result_msg}
+        心灵的烛火摇曳了 {expr} 分。你的心灵烛火依然稳定地闪烁着，真是坚强呢～
       great_loss : |
-        理智检定：<{name}>
-        详情：{roll_result}/{san_value}，{result_msg}
-        扣除 {expr} 点理智。当前理智：{new_san}。触发大成功/大失败或大幅度扣除，请进行 .ti 检定。
+        <{name}>，你触碰到了世界的一点重量…来自它的狂风向你袭来。
+        检定结果：{roll_result}/{san_value}，{result_msg}
+        这阵狂风让心灵的烛火摇曳了 {expr} 分，现在的烛火还有 {new_san} 分...你的心神陷入迷雾，请使用.ti抽取临时症状。
       zero : |
-        理智检定：<{name}>
-        详情：{roll_result}/{san_value}，{result_msg}
-        理智已归零。
+        <{name}>，你触碰到了世界的一点重量…来自它的狂风向你袭来。
+        检定结果：{roll_result}/{san_value}，{result_msg}
+        这阵狂风让心灵的烛火摇曳了 {expr} 分...你心灵的烛火已经彻底熄灭...你也化作了这无数狂风中的一股呢。
       
     temporary_insanity: |
-      角色 {name} 陷入临时疯狂。
-      症状详情：
+      呀！{name}的思绪被一阵狂风卷走了…暂时迷失在了心灵的迷雾中。
+      疯狂发作 - 临时症状：
       {result}
     long_term_insanity: |
-      角色 {name} 陷入不定性疯狂。
-      症状总结：
+      啊…{name}的心湖上起了一层不会散去的雾，需要很长很长时间才能看清对岸了呢。
+      疯狂发作 - 总结症状：
       {result}
 
   # ---------- 先攻 ----------
   initiative:
-    add: "已加入先攻序列：<{name}>，先攻值：{value}。"
-    remove_name: "已将 <{name}> 从先攻序列移除。"
-    clear: "先攻序列已清空。"
-    empty: "先攻序列当前为空。"
-    list: "当前先攻列表：\n{content}"
-    next_turn: "下一回合：轮到 <{name}> (先攻值: {value})。"
+    add: "记下了，<{name}> 会第 {value} 个行动！风会提醒你的！"
+    remove_name: "把 <{name}> 从行动序列中请出去了。"
+    clear: "呼——把所有的行动顺序都吹散啦！"
+    empty: "现在的行动序列就像无风的湖面，平静无波呢。"
+    list: "当前的风之轨迹记录着：\n{content}"
+    next_turn: "轮到 <{name}> 了！(先攻: {value}) 加油！"
 
   # ---------- 角色生成模板 ----------
   character_list:
     coc: |
-      已生成 COC 角色属性：
+      来自风之低语的启示，为你带来新的旅人：
       {characters}
+      愿他们的故事如风般悠长。
     dnd: |
-      已生成 DnD 角色属性：
+      来自风之低语的启示，为你带来新的冒险者：
       {characters}
+      愿他们的传奇如星般闪耀。
       
   # ---------- 名字生成 ----------
-  generated_names: "已生成随机名字（{num}个）：{names}。"
+  generated_names: "风儿摇动着铃铛，告诉了我{num}个名字：{names}！希望有你喜欢的！"
 
   # ---------- log 相关指令 ----------#
 
   log:
-    no_active_session: "当前没有正在进行的日志记录。"
-    message_added: "消息已记录。"
-    unfinished_session: "冲突：日志『{session_name}』尚未结束。请先结束或切换。"
-    new_session: "日志启动成功。标题：『{session_name}』。"
-    session_not_found: "错误：未找到名为『{session_name}』的日志。"
-    session_finished: "日志『{session_name}』已结束并存档。"
-    session_active: "提示：日志『{session_name}』已在运行中。"
-    session_resumed: "日志继续：已恢复『{session_name}』的记录。"
-    no_paused_session: "提示：当前没有处于暂停状态的日志。"
-    session_paused: "日志暂停：『{session_name}』已停止记录。"
-    no_unfinished_session: "提示：当前没有未完成的日志记录。"
-    session_halted: "已强行终止日志『{session_name}』的记录。"
-    session_line: "· {session_name} | {start_time} | {status} | 记录数：{message_count}"
-    no_sessions: "本地数据库中没有日志记录。"
-    already_active_session : "操作拒绝：日志『{prev}』正在运行中，无法同时开启多个记录。"
-    session_deleted: "已删除日志档案：『{session_name}』。"
-    session_exported: "导出成功：『{file_name}』已生成。预览地址：{result_website}"
-    delete_error : "指令错误：请使用 .log del <日志名>。"
+    no_active_session: "嗯…风平浪静，还没有开始记录任何故事呢～"
+    message_added: "沙沙……（记录中）"
+    unfinished_session: "等一下，之前的日志『{session_name}』还没写完呢。你是打算接着那个讲，还是直接把那一页翻过去？"
+    new_session: "好！(翻开新的一页) 新的故事总是让人期待呢。日志名就叫『{session_name}』对吧？我已经准备好记录了，开始吧！"
+    session_not_found: "唔…风儿好像没有带来名为『{session_name}』的故事呢…"
+    session_finished: "呼——写完收工！关于『{session_name}』的故事已经全部记好啦。这一章算是圆满结束了吧？"
+    session_active: "别急别急，『{session_name}』的记录正如火如荼地进行着呢，不用重新喊开始哦。"
+    session_resumed: "找到了，书签夹在这里。让我们继续接着『{session_name}』往下写吧！"
+    no_paused_session: "嗯？但我手里没有暂停的进度呀，刚才我们不是都结束了吗？"
+    session_paused: "好，那先在这里夹个书签。『{session_name}』的记录暂停，你也休息一下喝口水吧。"
+    no_unfinished_session: "四周静悄悄的，没有需要带走的半成品故事呢～"
+    session_halted: "收到。那我就直接停笔了，『{session_name}』的记录到此为止。"
+    session_line: "▸ {session_name} · {start_time} · {status} · 收集了{message_count}片记忆"
+    no_sessions: "呜……我的本子还是崭新的，还没记过任何故事呢。"
+    already_active_session : "别急别急，『{prev}』的记录正如火如荼地进行着呢。别一下开始太多故事呀，我的书本会记乱的！"
+    session_deleted: "明白了。关于『{session_name}』的这一页……我就把它撕下来给风带走咯。忘掉旧的，才能开始新的嘛。"
+    session_exported: "叮铃！整理完毕！我把『{session_name}』的记录编排好，存成文件『{file_name}』啦。\n对了，如果你想要那种漂漂亮亮的排版，可以去我的‘染色屋’看看哦：{result_website}"
+    delete_error : "诶？你要我撕掉哪一页呀？只说个删，我不敢随便动手。正确的指令是 .log del <日志名> 哦。"
 
   help :
     pc : |
-      《角色档案管理帮助》
-      .pc new <角色名> : 创建新角色并自动绑定到当前会话。
-      .pc tag [<名|序号>] ：绑定指定角色为当前活动角色。
-      .pc tag : 解除当前角色的绑定。
-      .pc list : 显示本地存储的所有角色列表。
-      .pc rename <新名字> : 修改当前活动角色的名字。
-      .pc del <名|序号> : 永久删除指定的角色档案。
-      .pc push : 将当前角色档案同步至全域云端。
-      .pc fetch : 获取云端关联的所有角色列表。
-      .pc pull <序号> : 从全域云端同步指定档案到本地。
+      《风铃的协助手册 · 角色管理篇》。
+      .pc new <角色名> : 风铃会拿出一张崭新的空白卡，写上名字，并直接把它放在当前桌面上，作为你现在的人物卡。
+      .pc create <角色名> : 与 .pc new 相同，兼容 Dice! 习惯写法。
+      .pc tag [<角色名> | <角色序号>] ：风铃帮你找到对应的卡，并放在你的面前作为你现在的人物卡。
+      .pc change [<角色名> | <角色序号>] ：与 .pc tag 相同，兼容 Dice! 习惯写法。
+      .pc tag [不加参数] : “是要暂时休息一下吗？那我先把这张卡收进文件夹咯，现在桌上是空的了。”
+      .pc list : 风铃会打开她的厚文件夹，把所有保存过的名字念给你听，并告诉你它们对应的序号。
+      .pc show [<角色名> | <角色序号>] : 风铃会临时翻开指定人物卡，不切换当前绑定。
+      .pc update <属性表达式> : 与 .st <属性表达式> 相同，兼容 Dice! 习惯写法。
+      .pc rename <新名字> : “要把现在的名字改掉吗？好，我用贴纸盖一下……搞定！”
+      .pc del <角色名|序号> : “关于这张卡的记忆，就让它随风而去吧。旧的不去，新的不来嘛。”
+      .pc push : 风铃会把你现在使用的人物卡存档，上传到云端，并覆盖之前的人物卡。
+      .pc push global : 风铃会让当前群重新使用全局档案。之后无论在哪个群修改，都会同步到同一份卡。
+      .pc push local : 风铃会把当前群的这张卡隔离成本地副本，之后这个群的修改不会影响其他地方。
+      .pc fetch : 风铃会拿来来自云端的记录本，上面写着跨群全域的角色卡列表
+      .pc pull : “看中这张卡了？好嘞，我这就去把它同步复印一份，拿到我们现在的桌子上。”
+      .pc pull <序号> global : 风铃会把选中的卡作为全局卡放到当前桌面上。
       
     st : |
-      《属性管理帮助》
-      .st <属性><数值> : 直接设定属性值。
-      .st <属性><+|-><数值> : 增减属性值。
-      .st <属性><算式> : 根据投掷结果设定属性。
-      .st <录入表达式>：批量录入人物卡属性。
-      .st show : 显示当前角色的所有属性。
-      .st show <属性名> : 查询单项属性数值。
-      .st show <数字> : 显示数值大于该数字的所有属性。
-      .st del <属性名> : 删除指定的非核心属性。
-      .st clr : 清空该角色的所有非核心属性。
-      .st export : 导出该角色的录入表达式。
+      《风铃的协助手册 · 属性记录篇》
+      .st <属性><数值> : 风铃会工整地在对应属性那一栏填上数字
+      .st <属性><+|-><数值> : 风铃会计算好结果，并帮你更新好你的人物卡。
+      .st <属性><骰子表达式> : 风铃会帮你扔骰子，然后直接把结果填进去。
+      .st <录入表达式>：找到COC卡下方的“简化卡”，把里面的内容复制来。风铃的手速可是很快的，瞬间就能把整张卡填满。
+      .st show : 风铃会把整张人物卡摊开放在桌上，让你看到人物卡的所有属性。
+      .st show <属性名> : 风铃会用手指着对应的属性，读出它的数值给你听。
+      .st show <数字> : 风铃会帮你筛选出所有大于特定数值的属性。
+      .st del <属性名> : 风铃会拿出一块小橡皮，轻轻把这一行擦得干干净净。
+      .st clr : “呼——搞定！现在的你就像一张白纸，准备好重新描绘新的冒险了吗？”
+      .st export : 风铃会把你所有的属性变成类似COC卡中的录入表达式给你。
     dice : |
-      《检定帮助》
-      .r <算式> : 普通掷骰。
-      .ra <技能> [数值] : 技能检定。
-      .rab [N] <技能> : 奖励骰检定（N个奖励骰）。
-      .rap [N] <技能> : 惩罚骰检定（N个惩罚骰）。
-      .sc <成功>/<失败> : 理智检定（San Check）。
-      .ti / .li : 抽取临时/长期疯狂症状。
-      .en <技能> : 技能成长判定。
-      .rh <算式> : 暗骰检定。
+      《风铃的协助手册 · 检定与掷骰篇》
+      .r <表达式> : 风铃会拿起骰子盘：“来，听听风的声音……结果是这个！
+      .ra <技能名> [数值（可选）] : 风铃会帮你对比骰子结果和你的技能值
+      .ra h技能名 / .ra e技能名 : 困难/极难检定短写，也可以继续写“困难技能名”“极难技能名”。
+      .rau <技能名> [数值（可选）] : 连续检定直到成功，输出总次数和前10次结果。
+      .rav <技能名>a<点数>/b<点数> : 进行对抗检定；a点数可省略，省略时读取自己的角色卡技能值。
+      .rav <技能名> @对抗者 : 使用双方当前角色卡中的同名技能进行对抗检定。
+      .rab [数量] <技能名> [数值（可选）] : 风铃会为你投掷若干个奖励骰，并从中选择最小的一个数字作为结果的十位。
+      .rap [数量] <技能名> [数值（可选）] : 风铃会为你投掷若干个惩罚骰，并从中选择最大的一个数字作为结果的十位。
+      .alias add <别名> <技能名> : 设置自己的技能别名；.alias list 查看，.alias del <别名> 删除。
+      .bot : 查看骰子信息；.bot off / .bot on / .bot status 可关闭、开启或查看本群骰子响应状态。
+      未填写的 COC 常见技能会自动使用默认值，例如侦查25、图书馆20、闪避=敏捷/2；艺术/科学/外语/生存等专业技能也会识别括号内容。
+      Dice! 兼容短写：!r、.rb、.rp、.hl、.nn 也可以直接使用。
+      风铃提示：有关于掷骰公式的进阶用法，请参考.dicehelp expr哦！
+      .sc <成功扣除>/<失败扣除> : “别看……或者，看着我的眼睛。我们要确认你的理智防线还能不能撑住。”
+      .ti : 风铃会为你抽取一个临时疯狂症状。
+      .li : 风铃会为你抽取一个长期不定性症状
+      .en <技能名> : “来看看你在这次冒险里学到了什么？……哇，成功了！你的【侦查】变强了哦。”
+      .rh <表达式> : 风铃会悄悄告诉你这次的结果。
     expr : |
-      《进阶表达式》
-      .r 1d6+5 / 2d6*3 : 支持基础四则运算。
-      .r N#1d10 : 重复执行 N 次掷骰。
-      .ra <次数>#b<技能名>。如：.ra3#b2射击50，三个射击检定，每一个射击检定都有两个奖励骰
-      .ra <次数>#p<技能名>。如：.ra3#p2射击50，三个射击检定，每一个射击检定都有两个惩罚骰
-      .r NdMkL : 投掷 N 个 M 面骰，保留最大的 L 个。
+      .r <算式>。如：1d6+5/2d6*3/(1d6+2)*3
+      .r <次数>#<表达式>。如：.r 3#1d10，是让风铃连扔3次1d10。
+      .ra <次数>#b<技能名>。如：.ra3#b2射击50，风铃会连扔三个射击检定，每一个射击检定都有两个奖励骰
+      .ra <次数>#p<技能名>。如：.ra3#p2射击50，风铃会连扔三个射击检定，每一个射击检定都有两个惩罚骰
+      .r <总数>d<面数>k<保留数>。如：.r4d6k3 会保留最高的3个；.r4d6k-2 会保留最低的2个。
     log : |
-      《日志管理帮助》
-      .log new <名> : 开启新的记录会话。
-      .log end : 结束并导出当前会话。
-      .log on [名] : 恢复指定会话的记录。
-      .log off : 暂停当前会话记录。
-      .log list : 列出本地会话存档。
-      .log get <名> : 获取指定日志的导出链接。
-      .log del <名> : 删除指定的会话档案。
+      《风铃的协助手册 · 记录与回忆篇》
+      .log new <故事名> : 风铃会翻开一本崭新的笔记本，写上标题，期待地看着你，准备记录你们的故事。
+      .log end : “呼——写完收工！这个故事圆满落幕啦。这一本我会好好收藏在书架上的。”
+      .log on [故事名] : 风铃会准确地翻到上次夹书签的地方，重新提起笔。（故事名留空则默认开始最近的一个）
+      .log off : 风铃会在当前页夹上一枚精致的书签，然后合上本子。暂停后，普通的闲聊就不会被记进日志里啦。
+      .log list : “让我想想……我们在这里一共存了这几个故事。”
+      .log get <故事名> : 风铃会把那一本日志整理好，生成一个链接或者文件发给你。
+      .log stat <故事名> : “这一场大家都很活跃呢！让我算算……一共说了这么多话。”
+      .log del <故事名> : 风铃会撕掉那一本故事。
 
     coc : |
-      《COC专用指令》
-      .setcoc : 显示当前房规设定。
-      .coc [N] : 随机生成 N 组角色属性。
-      .name <地区代码> : 生成随机姓名（cn/en/us/jp）。
-      .fire : 三连射
+      《风铃的协助手册 · 其余设置篇》
+      .setcoc : 风铃会合上规则书，告诉你当前的设定。
+      .coc <数目> : 风铃会为你生成若干个COC人物卡的属性。
+      .name <cn/en/us/jp> : 风铃会开动脑筋，根据地区为你的人物卡想出一些名字。
+      .d66 [次数] : 掷一次或多次 D66。
+      .查询法术 <名称> : 查询海豹内置资料中的 DND/COC 法术；未命中时会回退到 SRD 或开放神话仪式摘要。
+      .choose <选项A> <选项B> ... : 风铃会从给出的选项里帮你选一个；也支持用 /、|、逗号分隔。
 
     dnd : |
-      《DnD/战斗用指令》
-      .dnd [N] : 随机生成 N 组 DnD 角色属性。
-      .init : 显示当前先攻列表。
-      .ri +/- X : 投掷带修正值的先攻。
-      .ed : 结束当前行动回合。
-      .fireball [环数] : 计算火球术伤害。
+        `/dnd x` - 生成 x 个 DnD 角色属性
+        `.查询法术 火球术` - 查询 DND/COC 法术资料
+        `/init` - 显示当前先攻列表
+        `/init clr` - 清空先攻列表
+        `/init del [角色名]` - 删除角色先攻（默认为用户名） 
+        `/ri +/- x` - 以x的调整值投掷先攻\n"
+        `/ri x [角色名]` - 将角色（默认为用户名）的先攻设置为x
+        `/ed` - 结束当前回合
+        `/fireball n` - 施放 n 环火球术，计算伤害
+
+
 
   # 后端网址
   setting : 

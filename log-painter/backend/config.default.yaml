@@ -1,0 +1,3 @@
+# Copy this file to config.yaml and adjust export_root when deploying log-painter.
+# Relative paths are resolved from the log-painter directory.
+export_root: "../data/group_logs/exports"
