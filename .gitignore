@@ -32,4 +32,6 @@ old_version/
 **/__pycache__/
 *.log
 plan/
+tests/
+log-painter/frontend/test-fixtures/
 temp_*.png
