@@ -12,6 +12,20 @@ export default defineConfig(({ mode }) => {
     .filter(Boolean)
   const apiTarget = env.LOG_PAINTER_API_TARGET || 'https://worker.firehomework.top/dice/api'
   const exportTarget = env.LOG_PAINTER_EXPORT_TARGET || 'http://localhost:8000'
+  const proxy = {
+    '/api': {
+      changeOrigin: true,
+      target: apiTarget,
+      // target: 'http://8.130.140.128:8082',
+      // target: 'http://localhost:8088',
+
+      rewrite: (path: string) => path.replace(/^\/api/, ''),
+    },
+    '/export': {
+      target: exportTarget,
+      changeOrigin: true,
+    },
+  }
 
   return {
     plugins: [vue()],
@@ -20,27 +34,14 @@ export default defineConfig(({ mode }) => {
       port: appPort,
       strictPort: true,
       allowedHosts,
-      proxy: {
-      '/api': {
-          changeOrigin: true,
-          target: apiTarget,
-          // target: 'http://8.130.140.128:8082',
-          // target: 'http://localhost:8088',
-
-          rewrite: (path) => path.replace(/^\/api/, ''),
-
-      },
-      '/export': {
-        target: exportTarget, // FastAPI 后端地址
-        changeOrigin: true,
-      },
-      }
+      proxy
     },
     preview: {
       host: devHost,
       port: appPort,
       strictPort: true,
-      allowedHosts
+      allowedHosts,
+      proxy
     }
   }
 })
