@@ -8,6 +8,11 @@
 
 ---
 
+## 更新日志 V2.5
+
+```
+> 彻底重构了log-painter，以及加入了全新的一键启动，对所有人都更友好！
+```
 
 ## 更新日志 V2.4
 
@@ -178,85 +183,134 @@
 ## 染色器搭建
 
 本插件提供了类似 [海豹LOG染色器](https://log.weizaima.com/) 的染色功能，保存在 `/log-painter`下，感谢海豹LOG染色器提供的模板与思路。
-如果要使用染色器，需要通过npm和fastapi在本地进行搭建。
 若您不方便配置域名、没有合适的服务器，可以直接使用我的染色器网址: [https://painter.velinithra.space/](https://painter.velinithra.space/)
 
-如果您愿意搭建自己的染色器，则可以参考下列教程
+如果您愿意搭建自己的染色器，推荐使用仓库内置的一键启动脚本。
+
+### 推荐方式：一键启动
+
+进入染色器目录：
+
+```bash
+cd log-painter
+```
+
+启动服务：
+
+```bash
+./start.sh
+```
+
+脚本会自动完成下列工作：
+
+- 创建 `log-painter/backend/.venv`
+- 安装后端依赖
+- 安装前端依赖
+- 构建前端
+- 后台启动 FastAPI 后端和 Vite preview 前端
+
+启动完成后访问：
+
+```text
+http://localhost:5173
+```
+
+该启动方式使用 `nohup` 后台运行，关闭 SSH 或终端后仍会继续运行。
+
+常用管理命令：
+
+```bash
+./start.sh status
+./start.sh logs
+./start.sh stop
+./start.sh restart
+```
+
+默认端口：
+
+```text
+后端：http://localhost:8000
+前端：http://localhost:5173
+```
+
+如需修改端口：
+
+```bash
+BACKEND_PORT=8001 LOG_PAINTER_PORT=5174 ./start.sh
+```
+
+运行日志和 PID 文件会保存在：
+
+```text
+log-painter/.runtime/
+```
+
+如果之前生成过损坏的虚拟环境，可以删除后重启：
+
+```bash
+rm -rf backend/.venv
+./start.sh
+```
+
+后端依赖中已使用普通 `uvicorn`，不再使用 `uvicorn[standard]`，以避免旧版 pip 在安装可选原生依赖时遇到 `maturin` / wheel 构建问题。
 
 ---
 
-### 后端 (FastAPI)
+### 旧教程（已废弃）
 
-1. 进入后端目录，创建虚拟环境并激活：
+~~旧方式需要分别手动启动后端和前端，现在建议使用上方的 `./start.sh`。~~
 
-```bash
-cd log-painter/backend
+~~后端 (FastAPI)~~
 
-# Windows
-python -m venv venv
-venv\Scripts\activate
+~~1. 进入后端目录，创建虚拟环境并激活：~~
 
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
+~~`cd log-painter/backend`~~
 
-2. 安装依赖：
+~~Windows：`python -m venv venv`，`venv\Scripts\activate`~~
 
-```bash
-pip install -r requirements.txt
-```
+~~macOS/Linux：`python3 -m venv venv`，`source venv/bin/activate`~~
 
-3. 启动 FastAPI 服务：
+~~2. 安装依赖：~~
 
-```bash
-# Windows / macOS / Linux
-uvicorn main:app --reload
-```
+~~`pip install -r requirements.txt`~~
 
-> 默认运行在 `http://127.0.0.1:8000`
+~~3. 启动 FastAPI 服务：~~
+
+~~`uvicorn main:app --reload`~~
+
+~~默认运行在 `http://127.0.0.1:8000`~~
 
 ---
 
-### 前端 (npm)
+~~前端 (npm)~~
 
-1. 进入前端目录：
+~~1. 进入前端目录：~~
 
-```bash
-cd log-painter/frontend
-```
+~~`cd log-painter/frontend`~~
 
-2. 安装依赖：
+~~2. 安装依赖：~~
 
-```bash
-npm install
-```
+~~`npm install`~~
 
-3. 启动开发服务器：
+~~3. 启动开发服务器：~~
 
-```bash
-npm run dev
-```
+~~`npm run dev`~~
 
-> 默认运行在 `http://localhost:5173`（端口可能根据框架不同而变化）
+~~默认运行在 `http://localhost:5173`（端口可能根据框架不同而变化）~~
 
-4. 构建生产环境：
+~~4. 构建生产环境：~~
 
-```bash
-npm run build
-```
+~~`npm run build`~~
 
-### 配置
+~~配置~~
 
-进入 `log-painter/backend/` 复制默认配置，并修改目标文件夹到您存放 export log 的位置：
+~~进入 `log-painter/backend/` 复制默认配置，并修改目标文件夹到您存放 export log 的位置：~~
 
-```bash
-cp config.default.yaml config.yaml
-```
+~~`cp config.default.yaml config.yaml`~~
 
-进入 `log-painter/frontend/vite.config.ts` 中，在 `allowedHosts` 一项中修改您的服务器域名。
+~~进入 `log-painter/frontend/vite.config.ts` 中，在 `allowedHosts` 一项中修改您的服务器域名。~~
 
-进入 `component/config.yaml` 中将 `setting.website` 一项修改为您自己的染色器前端域名。
+~~进入 `component/config.yaml` 中将 `setting.website` 一项修改为您自己的染色器前端域名。~~
 
 ---
 
