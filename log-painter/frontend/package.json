@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "npm run build && vite preview"
   },
   "dependencies": {
     "@vicons/carbon": "^0.13.0",

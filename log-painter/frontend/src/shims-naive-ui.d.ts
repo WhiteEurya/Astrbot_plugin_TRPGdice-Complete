@@ -1,0 +1,32 @@
+declare module 'naive-ui' {
+  export const create: any
+  export const darkTheme: any
+  export type GlobalThemeOverrides = any
+  export const NConfigProvider: any
+  export const NMessageProvider: any
+  export const NDialogProvider: any
+  export const NModalProvider: any
+  export const NLayout: any
+  export const NLayoutHeader: any
+  export const NLayoutContent: any
+  export const NLayoutSider: any
+  export const NDrawer: any
+  export const NDrawerContent: any
+  export const NCard: any
+  export const NFlex: any
+  export const NButton: any
+  export const NText: any
+  export const NIcon: any
+  export const NTag: any
+  export const NInput: any
+  export const NSelect: any
+  export const NColorPicker: any
+  export const NCheckbox: any
+  export const NDivider: any
+  export const NTooltip: any
+  export const NSpin: any
+  export const NCollapse: any
+  export const NCollapseItem: any
+  export function useMessage(): any
+  export function useModal(): any
+}

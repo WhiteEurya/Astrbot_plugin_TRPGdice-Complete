@@ -10,7 +10,7 @@ import {
 </script>
 
 <template>
-  <n-config-provider>
+  <n-config-provider class="app-provider">
     <n-message-provider>
       <n-dialog-provider>
         <n-modal-provider>
@@ -20,3 +20,9 @@ import {
     </n-message-provider>
   </n-config-provider>
 </template>
+
+<style scoped>
+.app-provider {
+  height: 100%;
+}
+</style>

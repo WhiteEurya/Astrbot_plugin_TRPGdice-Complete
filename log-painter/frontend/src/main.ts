@@ -1,6 +1,7 @@
 // src/main.ts
 import { createApp } from 'vue'
 import App from './App.vue'
+import './style.css'
 import {
   create,
   // Provider & 布局 & 抽屉
