@@ -795,7 +795,7 @@ class DicePlugin(Star):
         yield event.plain_result(response)
         
     @st.command("export")
-    async def st_export(self, event: AstrMessageEvent):
+    async def st_export(self, event: AstrMessageEvent, *, args_str: str = ""):
         if not self._command_enabled(event):
             return
         """ 
@@ -820,6 +820,10 @@ class DicePlugin(Star):
             return
 
         chara_data = charmod.load_character(group_id, user_id, chara_id)
+        if not chara_data:
+            yield event.plain_result(get_output("pc.show.load_fail", id=chara_id))
+            return
+
         # 获取属性字典，如果不存在则为空字典
         chara_attrs = chara_data.get("attributes", {})
         
