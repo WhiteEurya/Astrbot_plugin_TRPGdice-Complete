@@ -364,7 +364,7 @@ class JSONLoggerCore:
         export_data = {"version": 1, "items": []}
         for m in sec.get("messages", []):
             ts_int = int(m.get("timestamp", int(time.time())))
-            time_str = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(ts_int + 8*3600))
+            time_str = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(ts_int))
             item = {
                 "nickname": m.get("nickname"),
                 "IMUserId": m.get("user_id"),

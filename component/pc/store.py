@@ -189,9 +189,21 @@ def is_local_binding(group_id: str, user_id: str, chara_id: str) -> bool:
 def _get_bound_character_path(group_id: str, user_id: str, chara_id: str):
     if str(group_id) == "Vault":
         return get_vault_character_file(user_id, chara_id)
-    if not is_local_binding(group_id, user_id, chara_id):
-        return get_vault_character_file(user_id, chara_id)
-    return get_character_file(group_id, user_id, chara_id)
+
+    vault_path = get_vault_character_file(user_id, chara_id)
+    local_path = get_character_file(group_id, user_id, chara_id)
+
+    if is_local_binding(group_id, user_id, chara_id):
+        return local_path
+
+    vault_data = _read_character_file(vault_path)
+    if vault_data and vault_data.get("global", True):
+        return vault_path
+
+    if os.path.exists(local_path):
+        return local_path
+
+    return vault_path
 
 def push_character_to_vault(group_id: str, user_id: str, chara_id: str, global_card: bool = False):
     data = load_character(group_id, user_id, chara_id)

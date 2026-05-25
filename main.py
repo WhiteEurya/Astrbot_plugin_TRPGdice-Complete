@@ -353,7 +353,7 @@ class DicePlugin(Star):
         
         if not chara_id:
             if user_id == operator_user_id:
-                yield get_output("pc.show.no_active")
+                yield event.plain_result(get_output("pc.show.no_active"))
             else:
                 yield event.plain_result("该玩家尚未在当前群组绑定人物卡哦。")
             return
@@ -384,10 +384,10 @@ class DicePlugin(Star):
                         chara_data["attributes"][attribute] = 1
                     
                     new_value = value_num
-                    derived_tips = charmod.sync_derived_attributes(chara_data)
-                    
                     chara_data["attributes"][attribute] = max(0, new_value)
-                    
+
+                derived_tips = charmod.sync_derived_attributes(chara_data)
+
                 # (循环外) 一次性保存并发送汇总回执
                 charmod.save_character(group_id, user_id, chara_id, chara_data)
                 if event.get_platform_name() == "aiocqhttp":
@@ -420,7 +420,7 @@ class DicePlugin(Star):
         
         match = re.match(r"([\u4e00-\u9fa5a-zA-Z]+)\s*([+\-*]?)\s*(\d+(?:d\d+)?|\d*)", attributes_clean)
         if not match:
-            yield get_output("pc.update.error_format")
+            yield event.plain_result(get_output("pc.update.error_format"))
             return
 
         attribute = match.group(1)
@@ -449,14 +449,14 @@ class DicePlugin(Star):
             try:
                 value_num = int(value_expr)
             except ValueError:
-                yield get_output("pc.show.invalid_value", value=value_expr)
+                yield event.plain_result(get_output("pc.show.invalid_value", value=value_expr))
                 return
         
         # (如果 value_expr 为空，例如 ".st san-")
         # 此时 value_num 保持为 0，这在COC中可能是有效的 (e.g. 减去0)
         # 如果你不希望这样，可以在这里加一个检查：
         if operator and not value_expr:
-             yield get_output("pc.update.error_format_no_value") # 缺少值
+             yield event.plain_result(get_output("pc.update.error_format_no_value")) # 缺少值
              return
 
         # 根据运算符计算新值
@@ -538,7 +538,7 @@ class DicePlugin(Star):
         
         chara_attrs = chara_data.get("attributes", {})
         if not chara_attrs:
-            yield event.plain_result(get_output("pc.show.attr_missing"))
+            yield event.plain_result(get_output("pc.show.attr_missing", attribute="任何属性"))
             return
 
         base_str = args_str.split('@')[0] if '@' in args_str else args_str
@@ -828,7 +828,7 @@ class DicePlugin(Star):
         chara_attrs = chara_data.get("attributes", {})
         
         if not chara_attrs:
-            yield event.plain_result(get_output("pc.show.attr_missing"))
+            yield event.plain_result(get_output("pc.show.attr_missing", attribute="任何属性"))
             return
 
         # --- 核心逻辑：直接拼接 ---
@@ -1100,7 +1100,7 @@ class DicePlugin(Star):
         
         chara_attrs = chara_data.get("attributes", {})
         if not chara_attrs:
-            yield event.plain_result(get_output("pc.show.attr_missing"))
+            yield event.plain_result(get_output("pc.show.attr_missing", attribute="任何属性"))
             return
 
         if not args_str:
@@ -1255,7 +1255,7 @@ class DicePlugin(Star):
             if current_bound == target_uuid:
                 yield event.plain_result(get_output("pc.pull.exist")) # 完全一致，无需操作
             else:
-                charmod.set_binding_info(user_id, group_id, target_uuid)
+                charmod.set_binding_info(user_id, group_id, target_uuid, local_binding=True)
                 yield event.plain_result(get_output("pc.pull.success", name=target['name']))
             return
 
@@ -1264,7 +1264,7 @@ class DicePlugin(Star):
         success = charmod.clone_character_to_group(user_id, target['group_id'], group_id, target_uuid)
         
         if success:
-            charmod.set_binding_info(user_id, group_id, target_uuid)
+            charmod.set_binding_info(user_id, group_id, target_uuid, local_binding=True)
             if local_exists : 
                 yield event.plain_result(get_output("pc.pull.sync", name=target['name']))
             else :
@@ -1875,7 +1875,9 @@ class DicePlugin(Star):
         
         group = event.message_obj.group_id
         parts = event.message_str.strip().split()
-        
+        if len(parts) < 3:
+            return event.plain_result("指令错误：请使用 .log get <日志名>")
+
         name = parts[2]
         grp = await logger_core.load_group(group)
         sec = grp.get(name)
