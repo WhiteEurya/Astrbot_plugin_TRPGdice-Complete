@@ -1898,8 +1898,21 @@ class DicePlugin(Star):
         group = event.message_obj.group_id
         parts = event.message_str.strip().split()
         if len(parts) < 3:
-            return event.plain_result("指令错误：请使用 .log export <日志名>")
-        info = await logger_core.export_session_text(group, parts[2])
+            return event.plain_result("指令错误：请使用 .log export <日志名> 或 .log export text <日志名>")
+
+        if parts[2].lower() in {"text", "txt"}:
+            if len(parts) < 4:
+                return event.plain_result("指令错误：请使用 .log export text <日志名>")
+            info = await logger_core.export_session_text(group, parts[3])
+            return event.plain_result(info)
+
+        name = parts[2]
+        grp = await logger_core.load_group(group)
+        sec = grp.get(name)
+        if not sec:
+            return event.plain_result(get_output("log.session_not_found", session_name=name))
+
+        info = await logger_core.export_session(group, sec, name)
         return event.plain_result(info)
 
 
