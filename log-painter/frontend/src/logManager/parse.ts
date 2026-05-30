@@ -39,6 +39,18 @@ function isObserverName(name: string, message: string) {
   return /\bOB\b|旁观|observer/i.test(name) || /^[-=]*\s*OB\s*[:：]/i.test(message)
 }
 
+function isImageUrl(value: string) {
+  return (
+    /^data:image\/[a-z0-9.+-]+/iu.test(value) ||
+    /^https?:\/\/[^\s"'<>]+?\.(?:png|jpe?g|gif|webp|bmp)(?:\?[^\s"'<>]*)?$/iu.test(value) ||
+    /^https?:\/\/multimedia\.nt\.qq\.com\.cn\/download(?:\?[^\s"'<>]*)?$/iu.test(value)
+  )
+}
+
+function isImageLinkLabel(value: string) {
+  return /^(?:image|img|图片|图像)$/iu.test(value.trim())
+}
+
 function extractImages(message: string) {
   const images: string[] = []
   const cqImageRe = /\[CQ:image,[^\]]*(?:url|file)=([^,\]]+)[^\]]*\]/giu
@@ -54,10 +66,17 @@ function extractImages(message: string) {
     if (value) images.push(value)
   }
 
-  const urlImageRe = /((?:https?:\/\/[^\s"'<>]+?\.(?:png|jpe?g|gif|webp|bmp)(?:\?[^\s"'<>]*)?)|(?:data:image\/[a-z0-9.+-]+[^\s"'<>]*))/giu
+  const markdownLinkRe = /(?<!!)\[([^\]]+)\]\(([^)]+)\)/gu
+  while ((match = markdownLinkRe.exec(message))) {
+    const label = match[1] || ''
+    const value = (match[2] || '').trim()
+    if (isImageLinkLabel(label) || isImageUrl(value)) images.push(value)
+  }
+
+  const urlImageRe = /((?:https?:\/\/[^\s"'<>]+)|(?:data:image\/[a-z0-9.+-]+[^\s"'<>]*))/giu
   while ((match = urlImageRe.exec(message))) {
     const value = (match[1] || '').trim()
-    if (value) images.push(value)
+    if (isImageUrl(value)) images.push(value)
   }
 
   return Array.from(new Set(images))
@@ -67,9 +86,12 @@ function stripImageLinks(message: string) {
   return message
     .replace(/\[CQ:image,[^\]]*(?:url|file)=[^,\]]+[^\]]*\]/giu, '')
     .replace(/!\[[^\]]*\]\([^)]+\)/gu, '')
+    .replace(/(?<!!)\[([^\]]+)\]\(([^)]+)\)/gu, (match, label: string, url: string) =>
+      isImageLinkLabel(label) || isImageUrl(url.trim()) ? '' : match
+    )
     .replace(
-      /((?:https?:\/\/[^\s"'<>]+?\.(?:png|jpe?g|gif|webp|bmp)(?:\?[^\s"'<>]*)?)|(?:data:image\/[a-z0-9.+-]+[^\s"'<>]*))/giu,
-      ''
+      /((?:https?:\/\/[^\s"'<>]+)|(?:data:image\/[a-z0-9.+-]+[^\s"'<>]*))/giu,
+      (match) => (isImageUrl(match.trim()) ? '' : match)
     )
     .split('\n')
     .map((line) => line.trimEnd())
