@@ -39,11 +39,16 @@ function isObserverName(name: string, message: string) {
   return /\bOB\b|旁观|observer/i.test(name) || /^[-=]*\s*OB\s*[:：]/i.test(message)
 }
 
+function cleanUrlBoundary(value: string) {
+  return value.trim().replace(/[),，。；;]+$/u, '')
+}
+
 function isImageUrl(value: string) {
+  const url = cleanUrlBoundary(value)
   return (
-    /^data:image\/[a-z0-9.+-]+/iu.test(value) ||
-    /^https?:\/\/[^\s"'<>]+?\.(?:png|jpe?g|gif|webp|bmp)(?:\?[^\s"'<>]*)?$/iu.test(value) ||
-    /^https?:\/\/multimedia\.nt\.qq\.com\.cn\/download(?:\?[^\s"'<>]*)?$/iu.test(value)
+    /^data:image\/[a-z0-9.+-]+/iu.test(url) ||
+    /^https?:\/\/[^\s"'<>]+?\.(?:png|jpe?g|gif|webp|bmp)(?:\?[^\s"'<>]*)?$/iu.test(url) ||
+    /^https?:\/\/multimedia\.nt\.qq\.com\.cn\/download(?:\?[^\s"'<>]*)?$/iu.test(url)
   )
 }
 
@@ -56,26 +61,26 @@ function extractImages(message: string) {
   const cqImageRe = /\[CQ:image,[^\]]*(?:url|file)=([^,\]]+)[^\]]*\]/giu
   let match: RegExpExecArray | null
   while ((match = cqImageRe.exec(message))) {
-    const value = decodeURIComponent(match[1] || '').trim()
+    const value = cleanUrlBoundary(decodeURIComponent(match[1] || ''))
     if (value) images.push(value)
   }
 
   const markdownImageRe = /!\[[^\]]*\]\(([^)]+)\)/gu
   while ((match = markdownImageRe.exec(message))) {
-    const value = (match[1] || '').trim()
+    const value = cleanUrlBoundary(match[1] || '')
     if (value) images.push(value)
   }
 
   const markdownLinkRe = /(?<!!)\[([^\]]+)\]\(([^)]+)\)/gu
   while ((match = markdownLinkRe.exec(message))) {
     const label = match[1] || ''
-    const value = (match[2] || '').trim()
+    const value = cleanUrlBoundary(match[2] || '')
     if (isImageLinkLabel(label) || isImageUrl(value)) images.push(value)
   }
 
   const urlImageRe = /((?:https?:\/\/[^\s"'<>]+)|(?:data:image\/[a-z0-9.+-]+[^\s"'<>]*))/giu
   while ((match = urlImageRe.exec(message))) {
-    const value = (match[1] || '').trim()
+    const value = cleanUrlBoundary(match[1] || '')
     if (isImageUrl(value)) images.push(value)
   }
 

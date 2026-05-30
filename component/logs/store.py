@@ -4,6 +4,7 @@ import time
 import asyncio
 import uuid
 import re
+from urllib.parse import unquote
 from typing import Dict, Any, Optional, List, Tuple
 
 PLUGIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -119,7 +120,40 @@ class JSONLoggerCore:
                 if os.path.exists(idx_tmp):
                     os.remove(idx_tmp)
 
-    # ===== 鍔熻兘鎬у嚱鏁?=====
+    # Session operations
+
+    def _append_image_url(self, images: List[str], value: Any):
+        if not value:
+            return
+        url = str(value).strip()
+        if not url.startswith(("http://", "https://", "data:image/")):
+            return
+        if url not in images:
+            images.append(url)
+
+    def _extract_image_urls_from_text(self, text: str) -> List[str]:
+        images: List[str] = []
+        if not text:
+            return images
+
+        cq_image_re = re.compile(r"\[CQ:image,[^\]]*(?:url|file)=([^,\]]+)[^\]]*\]", re.I)
+        for match in cq_image_re.finditer(text):
+            self._append_image_url(images, unquote(match.group(1)))
+
+        markdown_image_re = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+        markdown_link_re = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
+        for match in markdown_image_re.finditer(text):
+            self._append_image_url(images, match.group(1))
+        for match in markdown_link_re.finditer(text):
+            label = match.group(1).strip().lower()
+            if label in {"image", "img", "图片", "图像"}:
+                self._append_image_url(images, match.group(2))
+
+        qq_download_re = re.compile(r"https?://multimedia\.nt\.qq\.com\.cn/download[^\s\"'<>)]*", re.I)
+        for match in qq_download_re.finditer(text):
+            self._append_image_url(images, match.group(0))
+
+        return images
 
     async def add_message(self, group_id: str, user_id: str, nickname: str, timestamp: int,
                       text: str, components: Optional[List[Any]] = None, isDice: bool = False) -> Tuple[bool,str]:
@@ -131,17 +165,19 @@ class JSONLoggerCore:
         latest_name = active_names[-1]
         sec = grp[latest_name]
 
-        # 瑙ｆ瀽鍥剧墖
+        # Extract remote image URLs from message components and text.
         images = []
         if components:
             for comp in components:
                 if hasattr(comp, "url") and comp.url:
-                    images.append(comp.url)
-                elif hasattr(comp, "file") and comp.file.startswith(("http://", "https://")):
-                    images.append(comp.file)
+                    self._append_image_url(images, comp.url)
+                elif hasattr(comp, "file") and str(comp.file).startswith(("http://", "https://")):
+                    self._append_image_url(images, comp.file)
+        for image_url in self._extract_image_urls_from_text(text):
+            self._append_image_url(images, image_url)
 
-        # 娓呯悊鏂囨湰
-        text_clean = re.sub(r'\[CQ:image,.*?url=.*?(?:,|])', '', text).strip()
+        # Remove CQ image tags from the stored text body.
+        text_clean = re.sub(r'\[CQ:image,[^\]]*\]', '', text).strip()
 
         observers = sec.setdefault("observers", {})
         user_id = str(user_id)
@@ -164,10 +200,9 @@ class JSONLoggerCore:
     async def new_session(self, group_id: str, name: Optional[str] = None) -> Tuple[bool,str]:
         grp = await self.load_group(group_id)
         
-        # 淇鐐癸細鍙嫤鎴€滄鍦ㄨ褰曚腑锛圓ctive锛夆€濈殑浼氳瘽锛屾斁琛屸€滃凡鏆傚仠锛圥aused锛夆€濈殑浼氳瘽
+        # Only block active sessions; paused sessions can coexist until resumed.
         active = [n for n, s in grp.items() if s.get("end_time") is None and not s.get("finished", False)]
         if active:
-            # 杩欓噷浣犲彲浠ュ鐢ㄤ箣鍓嶇殑鎶ラ敊鏂囨锛屾垨鑰呭幓 output.py 閲屽姞涓€涓柊鐨勬枃妗堟瘮濡?log.active_session_exists
             return False, get_output("log.unfinished_session", session_name=active[-1])
             
         name = name or uuid.uuid4().hex[:8]
@@ -253,11 +288,10 @@ class JSONLoggerCore:
     async def resume_session(self, group_id: str, name: Optional[str] = None) -> Tuple[bool,str]:
         grp = await self.load_group(group_id)
         
-        # --- 鏂板闃插尽锛氶槻姝㈠弻寮€ ---
+        # Prevent multiple active sessions in the same group.
         active = [n for n, s in grp.items() if s.get("end_time") is None and not s.get("finished", False)]
         if active:
             return False, get_output("log.already_active_session", prev=active[-1], curr = name)
-        # ------------------------
         
         if name:
             sec = grp.get(name)
@@ -268,7 +302,7 @@ class JSONLoggerCore:
             await self.persist_group(group_id)
             return True, get_output("log.session_resumed", session_name=name)
 
-        # 鑷姩鎭㈠鏈€鍚庝竴涓殏鍋滀細璇?
+        # Resume the most recent paused session when no name is provided.
         paused = [n for n, s in grp.items() if s.get("end_time") is not None and not s.get("finished", False)]
         if not paused:
             return False, get_output("log.no_paused_session")
