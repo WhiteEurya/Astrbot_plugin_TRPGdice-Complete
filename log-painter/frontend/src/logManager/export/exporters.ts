@@ -42,7 +42,7 @@ export function exportHtml(items: PreviewItem[], filters: PreviewFilters) {
         filters.hideImages || !filters.exportImages || !item.images?.length
           ? ''
           : `<div class="imgs">${item.images
-              .map((src) => `<img src="${escapeHtml(src)}" alt="" />`)
+              .map((src) => `<img src="${escapeHtml(src)}" alt="" referrerpolicy="no-referrer" />`)
               .join('')}</div>`
       const colorStyle = filters.exportColors ? `style="--accent:${escapeHtml(item.color)}"` : ''
       const nameStyle = filters.exportColors ? `style="color:${escapeHtml(item.color)}"` : ''

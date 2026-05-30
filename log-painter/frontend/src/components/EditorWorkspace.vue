@@ -69,7 +69,7 @@ function itemClass(item: PreviewItem) {
           <p v-if="item.message">{{ item.message }}</p>
           <div v-if="!filters.hideImages && item.images?.length" class="preview-images">
             <button v-for="src in item.images" :key="src" type="button" @click="zoomImage = src">
-              <img :src="src" alt="" />
+              <img :src="src" alt="" referrerpolicy="no-referrer" />
             </button>
           </div>
         </article>
@@ -78,7 +78,7 @@ function itemClass(item: PreviewItem) {
 
     <div v-if="zoomImage" class="image-lightbox" @click.self="zoomImage = ''">
       <button type="button" class="close-lightbox" @click="zoomImage = ''">关闭</button>
-      <img :src="zoomImage" alt="" />
+      <img :src="zoomImage" alt="" referrerpolicy="no-referrer" />
     </div>
   </main>
 </template>
