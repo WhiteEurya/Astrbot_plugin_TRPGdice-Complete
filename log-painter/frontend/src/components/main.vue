@@ -8,6 +8,8 @@ import { useLogPainter } from '../composables/useLogPainter'
 const painter = useLogPainter()
 const {
   text,
+  sourceFile,
+  loadStatus,
   roles,
   filters,
   items,
@@ -41,7 +43,7 @@ const observerCount = computed(() => items.value.filter((item) => item.isObserve
         <span class="product-mark"></span>
         <div>
           <div class="product-name">TRPG Log Painter</div>
-          <div class="product-sub">fresh IDE workspace</div>
+          <div class="product-sub">{{ sourceFile || 'fresh IDE workspace' }}</div>
         </div>
       </div>
       <div class="topbar-actions">
@@ -80,6 +82,7 @@ const observerCount = computed(() => items.value.filter((item) => item.isObserve
       <span>角色 {{ roles.length }}</span>
       <span>图片 {{ imageCount }}</span>
       <span>OB {{ observerCount }}</span>
+      <span v-if="loadStatus">{{ loadStatus }}</span>
       <span class="status-mode">Dev Preview</span>
     </footer>
   </div>

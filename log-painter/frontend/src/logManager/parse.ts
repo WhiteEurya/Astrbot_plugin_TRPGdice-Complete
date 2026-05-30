@@ -1,5 +1,24 @@
 import type { LogItem } from './types'
 
+interface PluginExportItem {
+  nickname?: unknown
+  IMUserId?: unknown
+  user_id?: unknown
+  time?: unknown
+  timestamp?: unknown
+  message?: unknown
+  text?: unknown
+  images?: unknown
+  isDice?: unknown
+  isObserver?: unknown
+  observer?: unknown
+  role?: unknown
+}
+
+interface PluginExportPayload {
+  items?: unknown
+}
+
 const HEADER_RE =
   /^\s*(.+?)\((\d{5,}|Bot|OB|Observer)\)\s+(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})\s+(\d{1,2}:\d{2}:\d{2})\s*$/u
 
@@ -131,6 +150,56 @@ export function parseLogText(text: string): LogItem[] {
 
   flush()
   return items
+}
+
+function normalizeExportTime(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const date = new Date(value * 1000)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
+      .map((part) => String(part).padStart(2, '0'))
+      .join(':')
+    return `${year}/${month}/${day} ${time}`
+  }
+
+  const text = String(value || '').trim()
+  const match = /^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})\s+(\d{1,2}:\d{2}:\d{2})$/.exec(text)
+  if (match) {
+    const [, year, month, day, time] = match
+    return `${year}/${pad2(month)}/${pad2(day)} ${time}`
+  }
+  return '0000/00/00 00:00:00'
+}
+
+function normalizeImages(value: unknown) {
+  return Array.isArray(value)
+    ? value.map((item) => String(item || '').trim()).filter(Boolean)
+    : []
+}
+
+function markdownImage(url: string) {
+  return `![image](${url.replace(/\)/g, '%29')})`
+}
+
+export function pluginExportToLogText(payload: PluginExportPayload) {
+  const items = Array.isArray(payload?.items) ? payload.items as PluginExportItem[] : []
+  const validHeaderId = /^(\d{5,}|Bot|OB|Observer)$/u
+
+  return items
+    .map((item, index) => {
+      const rawName = String(item.nickname || '').trim()
+      const rawId = String(item.IMUserId ?? item.user_id ?? 'unknown').trim()
+      const isObserver = Boolean(item.isObserver || item.observer || item.role === 'OB')
+      const name = `${rawName || '未命名'}${isObserver && !/\bOB\b|旁观|observer/i.test(rawName) ? '[OB]' : ''}`
+      const id = validHeaderId.test(rawId) ? rawId : String(10000 + index)
+      const message = String(item.message ?? item.text ?? '').trimEnd()
+      const images = normalizeImages(item.images)
+      const body = [message, ...images.map(markdownImage)].filter(Boolean).join('\n')
+      return `${name}(${id}) ${normalizeExportTime(item.time ?? item.timestamp)}\n${body || ' '}`
+    })
+    .join('\n\n')
 }
 
 export function serializeLogItems(items: LogItem[]) {
