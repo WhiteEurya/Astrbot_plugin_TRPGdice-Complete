@@ -13,9 +13,9 @@ import time
 import os
 import json
 import sys
-import subprocess
+import html
 from pathlib import Path
-from playwright.async_api import async_playwright
+from playwright.async_api import Error as PlaywrightError, async_playwright
 
 # ========== MODULE IMPORT ========== #
 from .component.pc import store as charmod
@@ -36,13 +36,13 @@ from .component.pc.view import (
 )
 from .component.pc.nick import build_card_by_mode, build_coc_card
 from .component.pc.template import get_coc_st_template
-
-from playwright.async_api import async_playwright
+from .component.spells import query_coc_spell
 
 logger_core = JSONLoggerCore()
 
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_DIR = os.path.join(PLUGIN_DIR, "data", "settings")
+_T2I_FONT_PATCHED = False
 
 COMMANDS = [
     "show",
@@ -77,23 +77,6 @@ class DicePlugin(Star):
         self.wakeup_prefix = [".", "。", "/", "!", "！"]
         self.uni_cache = {}
         self.initiative_manager = InitiativeManager()
-        # install chromium for spell visualizing
-        try:
-            subprocess.run(
-                [sys.executable, "-m", "playwright", "install-deps"], 
-                check=True, 
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.PIPE
-            )
-            subprocess.run(
-                [sys.executable, "-m", "playwright", "install", "chromium"], 
-                check=True, 
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.PIPE
-            )
-        except Exception as e:
-            print(f"Failed to install chromium: {e}")
-
         self.plugin_dir = os.path.dirname(os.path.abspath(__file__))
         self.json_path = os.path.join(self.plugin_dir, "spellsearcher/SpellSourceFolder.json")
         self.htm_spells_dir = os.path.join(self.plugin_dir, "spellsearcher/HTMSpells")
@@ -1891,8 +1874,7 @@ class DicePlugin(Star):
             return event.plain_result(get_output("log.get_usage"))
 
         name = parts[2]
-        grp = await logger_core.load_group(group)
-        sec = grp.get(name)
+        session_uuid, sec = await logger_core.get_session(group, name)
 
         logger.info(f"{name}, {group}")
 
@@ -1919,8 +1901,7 @@ class DicePlugin(Star):
             return event.plain_result(info)
 
         name = parts[2]
-        grp = await logger_core.load_group(group)
-        sec = grp.get(name)
+        session_uuid, sec = await logger_core.get_session(group, name)
         if not sec:
             return event.plain_result(get_output("log.session_not_found", session_name=name))
 
@@ -2464,7 +2445,41 @@ class DicePlugin(Star):
         <p><ref>{reference}</ref><span class="spell-source-bottom">【{res.source}】</span></p>
         """
         return re.sub(r"</?u\b[^>]*>", lambda match: "<strong>" if match.group(0)[1] != "/" else "</strong>", sample_html, flags=re.IGNORECASE)
-        
+
+    @staticmethod
+    def _html_fragment_to_text(value: str) -> str:
+        text = re.sub(r"(?i)<br\s*/?>", "\n", value or "")
+        text = re.sub(r"(?i)</p\s*>", "\n", text)
+        text = re.sub(r"<[^>]+>", "", text)
+        text = html.unescape(text)
+        text = re.sub(r"[ \t]+\n", "\n", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()
+
+    @classmethod
+    def spellfeature_to_text(cls, res: SpellFeature) -> str:
+        cantrip_suffix = get_output("spell.cantrip_suffix") if res.spelllevel == get_output("spell.cantrip_level") else ""
+        level_line = get_output(
+            "spell.level_line",
+            level=res.spelllevel,
+            cantrip_suffix=cantrip_suffix,
+            school=res.spellschool,
+            classes=res.spellclasses,
+        )
+        return "\n".join(
+            part
+            for part in [
+                f"# {res.spellname}",
+                level_line,
+                f"- {get_output('spell.label.casting_time')}{cls._html_fragment_to_text(res.castingtime)}",
+                f"- {get_output('spell.label.range')}{cls._html_fragment_to_text(res.spellrange)}",
+                f"- {get_output('spell.label.components')}{cls._html_fragment_to_text(res.components)}",
+                f"- {get_output('spell.label.duration')}{cls._html_fragment_to_text(res.duration)}",
+                cls._html_fragment_to_text(res.description),
+                f"> {get_output('spell.reference')}【{res.source}】",
+            ]
+            if part
+        )
 
     def search_spell_in_folder(self, spell_name: str, new_version: bool) -> SpellFeature:
         """从本地文件夹中搜索法术并返回特征对象"""
@@ -2499,7 +2514,7 @@ class DicePlugin(Star):
     async def render_html_to_image(self, html_content: str, output_filename: str):
         custom_css = """
         body { width: 600px; margin: 0; padding: 0; background-color: #fdfaf6; }
-        #card-container { padding: 30px; box-sizing: border-box; width: 100%; color: #333333; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
+        #card-container { padding: 30px; box-sizing: border-box; width: 100%; color: #333333; font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif; }
         h4 { color: #7a200d; border-bottom: 2px solid #c9ad6a; padding-bottom: 5px; font-size: 24px; margin-top: 0; margin-bottom: 6px; }
         #card-container > p:last-of-type { position: relative; }
         .spell-source-bottom { position: absolute; right: 0; bottom: 0; color: #888888; font-style: italic; font-size: 13px; white-space: nowrap; }
@@ -2576,16 +2591,21 @@ class DicePlugin(Star):
         </html>
         """
 
-        # 异步调用 playwright
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(args=['--no-sandbox']) 
-            page = await browser.new_page()
-            await page.set_content(full_html)
-            
-            locator = page.locator("#card-container")
-            await locator.screenshot(path=output_filename)
-            
-            await browser.close()
+        try:
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(args=['--no-sandbox'])
+                page = await browser.new_page()
+                await page.set_content(full_html)
+
+                locator = page.locator("#card-container")
+                await locator.screenshot(path=output_filename)
+
+                await browser.close()
+        except PlaywrightError as exc:
+            raise RuntimeError(
+                "Playwright Chromium 未安装或缺少系统依赖；Docker 用户请执行 "
+                "`python -m playwright install --with-deps chromium` 后重启 AstrBot。"
+            ) from exc
 
     @filter.command("find")
     async def query_spell(self, event: AstrMessageEvent, spell_name: str = "", version_tag: str = ""):
@@ -2600,7 +2620,10 @@ class DicePlugin(Star):
         new_version = True
         if version_tag == "旧版" or version_tag == "5e" or version_tag == "2014":
             new_version = False
-        yield event.plain_result(get_output("spell.searching", spell_name=spell_name))
+        lookup_query = spell_name
+        if version_tag and spell_name.lower() in {"coc", "克苏鲁", "神话", "仪式"}:
+            lookup_query = f"{spell_name} {version_tag}"
+        yield event.plain_result(get_output("spell.searching", spell_name=lookup_query))
         
         try:
             res = self.search_spell_in_folder(spell_name, new_version)
@@ -2609,10 +2632,15 @@ class DicePlugin(Star):
             return
 
         if not res:
-            yield event.plain_result(get_output("spell.not_found", spell_name=spell_name))
+            coc_result = query_coc_spell(lookup_query)
+            if coc_result:
+                yield event.plain_result(coc_result)
+                return
+            yield event.plain_result(get_output("spell.not_found", spell_name=lookup_query))
             return
 
         html_content = self.spellfeature_to_html(res)
+        text = self.spellfeature_to_text(res)
         safe_spell_name = re.sub(r"[^\w\u4e00-\u9fff.-]+", "_", spell_name).strip("._") or "spell"
         temp_image_path = os.path.join(self.plugin_dir, f"temp_{safe_spell_name}_{int(time.time() * 1000)}.png")
 
@@ -2620,7 +2648,7 @@ class DicePlugin(Star):
             await self.render_html_to_image(html_content, temp_image_path)
             yield event.chain_result([Image.fromFileSystem(temp_image_path)])
         except Exception as e:
-            yield event.plain_result(get_output("spell.render_error", error=str(e)))
+            yield event.plain_result(f"{get_output('spell.render_error', error=str(e))}\n\n{text}")
         finally:
             if os.path.exists(temp_image_path):
                 try:

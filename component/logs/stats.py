@@ -14,7 +14,12 @@ def select_sessions(
 ) -> Tuple[List[SessionEntry], bool]:
     if name:
         session = sessions.get(name)
-        return ([(name, session)] if session is not None else []), session is not None
+        if session is not None:
+            return [(name, session)], True
+        for session_id, session in reversed(list(sessions.items())):
+            if str(session.get("name") or session_id) == name:
+                return [(session_id, session)], True
+        return [], False
 
     if all_flag:
         return list(sessions.items()), True
@@ -33,6 +38,7 @@ def select_sessions(
 
 
 def format_session_stats(session_name: str, session: Dict[str, Any]) -> str:
+    display_name = str(session.get("name") or session_name)
     messages = session.get("messages", [])
     users = {str(m.get("user_id", "")) for m in messages if m.get("user_id")}
     dice_count = sum(1 for m in messages if m.get("isDice"))
@@ -40,7 +46,7 @@ def format_session_stats(session_name: str, session: Dict[str, Any]) -> str:
     image_count = sum(len(m.get("images", [])) for m in messages)
     return get_output(
         "log.stat.line",
-        session_name=session_name,
+        session_name=display_name,
         message_count=len(messages),
         user_count=len(users),
         dice_count=dice_count,

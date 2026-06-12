@@ -134,6 +134,37 @@ export function useLogPainter() {
     text.value = SAMPLE_TEXT
   }
 
+  async function loadExportUuid(logUuid: string) {
+    const safeUuid = logUuid.trim().toLowerCase()
+    if (!/^[0-9a-f]{8}$/i.test(safeUuid)) {
+      loadStatus.value = '日志链接无效'
+      return
+    }
+
+    sourceFile.value = safeUuid
+    loadStatus.value = '正在加载日志'
+
+    try {
+      const response = await fetch(`/export?uuid=${encodeURIComponent(safeUuid)}`, {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store'
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      const data = await response.json()
+      importedItems.value = pluginExportToItems(data)
+      const renderedText = pluginExportToLogText(data)
+      text.value = renderedText
+      importedText.value = renderedText
+      filters.exportTitle = String(data?.name || safeUuid)
+      loadStatus.value = renderedText ? `已加载 ${filters.exportTitle}` : `已加载空日志 ${filters.exportTitle}`
+    } catch (error) {
+      loadStatus.value = `加载失败：${error instanceof Error ? error.message : '未知错误'}`
+    }
+  }
+
   async function loadExportFile(fileName: string) {
     const safeName = fileName.trim()
     if (!safeName || safeName.includes('..') || safeName.includes('/') || safeName.includes('\\') || !safeName.endsWith('.json')) {
@@ -166,7 +197,14 @@ export function useLogPainter() {
   }
 
   onMounted(() => {
-    const fileName = new URLSearchParams(window.location.search).get('file')
+    const params = new URLSearchParams(window.location.search)
+    const logUuid = params.get('uuid')
+    if (logUuid) {
+      void loadExportUuid(logUuid)
+      return
+    }
+
+    const fileName = params.get('file')
     if (fileName) {
       void loadExportFile(fileName)
     }
@@ -196,6 +234,7 @@ export function useLogPainter() {
     updateRoleNames,
     clearText,
     loadSample,
+    loadExportUuid,
     loadExportFile,
     downloadText,
     downloadHtml

@@ -291,6 +291,8 @@ MYTHOS_ALIASES = {
     "愈合": "加速愈合",
 }
 
+COC_QUERY_PREFIXES = {"coc", "克苏鲁", "神话", "仪式"}
+
 
 def _normalize_name(value: str) -> str:
     value = (value or "").strip().lower()
@@ -578,6 +580,27 @@ def _lookup_mythos_ritual(name: str) -> str:
     )
 
 
+def query_coc_spell(raw_query: str) -> str | None:
+    query = (raw_query or "").strip()
+    if not query:
+        return None
+
+    parts = query.split(maxsplit=1)
+    first = parts[0].lower()
+    rest = parts[1].strip() if len(parts) > 1 else ""
+    lookup_name = rest if first in COC_QUERY_PREFIXES and rest else query
+
+    sealdice_result = _lookup_sealdice_coc_spell(lookup_name)
+    if sealdice_result:
+        return sealdice_result
+
+    normalized = _normalize_name(lookup_name)
+    if first in COC_QUERY_PREFIXES or normalized in MYTHOS_ALIASES or lookup_name in MYTHOS_RITUALS:
+        return _lookup_mythos_ritual(lookup_name)
+
+    return None
+
+
 def query_spell(raw_query: str) -> str:
     query = (raw_query or "").strip()
     if not query:
@@ -598,16 +621,13 @@ def query_spell(raw_query: str) -> str:
         if sealdice_result:
             return sealdice_result
         return _lookup_dnd_spell(rest or query)
-    if first in {"coc", "克苏鲁", "神话", "仪式"}:
-        sealdice_result = _lookup_sealdice_coc_spell(rest or query)
-        if sealdice_result:
-            return sealdice_result
-        return _lookup_mythos_ritual(rest or query)
+    if first in COC_QUERY_PREFIXES:
+        return query_coc_spell(query) or _lookup_mythos_ritual(rest or query)
 
     normalized = _normalize_name(query)
     if normalized in MYTHOS_ALIASES or query in MYTHOS_RITUALS:
         return _lookup_mythos_ritual(query)
-    sealdice_result = _lookup_sealdice_dnd_spell(query) or _lookup_sealdice_coc_spell(query)
+    sealdice_result = _lookup_sealdice_dnd_spell(query) or query_coc_spell(query)
     if sealdice_result:
         return sealdice_result
     return _lookup_dnd_spell(query)

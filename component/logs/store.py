@@ -27,8 +27,8 @@ class JSONLoggerCore:
     def _get_index_path(self, group_id: str) -> str:
         return os.path.join(self._get_group_dir(group_id), "index.json")
 
-    def _get_session_path(self, group_id: str, session_name: str) -> str:
-        return os.path.join(self._get_group_dir(group_id), f"{session_name}.json")
+    def _get_session_path(self, group_id: str, session_uuid: str) -> str:
+        return os.path.join(self._get_group_dir(group_id), f"{session_uuid}.json")
 
     def _get_observers_path(self, group_id: str) -> str:
         return os.path.join(self._get_group_dir(group_id), "observers.json")
@@ -36,9 +36,33 @@ class JSONLoggerCore:
     def _get_lock(self, group_id: str) -> asyncio.Lock:
         return self.locks.setdefault(group_id, asyncio.Lock())
 
+    def _new_log_uuid(self, grp: Optional[Dict[str, Any]] = None) -> str:
+        used = set((grp or {}).keys())
+        while True:
+            value = uuid.uuid4().hex[:8]
+            if value not in used:
+                return value
+
+    def _is_log_uuid(self, value: Any) -> bool:
+        return bool(re.fullmatch(r"[0-9a-fA-F]{8}", str(value or "")))
+
+    def _session_name(self, session_uuid: str, sec: Dict[str, Any]) -> str:
+        return str(sec.get("name") or session_uuid)
+
+    def _resolve_session(self, grp: Dict[str, Any], name_or_uuid: Optional[str]):
+        if not name_or_uuid:
+            return None, None
+        key = str(name_or_uuid)
+        if key in grp:
+            return key, grp[key]
+        for session_uuid, sec in reversed(list(grp.items())):
+            if self._session_name(session_uuid, sec) == key:
+                return session_uuid, sec
+        return None, None
+
     def _select_session(self, grp: Dict[str, Any], name: Optional[str] = None):
         if name:
-            return name, grp.get(name)
+            return self._resolve_session(grp, name)
 
         active = [
             (n, s)
@@ -73,22 +97,51 @@ class JSONLoggerCore:
         else:
             index = {}
 
-        for name, meta in index.items():
-            sess_path = self._get_session_path(group_id, name)
+        dirty = False
+        for index_key, meta in index.items():
+            if not isinstance(meta, dict):
+                meta = {}
+
+            raw_uuid = str(meta.get("uuid") or "")
+            session_uuid = raw_uuid.lower() if self._is_log_uuid(raw_uuid) else self._new_log_uuid(grp)
+            if not raw_uuid or session_uuid != raw_uuid:
+                dirty = True
+            session_name = str(meta.get("name") or index_key)
+            sess_path = self._get_session_path(group_id, session_uuid)
+
+            if not os.path.isfile(sess_path):
+                legacy_path = self._get_session_path(group_id, index_key)
+                name_path = self._get_session_path(group_id, session_name)
+                if os.path.isfile(legacy_path):
+                    sess_path = legacy_path
+                elif os.path.isfile(name_path):
+                    sess_path = name_path
+
             if os.path.isfile(sess_path):
                 try:
                     with open(sess_path, "r", encoding="utf-8") as f:
                         data = json.load(f)
+                    raw_stored_uuid = str(data.get("uuid") or session_uuid)
+                    stored_uuid = raw_stored_uuid.lower() if self._is_log_uuid(raw_stored_uuid) else session_uuid
+                    if stored_uuid in grp:
+                        stored_uuid = self._new_log_uuid(grp)
+                        dirty = True
+                    if data.get("uuid") != stored_uuid or data.get("name") != session_name:
+                        dirty = True
+                    data["uuid"] = stored_uuid
+                    data["name"] = str(data.get("name") or session_name)
                     data.setdefault("start_time", meta.get("start_time", 0))
                     data.setdefault("end_time", meta.get("end_time", None))
                     data.setdefault("messages", data.get("messages", []))
                     data.setdefault("finished", meta.get("finished", False))
                     data.setdefault("observers", data.get("observers", {}))
-                    grp[name] = data
+                    grp[stored_uuid] = data
                 except Exception:
                     pass
 
         self.sessions[group_id] = grp
+        if dirty:
+            await self.persist_group(group_id)
         return grp
 
     async def load_group_observers(self, group_id: str) -> Dict[str, str]:
@@ -133,8 +186,10 @@ class JSONLoggerCore:
             grp_dir = self._get_group_dir(group_id)
             os.makedirs(grp_dir, exist_ok=True)
 
-            for name, sec in list(grp.items()):
-                session_path = self._get_session_path(group_id, name)
+            for session_uuid, sec in list(grp.items()):
+                sec["uuid"] = session_uuid
+                sec.setdefault("name", session_uuid)
+                session_path = self._get_session_path(group_id, session_uuid)
                 tmp = session_path + ".tmp"
                 try:
                     with open(tmp, "w", encoding="utf-8") as f:
@@ -145,10 +200,16 @@ class JSONLoggerCore:
                         os.remove(tmp)
 
             # index.json
-            index = {name: {"start_time": sec.get("start_time", 0),
-                            "end_time": sec.get("end_time", None),
-                            "finished": bool(sec.get("finished", False))}
-                     for name, sec in grp.items()}
+            index = {
+                session_uuid: {
+                    "uuid": session_uuid,
+                    "name": self._session_name(session_uuid, sec),
+                    "start_time": sec.get("start_time", 0),
+                    "end_time": sec.get("end_time", None),
+                    "finished": bool(sec.get("finished", False)),
+                }
+                for session_uuid, sec in grp.items()
+            }
             idx_path = self._get_index_path(group_id)
             idx_tmp = idx_path + ".tmp"
             try:
@@ -202,8 +263,8 @@ class JSONLoggerCore:
         if not active_names:
             return False, get_output("log.no_active_session")
 
-        latest_name = active_names[-1]
-        sec = grp[latest_name]
+        latest_uuid = active_names[-1]
+        sec = grp[latest_uuid]
 
         # Extract remote image URLs from message components and text.
         images = []
@@ -254,10 +315,19 @@ class JSONLoggerCore:
         # Only block active sessions; paused sessions can coexist until resumed.
         active = [n for n, s in grp.items() if s.get("end_time") is None and not s.get("finished", False)]
         if active:
-            return False, get_output("log.unfinished_session", session_name=active[-1])
+            return False, get_output("log.unfinished_session", session_name=self._session_name(active[-1], grp[active[-1]]))
             
-        name = name or uuid.uuid4().hex[:8]
-        grp[name] = {"start_time": int(time.time()), "end_time": None, "messages": [], "finished": False, "observers": {}}
+        session_uuid = self._new_log_uuid(grp)
+        name = name or session_uuid
+        grp[session_uuid] = {
+            "uuid": session_uuid,
+            "name": name,
+            "start_time": int(time.time()),
+            "end_time": None,
+            "messages": [],
+            "finished": False,
+            "observers": {},
+        }
         await self.persist_group(group_id)
         return True, get_output("log.new_session", session_name=name)
 
@@ -322,16 +392,16 @@ class JSONLoggerCore:
         # Prevent multiple active sessions in the same group.
         active = [n for n, s in grp.items() if s.get("end_time") is None and not s.get("finished", False)]
         if active:
-            return False, get_output("log.already_active_session", prev=active[-1], curr = name)
+            return False, get_output("log.already_active_session", prev=self._session_name(active[-1], grp[active[-1]]), curr = name)
         
         if name:
-            sec = grp.get(name)
+            session_uuid, sec = self._resolve_session(grp, name)
             if not sec: return False, get_output("log.session_not_found", session_name=name)
             if sec.get("finished"): return False, get_output("log.session_finished", session_name=name)
             if sec.get("end_time") is None: return False, get_output("log.session_active", session_name=name)
             sec["end_time"] = None
             await self.persist_group(group_id)
-            return True, get_output("log.session_resumed", session_name=name)
+            return True, get_output("log.session_resumed", session_name=self._session_name(session_uuid, sec))
 
         # Resume the most recent paused session when no name is provided.
         paused = [n for n, s in grp.items() if s.get("end_time") is not None and not s.get("finished", False)]
@@ -340,7 +410,7 @@ class JSONLoggerCore:
         sec = grp[paused[-1]]
         sec["end_time"] = None
         await self.persist_group(group_id)
-        return True, get_output("log.session_resumed", session_name=paused[-1])
+        return True, get_output("log.session_resumed", session_name=self._session_name(paused[-1], sec))
 
     async def pause_sessions(self, group_id: str) -> Tuple[bool,str]:
         grp = await self.load_group(group_id)
@@ -350,27 +420,28 @@ class JSONLoggerCore:
         sec = grp[active[-1]]
         sec["end_time"] = int(time.time())
         await self.persist_group(group_id)
-        return True, get_output("log.session_paused", session_name=active[-1])
+        return True, get_output("log.session_paused", session_name=self._session_name(active[-1], sec))
 
     async def end_session(self, group_id: str) -> Tuple[bool,str]:
         grp = await self.load_group(group_id)
         active = [n for n, s in grp.items() if s.get("end_time") is None and not s.get("finished", False)]
         if not active:
             return False, get_output("log.no_active_session")
-        name = active[-1]
-        sec = grp[name]
+        session_uuid = active[-1]
+        sec = grp[session_uuid]
         sec["end_time"] = int(time.time())
         sec["finished"] = True
         await self.persist_group(group_id)
-        return True, await self.export_session(group_id, sec, name)
+        return True, await self.export_session(group_id, sec, self._session_name(session_uuid, sec))
 
     async def halt_session(self, group_id: str) -> Tuple[bool,str]:
         grp = await self.load_group(group_id)
         unfinished = [n for n, s in grp.items() if not s.get("finished", False)]
         if not unfinished:
             return False, get_output("log.no_unfinished_session")
-        name = unfinished[-1]
-        del grp[name]
+        session_uuid = unfinished[-1]
+        name = self._session_name(session_uuid, grp[session_uuid])
+        del grp[session_uuid]
         await self.persist_group(group_id)
         return True, get_output("log.session_halted", session_name=name)
 
@@ -386,7 +457,8 @@ class JSONLoggerCore:
         
         grp = await self.load_group(group_id)
         lines = []
-        for name, sec in grp.items():
+        for session_uuid, sec in grp.items():
+            name = self._session_name(session_uuid, sec)
             st = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(sec.get("start_time", 0)))
             status = get_output("log.status_finished") if sec.get("finished") else (get_output("log.status_active") if sec.get("end_time") is None else get_output("log.status_paused"))
             lines.append(get_output("log.session_line", session_name=name, start_time=st, status=status, message_count=len(sec.get("messages", []))))
@@ -404,29 +476,43 @@ class JSONLoggerCore:
 
     async def delete_session(self, group_id: str, name: str) -> Tuple[bool,str]:
         grp = await self.load_group(group_id)
-        if name not in grp:
+        session_uuid, sec = self._resolve_session(grp, name)
+        if not sec:
             return False, get_output("log.session_not_found", session_name=name)
         try:
-            os.remove(self._get_session_path(group_id, name))
+            os.remove(self._get_session_path(group_id, session_uuid))
         except Exception:
             pass
         try:
-            os.remove(os.path.join(self.base_dir, "exports", f"{group_id}_{name}.json"))
+            os.remove(os.path.join(self.base_dir, "exports", f"{session_uuid}.json"))
         except Exception:
             pass
-        del grp[name]
+        try:
+            os.remove(os.path.join(self.base_dir, "exports", f"{group_id}_{self._session_name(session_uuid, sec)}.json"))
+        except Exception:
+            pass
+        del grp[session_uuid]
         await self.persist_group(group_id)
-        return True, get_output("log.session_deleted", session_name=name)
+        return True, get_output("log.session_deleted", session_name=self._session_name(session_uuid, sec))
+
+    async def get_session(self, group_id: str, name_or_uuid: str):
+        grp = await self.load_group(group_id)
+        return self._resolve_session(grp, name_or_uuid)
 
     async def export_session(self, group_id: str, sec: dict, name: str) -> str:
 
         if group_id == "1062260572" and name == "746573746c6f67":
             website = get_output("setting.website")
-            file_name = "746573746c6f67.json"
-            result_website = f"{website}/?file={file_name}" 
+            file_name = "74657374"
+            result_website = f"{website}/?uuid={file_name}"
             return get_output("log.session_exported", session_name = "???", file_name=file_name, result_website = result_website)
         
-        export_data = {"version": 1, "items": []}
+        raw_session_uuid = str(sec.get("uuid") or "")
+        session_uuid = raw_session_uuid.lower() if self._is_log_uuid(raw_session_uuid) else uuid.uuid4().hex[:8]
+        session_name = str(sec.get("name") or name or session_uuid)
+        sec["uuid"] = session_uuid
+        sec["name"] = session_name
+        export_data = {"version": 1, "uuid": session_uuid, "name": session_name, "items": []}
         for m in sec.get("messages", []):
             ts_int = int(m.get("timestamp", int(time.time())))
             time_str = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(ts_int))
@@ -450,27 +536,28 @@ class JSONLoggerCore:
 
         exports_dir = os.path.join(self.base_dir, "exports")
         os.makedirs(exports_dir, exist_ok=True)
-        file_name = f"{group_id}_{name}.json"
-        file_path = os.path.join(exports_dir, file_name)
+        file_name = session_uuid
+        file_path = os.path.join(exports_dir, f"{file_name}.json")
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(export_data, f, ensure_ascii=False, indent=2)
             
         website = get_output("setting.website")
-        result_website = f"{website}/?file={file_name}" 
-        return get_output("log.session_exported", session_name = name, file_name=file_name, result_website = result_website)
+        result_website = f"{website}/?uuid={file_name}"
+        return get_output("log.session_exported", session_name = session_name, file_name=file_name, result_website = result_website)
 
     async def export_session_text(self, group_id: str, name: str) -> str:
         grp = await self.load_group(group_id)
-        sec = grp.get(name)
+        session_uuid, sec = self._resolve_session(grp, name)
         if not sec:
             return get_output("log.session_not_found", session_name=name)
 
         exports_dir = os.path.join(self.base_dir, "exports")
         os.makedirs(exports_dir, exist_ok=True)
-        file_name = f"{group_id}_{name}.txt"
+        session_name = self._session_name(session_uuid, sec)
+        file_name = f"{session_uuid}.txt"
         file_path = os.path.join(exports_dir, file_name)
 
-        lines = [f"# {name}"]
+        lines = [f"# {session_name}"]
         for m in sec.get("messages", []):
             ts_int = int(m.get("timestamp", int(time.time())))
             time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts_int))

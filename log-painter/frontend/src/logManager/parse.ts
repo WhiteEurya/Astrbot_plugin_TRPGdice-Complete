@@ -19,6 +19,7 @@ interface PluginExportItem {
 
 interface PluginExportPayload {
   items?: unknown
+  messages?: unknown
 }
 
 const HEADER_RE =
@@ -108,6 +109,19 @@ function stripImageLinks(message: string) {
 }
 
 export function parseLogText(text: string): LogItem[] {
+  const normalizedText = normalizeText(text).trim()
+  if (normalizedText.startsWith('{') || normalizedText.startsWith('[')) {
+    try {
+      const payload = JSON.parse(normalizedText)
+      const parsedItems = Array.isArray(payload)
+        ? pluginExportToItems({ items: payload })
+        : pluginExportToItems(payload)
+      if (parsedItems.length) return parsedItems
+    } catch {
+      // Not a supported JSON log; continue with plain text parsing.
+    }
+  }
+
   const lines = normalizeText(text).split('\n')
   const items: LogItem[] = []
   let current:
@@ -217,7 +231,11 @@ export function pluginExportToLogText(payload: PluginExportPayload) {
 }
 
 export function pluginExportToItems(payload: PluginExportPayload): LogItem[] {
-  const items = Array.isArray(payload?.items) ? payload.items as PluginExportItem[] : []
+  const items = Array.isArray(payload?.items)
+    ? payload.items as PluginExportItem[]
+    : Array.isArray(payload?.messages)
+      ? payload.messages as PluginExportItem[]
+      : []
   const validHeaderId = /^(\d{5,}|Bot|OB|Observer)$/u
   return items
     .map((item, index): LogItem => {
