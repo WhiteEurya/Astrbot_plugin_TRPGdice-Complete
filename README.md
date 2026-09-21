@@ -352,7 +352,7 @@ rm -rf backend/.venv
 > 规则系统会影响未指定骰式时的 .r 默认骰：CoC 为 1d100，DnD 为 1d20。
 > 新增易记的 DnD 优势/劣势指令：.adv、.adv+3、.dis、.dis-2。
 > 新增 DnD 角色属性生成、先攻列表、回合推进、火球术伤害和 DnD / CoC 法术查询工具。
-> 帮助指令现在会从 component/config.yaml 读取分类文案，生成 HTML 帮助图片；.help、.dicehelp 及分类帮助均可使用。
+> 新增 Help 帮助图像化：帮助指令从 component/config.yaml 读取分类文案，生成 HTML 后通过 Playwright 渲染为图片；.help、.dicehelp 及分类帮助均可使用。
 > 完善日志管理：支持日志统计、JSON / 文本导出、OB 观察者管理和 .ob 快捷切换。
 > 增加技能别名、D66、随机选择、群名片模式和跨群角色卡同步等跑团辅助功能。
 > 修复默认回复配置中骰点、技能检定、SAN、角色生成和疯狂症状内容被占位文案吞掉的问题，并统一默认配置与当前配置的模板参数。
