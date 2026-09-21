@@ -15,6 +15,7 @@ import json
 import sys
 import html
 from pathlib import Path
+from typing import Optional
 from playwright.async_api import Error as PlaywrightError, async_playwright
 
 # ========== MODULE IMPORT ========== #
@@ -51,11 +52,71 @@ COMMANDS = [
     "export"
 ]
 
+RULE_SYSTEMS = {
+    "coc": {"label": "CoC", "default_roll": "1d100", "aliases": {"coc", "coc7", "cthulhu", "克苏鲁"}},
+    "dnd": {"label": "DnD", "default_roll": "1d20", "aliases": {"dnd", "dnd5e", "d&d", "d20", "龙与地下城"}},
+}
+DEFAULT_RULE_SYSTEM = "coc"
+
 log_help_str = '''.log 指令一览：
     .log on -- 开启log记录。亚托莉会记录之后所有的对话，并保存在“群名+时间”文件夹内。（施工中）
     .log off -- 暂停log记录。在同一群聊内再次使用.log on，可以继续记录未完成的log。（施工中）
     .log end -- 结束log记录。亚托莉会在群聊内发送“群名+时间.txt”的log文件。（施工中）
 '''
+
+HELP_PAGE_META = {
+    "index": ("风铃协助手册", "跑团常用指令索引"),
+    "dice": ("风铃协助手册 · 掷骰篇", "检定、奖励骰、暗骰与理智检定"),
+    "expr": ("风铃协助手册 · 表达式篇", "复杂骰式、重复投掷与保留骰"),
+    "pc": ("风铃协助手册 · 角色管理篇", "人物卡创建、切换、同步与删除"),
+    "st": ("风铃协助手册 · 属性记录篇", "属性录入、查询、修改与导出"),
+    "log": ("风铃协助手册 · 记录篇", "日志开启、暂停、导出与整理"),
+    "coc": ("风铃协助手册 · COC 与杂项篇", "规则设置、法术查询与常用小工具"),
+    "dnd": ("风铃协助手册 · DnD 篇", "角色生成、法术查询与先攻管理"),
+}
+
+HELP_COMMAND_ALIASES = {
+    "help": "index",
+    "helproll": "dice",
+    "helpexpr": "expr",
+    "helppc": "pc",
+    "helpst": "st",
+    "helplog": "log",
+    "helpcoc": "coc",
+    "helpdnd": "dnd",
+    "help roll": "dice",
+    "help expr": "expr",
+    "help pc": "pc",
+    "help st": "st",
+    "help log": "log",
+    "help coc": "coc",
+    "help dnd": "dnd",
+    "bothelp": "index",
+    "dicehelp": "index",
+    "dicehelproll": "dice",
+    "dicehelpexpr": "expr",
+    "dicehelppc": "pc",
+    "dicehelpst": "st",
+    "dicehelplog": "log",
+    "dicehelpcoc": "coc",
+    "dicehelpdnd": "dnd",
+    "dicehelp roll": "dice",
+    "dicehelp expr": "expr",
+    "dicehelp pc": "pc",
+    "dicehelp st": "st",
+    "dicehelp log": "log",
+    "dicehelp coc": "coc",
+    "dicehelp dnd": "dnd",
+}
+
+HELP_COMMAND_PREFIXES = ("dicehelp", "help")
+ASTRBOT_BUILTIN_HELP_TOPICS = {
+    "astrbot",
+    "system",
+    "core",
+    "原生",
+    "系统",
+}
 
 async def get_sender_nickname(client, group_id, sender_id) :
     payloads = {
@@ -178,6 +239,45 @@ class DicePlugin(Star):
             return True
         return self._is_bot_enabled(group_id)
 
+    def _normalize_rule_system(self, value: str) -> str:
+        value = (value or "").strip().lower()
+        for system, meta in RULE_SYSTEMS.items():
+            if value == system or value in meta["aliases"]:
+                return system
+        return ""
+
+    def _get_rule_system(self, context_id) -> str:
+        if not context_id:
+            return DEFAULT_RULE_SYSTEM
+        settings = self._get_group_settings(context_id)
+        system = self._normalize_rule_system(settings.get("rule_system", ""))
+        return system or DEFAULT_RULE_SYSTEM
+
+    def _set_rule_system(self, context_id, system: str) -> str:
+        normalized = self._normalize_rule_system(system)
+        if not normalized:
+            return ""
+        settings = self._get_group_settings(context_id)
+        settings["rule_system"] = normalized
+        self._save_group_settings(context_id, settings)
+        return normalized
+
+    def _default_roll_expr(self, context_id) -> str:
+        system = self._get_rule_system(context_id)
+        return RULE_SYSTEMS[system]["default_roll"]
+
+    def _format_rule_system_status(self, context_id) -> str:
+        system = self._get_rule_system(context_id)
+        meta = RULE_SYSTEMS[system]
+        return f"当前规则系统：{meta['label']}，.r 默认骰为 {meta['default_roll']}。"
+
+    def _advantage_roll_expression(self, context_id, modifier: str, disadvantage: bool = False) -> str:
+        default_roll = self._default_roll_expr(context_id)
+        match = re.fullmatch(r"1d(\d+)", default_roll)
+        dice_faces = match.group(1) if match else "20"
+        keep = "k-1" if disadvantage else "k1"
+        return f"2d{dice_faces}{keep}{modifier}"
+
     def _stop_event(self, event: AstrMessageEvent):
         for method_name in ("stop_event", "stop_propagation", "stop"):
             method = getattr(event, method_name, None)
@@ -187,6 +287,471 @@ class DicePlugin(Star):
                 except TypeError:
                     pass
                 return
+
+    def _help_command_page(self, command_text: str) -> str:
+        command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
+        return HELP_COMMAND_ALIASES.get(command, "")
+
+    def _help_topic_from_command(self, command_text: str) -> str:
+        command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
+        for prefix in HELP_COMMAND_PREFIXES:
+            if command == prefix:
+                return ""
+            if command.startswith(prefix):
+                return command[len(prefix):].strip(" .:/_-")
+        return ""
+
+    def _resolve_help_request(self, command_text: str) -> tuple[str, str]:
+        command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
+        page = self._help_command_page(command)
+        if page:
+            return "page", page
+        topic = self._help_topic_from_command(command)
+        if topic in ASTRBOT_BUILTIN_HELP_TOPICS:
+            return "builtin", topic
+        if topic:
+            return "command", topic
+        if command.startswith(HELP_COMMAND_PREFIXES):
+            return "page", "index"
+        return "", ""
+
+    def _suppress_astrbot_builtin_help(self, event: AstrMessageEvent):
+        activated_handlers = event.get_extra("activated_handlers") or []
+        handlers_parsed_params = event.get_extra("handlers_parsed_params") or {}
+
+        kept_handlers = []
+        for handler in list(activated_handlers):
+            module_path = getattr(handler, "handler_module_path", "")
+            full_name = getattr(handler, "handler_full_name", "")
+            handler_name = getattr(handler, "handler_name", "")
+            is_builtin_help = (
+                handler_name == "help"
+                and (
+                    "packages.astrbot" in module_path
+                    or "packages.astrbot" in full_name
+                    or module_path == "astrbot.main"
+                )
+            )
+            if is_builtin_help:
+                logger.debug(f"suppress builtin AstrBot help handler: {full_name}")
+                handlers_parsed_params.pop(full_name, None)
+                continue
+            kept_handlers.append(handler)
+
+        activated_handlers[:] = kept_handlers
+        event.set_extra("activated_handlers", kept_handlers)
+        event.set_extra("handlers_parsed_params", handlers_parsed_params)
+
+    def _split_help_line(self, line: str) -> tuple[str, str]:
+        stripped = line.strip()
+        if not stripped:
+            return "", ""
+
+        normalized = stripped.replace("`", "")
+        for separator in (" : ", " ：", "：", " - ", " -- "):
+            if separator in normalized:
+                left, right = normalized.split(separator, 1)
+                left = left.strip()
+                right = right.strip()
+                if left.startswith((".", "/", "!", "！")):
+                    return left, right
+                if right.startswith((".", "/", "!", "！")):
+                    return right, left
+                return left, right
+
+        command_match = re.match(r"^([./!！][^\s，。；;：:]+(?:\s+[^\s，。；;：:]+){0,3})(.*)$", normalized)
+        if command_match:
+            return command_match.group(1).strip(), command_match.group(2).strip()
+
+        return "", normalized
+
+    def _iter_help_entries(self):
+        for page_key in HELP_PAGE_META:
+            if page_key == "index":
+                continue
+            raw_text = get_output(f"help.{page_key}")
+            for raw_line in raw_text.splitlines():
+                line = raw_line.strip()
+                if not line or line.startswith("《"):
+                    continue
+                command, description = self._split_help_line(line)
+                if command:
+                    yield page_key, command, description
+
+    def _normalize_help_command_key(self, value: str) -> str:
+        value = (value or "").lower().replace("！", "!")
+        value = re.sub(r"<[^>]*>|\[[^\]]*\]|（.*?）|\(.*?\)", "", value)
+        value = re.sub(r"[`./!。/]", "", value)
+        return re.sub(r"[^a-z0-9\u4e00-\u9fff]+", "", value)
+
+    def _help_command_aliases(self, command: str) -> set[str]:
+        aliases = set()
+        for part in re.split(r"[/；;，,、]", command):
+            part = part.strip()
+            if not part:
+                continue
+            key = self._normalize_help_command_key(part)
+            if key:
+                aliases.add(key)
+            head_match = re.match(r"^[`]*[./!！。]?([a-z][a-z0-9]*)(?:\s+([a-z0-9]+))?", part.lower())
+            if head_match:
+                first = head_match.group(1)
+                second = head_match.group(2) or ""
+                aliases.add(first)
+                if second:
+                    aliases.add(first + second)
+        return aliases
+
+    def _find_help_command(self, query: str) -> Optional[tuple[str, str, str]]:
+        normalized_query = self._normalize_help_command_key(query)
+        if not normalized_query:
+            return None
+        for page_key, command, description in self._iter_help_entries():
+            if normalized_query in self._help_command_aliases(command):
+                return page_key, command, description
+        for page_key, command, description in self._iter_help_entries():
+            if normalized_query in self._normalize_help_command_key(command):
+                return page_key, command, description
+        return None
+
+    def _build_help_command_html(self, query: str) -> tuple[str, str]:
+        match = self._find_help_command(query)
+        if not match:
+            topic = html.escape(query)
+            fallback_text = f"未找到 help {query} 的说明。可以试试 .help、.help roll 或 .dicehelp roll。"
+            return (
+                fallback_text,
+                f"""
+                <section class="help-card">
+                    <div class="help-topline">
+                        <span class="help-dot"></span>
+                        <span>TRPG Dice</span>
+                        <span class="help-page-key">HELP</span>
+                    </div>
+                    <header class="help-header">
+                        <h1>没有找到这个指令</h1>
+                        <p>查询：{topic}</p>
+                    </header>
+                    <div class="help-note">可以使用 .help 查看索引，或使用 .help roll / .help pc 查看分类帮助。</div>
+                </section>
+                """,
+            )
+
+        page_key, command, description = match
+        title, _subtitle = HELP_PAGE_META.get(page_key, HELP_PAGE_META["index"])
+        fallback_text = f"{command}\n{description}\n\n来自：{title}"
+        return (
+            fallback_text,
+            f"""
+            <section class="help-card">
+                <div class="help-topline">
+                    <span class="help-dot"></span>
+                    <span>TRPG Dice</span>
+                    <span class="help-page-key">{html.escape(page_key.upper())}</span>
+                </div>
+                <header class="help-header">
+                    <h1>指令说明</h1>
+                    <p>{html.escape(title)}</p>
+                </header>
+                <div class="help-section">
+                    <div class="help-section-title">
+                        <span class="help-icon">◆</span>
+                        <span>{html.escape(command)}</span>
+                    </div>
+                    <div class="help-command-detail">{html.escape(description)}</div>
+                </div>
+                <footer class="help-footer">
+                    <span>更多：.help {html.escape(page_key)} / .help</span>
+                </footer>
+            </section>
+            """,
+        )
+
+    def _build_help_html(self, page_key: str) -> str:
+        title, subtitle = HELP_PAGE_META.get(page_key, HELP_PAGE_META["index"])
+        text_key = "help.index" if page_key == "index" else f"help.{page_key}"
+        raw_text = get_output(text_key)
+
+        rows = []
+        notes = []
+        for raw_line in raw_text.splitlines():
+            line = raw_line.strip()
+            if not line:
+                continue
+            if line.startswith("《") and line.endswith(("》", "》。")):
+                continue
+            command, description = self._split_help_line(line)
+            if command:
+                rows.append((command, description))
+            else:
+                notes.append(description)
+
+        notes_html = "".join(
+            f'<div class="help-note">{html.escape(note)}</div>'
+            for note in notes[:3]
+            if note
+        )
+        rows_html = "".join(
+            '<div class="help-row">'
+            f'<div class="help-command">{html.escape(command)}</div>'
+            f'<div class="help-desc">{html.escape(description)}</div>'
+            '</div>'
+            for command, description in rows
+        )
+        if not rows_html:
+            rows_html = "".join(
+                f'<div class="help-note">{html.escape(line.strip())}</div>'
+                for line in raw_text.splitlines()
+                if line.strip()
+            )
+
+        return f"""
+        <section class="help-card">
+            <div class="help-topline">
+                <span class="help-dot"></span>
+                <span>TRPG Dice</span>
+                <span class="help-page-key">{html.escape(page_key.upper())}</span>
+            </div>
+            <header class="help-header">
+                <h1>{html.escape(title)}</h1>
+                <p>{html.escape(subtitle)}</p>
+            </header>
+            <div class="help-notes">{notes_html}</div>
+            <div class="help-section">
+                <div class="help-section-title">
+                    <span class="help-icon">◆</span>
+                    <span>指令速查</span>
+                </div>
+                <div class="help-rows">{rows_html}</div>
+            </div>
+            <footer class="help-footer">
+                <span>更多：.dicehelp roll / expr / pc / st / log / coc / dnd</span>
+            </footer>
+        </section>
+        """
+
+    async def render_help_html_to_image(self, html_content: str, output_filename: str):
+        custom_css = """
+        :root {
+            color-scheme: light;
+            font-family: "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+        }
+        #help-container {
+            width: 900px;
+            box-sizing: border-box;
+            padding: 34px;
+            background:
+                radial-gradient(circle at 14% 10%, rgba(118, 99, 59, 0.08), transparent 28%),
+                linear-gradient(180deg, #fbf4e7 0%, #f4ead8 100%);
+            color: #26322b;
+        }
+        .help-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #c9b995;
+            border-radius: 8px;
+            background: rgba(255, 252, 244, 0.92);
+            box-shadow: 0 14px 34px rgba(49, 39, 23, 0.16);
+            padding: 30px 34px 26px;
+        }
+        .help-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 9px;
+            background: linear-gradient(90deg, #254c3a, #406b53 55%, #b99b54);
+        }
+        .help-topline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #6d624c;
+            font-size: 16px;
+            letter-spacing: 0;
+            margin-top: 2px;
+        }
+        .help-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #b99b54;
+            box-shadow: 0 0 0 4px rgba(185, 155, 84, 0.18);
+        }
+        .help-page-key {
+            margin-left: auto;
+            color: #2f5a45;
+            font-weight: 700;
+        }
+        .help-header {
+            margin: 20px 0 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #dccfb4;
+        }
+        .help-header h1 {
+            margin: 0 0 9px;
+            color: #223f32;
+            font-size: 42px;
+            line-height: 1.16;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+        .help-header p {
+            margin: 0;
+            color: #6a5d48;
+            font-size: 20px;
+            line-height: 1.45;
+        }
+        .help-notes {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .help-note {
+            border-left: 4px solid #b99b54;
+            background: #f7efdF;
+            padding: 10px 13px;
+            color: #4d473a;
+            font-size: 18px;
+            line-height: 1.48;
+            border-radius: 6px;
+        }
+        .help-section {
+            border: 1px solid #ded1b5;
+            border-radius: 8px;
+            background: #fffaf0;
+        }
+        .help-section-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 14px 18px;
+            color: #264736;
+            font-size: 22px;
+            font-weight: 800;
+            border-bottom: 1px solid #e5d9c0;
+            background: #f5ead7;
+        }
+        .help-icon {
+            color: #b99b54;
+            font-size: 17px;
+        }
+        .help-rows {
+            display: grid;
+        }
+        .help-row {
+            display: grid;
+            grid-template-columns: minmax(210px, 0.86fr) minmax(0, 1.7fr);
+            gap: 18px;
+            align-items: start;
+            padding: 13px 18px;
+            border-bottom: 1px dashed #dfd2b8;
+        }
+        .help-row:last-child {
+            border-bottom: none;
+        }
+        .help-command {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: #e8efe7;
+            color: #1f4a38;
+            font-family: "Cascadia Mono", "Consolas", "Menlo", monospace;
+            font-size: 17px;
+            line-height: 1.35;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+        .help-desc {
+            color: #342f27;
+            font-size: 18px;
+            line-height: 1.48;
+        }
+        .help-command-detail {
+            padding: 22px 24px;
+            color: #342f27;
+            font-size: 22px;
+            line-height: 1.62;
+            background: #fffaf0;
+        }
+        .help-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+            color: #6f634c;
+            font-size: 16px;
+        }
+        """
+        full_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>{custom_css}</style>
+        </head>
+        <body>
+            <div id="help-container">{html_content}</div>
+        </body>
+        </html>
+        """
+
+        try:
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(args=['--no-sandbox'])
+                page = await browser.new_page(viewport={"width": 900, "height": 1400}, device_scale_factor=1)
+                await page.set_content(full_html)
+                locator = page.locator("#help-container")
+                await locator.screenshot(path=output_filename)
+                await browser.close()
+        except PlaywrightError as exc:
+            raise RuntimeError(
+                "Playwright Chromium 未安装或缺少系统依赖；Docker 用户请执行 "
+                "`python -m playwright install --with-deps chromium` 后重启 AstrBot。"
+            ) from exc
+
+    async def _yield_help_result(self, event: AstrMessageEvent, page_key: str):
+        text_key = "help.index" if page_key == "index" else f"help.{page_key}"
+        fallback_text = get_output(text_key)
+        safe_key = re.sub(r"[^a-z0-9_-]+", "_", page_key.lower()) or "index"
+        temp_image_path = os.path.join(self.plugin_dir, f"temp_help_{safe_key}_{int(time.time() * 1000)}.png")
+
+        try:
+            await self.render_help_html_to_image(self._build_help_html(page_key), temp_image_path)
+            yield event.chain_result([Image.fromFileSystem(temp_image_path)]).stop_event()
+        except Exception as e:
+            yield event.plain_result(f"帮助图片生成失败：{e}\n\n{fallback_text}").stop_event()
+        finally:
+            if os.path.exists(temp_image_path):
+                try:
+                    os.remove(temp_image_path)
+                except OSError:
+                    pass
+
+    async def _yield_help_command_result(self, event: AstrMessageEvent, query: str):
+        fallback_text, html_content = self._build_help_command_html(query)
+        safe_key = re.sub(r"[^a-z0-9_-]+", "_", query.lower()) or "command"
+        temp_image_path = os.path.join(self.plugin_dir, f"temp_help_cmd_{safe_key}_{int(time.time() * 1000)}.png")
+
+        try:
+            await self.render_help_html_to_image(html_content, temp_image_path)
+            yield event.chain_result([Image.fromFileSystem(temp_image_path)]).stop_event()
+        except Exception as e:
+            yield event.plain_result(f"帮助图片生成失败：{e}\n\n{fallback_text}").stop_event()
+        finally:
+            if os.path.exists(temp_image_path):
+                try:
+                    os.remove(temp_image_path)
+                except OSError:
+                    pass
 
     def _bot_image_path(self):
         candidates = [
@@ -1965,59 +2530,6 @@ class DicePlugin(Star):
 
         return event.plain_result("\n".join(results))
     # ======================== LOG相关 ============================= #
-    
-    # 注册指令 /dicehelp
-    @filter.command("bothelp")
-    async def help ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.index"))
-        
-    @command_group("dicehelp")
-    async def dicehelp(self, event : AstrMessageEvent) :
-        pass
-
-    @dicehelp.command("roll")
-    async def help_roll ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.dice"))
-        
-    @dicehelp.command("expr")
-    async def help_expr ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.expr"))
-        
-    @dicehelp.command("pc")
-    async def help_pc ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.pc"))
-        
-    @dicehelp.command("st")
-    async def help_st ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.st"))
-
-    @dicehelp.command("log")
-    async def help_log ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.log"))
-        
-    @dicehelp.command("coc")
-    async def help_coc ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.coc"))
-        
-    @dicehelp.command("dnd")
-    async def help_dnd ( self , event: AstrMessageEvent):
-        if not self._command_enabled(event):
-            return
-        yield event.plain_result(get_output("help.dnd"))
         
     @filter.command("fireball")
     async def fireball_cmd(self, event: AstrMessageEvent, ring: int = 3):
@@ -2134,11 +2646,45 @@ class DicePlugin(Star):
     async def setcoc_cmd(self, event: AstrMessageEvent, command: str = " "):
         if not self._command_enabled(event):
             return
-        group_id = event.get_group_id()
+        group_id = self._group_id(event)
+        self._set_rule_system(group_id, "coc")
         result = modify_coc_great_sf_rule_command(group_id, command)
         yield event.plain_result(result)
 
-    
+    async def _set_rule_system_cmd(self, event: AstrMessageEvent, system: str = None):
+        if not self._command_enabled(event):
+            return
+        context_id = self._group_id(event)
+        if not system:
+            yield event.plain_result(
+                self._format_rule_system_status(context_id)
+                + "\n可用规则：coc、dnd。用法：.ruleset dnd / .ruleset coc"
+            )
+            return
+
+        normalized = self._set_rule_system(context_id, system)
+        if not normalized:
+            yield event.plain_result("不认识这个规则系统。可用规则：coc、dnd。")
+            return
+
+        meta = RULE_SYSTEMS[normalized]
+        yield event.plain_result(f"已切换到 {meta['label']}，.r 默认骰现在是 {meta['default_roll']}。")
+
+    @filter.command("ruleset")
+    async def ruleset_cmd(self, event: AstrMessageEvent, system: str = None):
+        async for result in self._set_rule_system_cmd(event, system):
+            yield result
+
+    @filter.command("setrule")
+    async def setrule_cmd(self, event: AstrMessageEvent, system: str = None):
+        async for result in self._set_rule_system_cmd(event, system):
+            yield result
+
+    @filter.command("system")
+    async def system_cmd(self, event: AstrMessageEvent, system: str = None):
+        async for result in self._set_rule_system_cmd(event, system):
+            yield result
+
     # 识别所有信息
     async def _dispatch_inline_command(self, event: AstrMessageEvent, parsed, target_user_id: str):
         cmd = parsed.cmd
@@ -2152,6 +2698,11 @@ class DicePlugin(Star):
             await self.handle_roll_dice(event, expr, remark)
         elif cmd == "rd":
             await self.handle_roll_dice(event, expr, remark)
+        elif cmd in {"radv", "rdis"}:
+            expression = self._advantage_roll_expression(
+                self._group_id(event), expr, disadvantage=cmd == "rdis"
+            )
+            await self.handle_roll_dice(event, expression, remark)
         elif cmd == "rh":
             async for result in self.roll_hidden(event, expr):
                 yield result
@@ -2212,6 +2763,11 @@ class DicePlugin(Star):
                 remark=remark,
             )
             yield event.plain_result(result)
+        elif cmd in {"radv", "rdis"}:
+            expression = self._advantage_roll_expression(
+                context_id, expr, disadvantage=cmd == "rdis"
+            )
+            yield event.plain_result(dice_mod.handle_roll_dice(expression, name=name, remark=remark))
         elif cmd == "rh":
             yield event.plain_result(dice_mod.roll_hidden(expr))
         elif cmd in {"ra", "rc"}:
@@ -2320,8 +2876,23 @@ class DicePlugin(Star):
         command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
             return
+        help_kind, help_target = self._resolve_help_request(command_text)
+        if help_kind:
+            if help_kind == "builtin":
+                return
+            self._suppress_astrbot_builtin_help(event)
+            self._stop_event(event)
+            if not self._command_enabled(event):
+                return
+            if help_kind == "page":
+                async for result in self._yield_help_result(event, help_target):
+                    yield result
+            else:
+                async for result in self._yield_help_command_result(event, help_target):
+                    yield result
+            return
 
-        parsed = parse_inline_command(command_text)
+        parsed = parse_inline_command(command_text, self._default_roll_expr(self._group_id(event)))
         if parsed is None:
             return
 
@@ -2338,12 +2909,27 @@ class DicePlugin(Star):
         command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
             return
+        help_kind, help_target = self._resolve_help_request(command_text)
+        if help_kind:
+            if help_kind == "builtin":
+                return
+            self._suppress_astrbot_builtin_help(event)
+            self._stop_event(event)
+            if not self._command_enabled(event):
+                return
+            if help_kind == "page":
+                async for result in self._yield_help_result(event, help_target):
+                    yield result
+            else:
+                async for result in self._yield_help_command_result(event, help_target):
+                    yield result
+            return
 
         if not self._is_bot_enabled(self._group_id(event)) and not command_text.lower().startswith("bot"):
             self._stop_event(event)
             return
 
-        parsed = parse_inline_command(command_text)
+        parsed = parse_inline_command(command_text, self._default_roll_expr(self._group_id(event)))
         if parsed is None:
             return
 

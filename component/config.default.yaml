@@ -11,19 +11,19 @@ output:
   skill_check:
     normal: 
       head : |
-        技能检定结果 {name} {skill_name} {skill_value}
+        技能检定结果 {name} {skill_name}
       detail : | 
         技能检定骰点结果 {roll_result} {skill_value} {result}
     penalty:
       head : |
-        惩罚骰技能检定结果 {name} {skill_name} {skill_value} {penalty_dice}
+        惩罚骰技能检定结果 {name} {skill_name}
       detail : |
-        惩罚骰技能检定骰点结果 {roll_result} {skill_value} {result}
+        惩罚骰骰面 {new_tens_digits}，最终结果 {final_y}/{skill_value}：{result}
     bonus:
       head : |
-        奖励骰技能检定结果 {name} {skill_name} {skill_value} {bonus_dice}
+        奖励骰技能检定结果 {name} {skill_name}
       detail : |
-        奖励骰技能检定骰点结果 {roll_result} {skill_value} {result}
+        奖励骰骰面 {new_tens_digits}，最终结果 {final_y}/{skill_value}：{result}
 
     pistol_check:
       head: |
@@ -175,12 +175,12 @@ output:
   coc_roll:
     set_rule: "COC 检定结果 {rule}"
     results:
-      great_success: "COC 检定结果"
-      extreme_success: "COC 检定结果"
-      hard_success: "COC 检定结果"
-      success: "COC 检定结果"
-      great_failure: "COC 检定结果"
-      failure: "COC 检定结果"
+      great_success: "大成功"
+      extreme_success: "极难成功"
+      hard_success: "困难成功"
+      success: "成功"
+      great_failure: "大失败"
+      failure: "失败"
       error: "COC 检定结果 {error}"
       reset: "COC 检定结果 {rule}"
 
@@ -288,9 +288,11 @@ output:
   dice:
     normal:
       success: |
-        掷骰结果
+        <{name}> 的掷骰结果：
+        {result}
       success_remark : |
-        掷骰结果
+        <{name}> 的【{remark}】掷骰结果：
+        {result}
       error: "掷骰结果 {error}"
     vampire:
       success: "掷骰结果 {name} {result}"
@@ -316,41 +318,45 @@ output:
   # ---------- SAN 理智 ----------
   san:
     result:
-      success: "SAN 指令结果"
-      failure: "SAN 指令结果"
-    specific_phobia: "SAN 指令结果 {phobia} {roll}"
-    specific_mania: "SAN 指令结果 {mania} {roll}"
+      success: "成功"
+      failure: "失败"
+    specific_phobia: "具体恐惧症：{phobia}（骰值 {roll}）"
+    specific_mania: "具体躁狂症：{mania}（骰值 {roll}）"
     temporary:
-      "1": "SAN 指令结果"
-      "2": "SAN 指令结果"
-      "3": "SAN 指令结果"
-      "4": "SAN 指令结果"
-      "5": "SAN 指令结果"
-      "6": "SAN 指令结果"
-      "7": "SAN 指令结果"
-      "8": "SAN 指令结果"
-      "9": "SAN 指令结果"
-      "10": "SAN 指令结果"
+      "1": "失忆：调查员只记得最后身处的安全地点，却没有任何来到这里的记忆。这将会持续 1D10 轮。"
+      "2": "假性残疾：调查员陷入心理性的失明、失聪或躯体缺失感，持续 1D10 轮。"
+      "3": "暴力倾向：调查员对周围所有人展开攻击，持续 1D10 轮。"
+      "4": "偏执：调查员陷入严重的偏执妄想，持续 1D10 轮。"
+      "5": "人际依赖：调查员误认为某人是自己的重要之人，并据此行动，持续 1D10 轮。"
+      "6": "昏厥：调查员当场昏倒，1D10 轮后苏醒。"
+      "7": "逃避行为：调查员试图逃离当前场所，持续 1D10 轮。"
+      "8": "歇斯底里：调查员陷入极端情绪，持续 1D10 轮。"
+      "9": "恐惧：骰 1D100 或由守秘人选择一个恐惧症，持续 1D10 轮。"
+      "10": "躁狂：骰 1D100 或由守秘人选择一个躁狂症，持续 1D10 轮。"
     long_term:
-      "1": "SAN 指令结果"
-      "2": "SAN 指令结果"
-      "3": "SAN 指令结果"
-      "4": "SAN 指令结果"
-      "5": "SAN 指令结果"
-      "6": "SAN 指令结果"
-      "7": "SAN 指令结果"
-      "8": "SAN 指令结果"
-      "9": "SAN 指令结果"
-      "10": "SAN 指令结果"
+      "1": "失忆：调查员发现自己身处陌生地方，并忘记自己是谁。"
+      "2": "被窃：调查员 1D10 小时后清醒，发现贵重物品丢失。"
+      "3": "遍体鳞伤：调查员 1D10 小时后清醒，身体有严重伤痕。"
+      "4": "暴力倾向：调查员可能在疯狂期间杀人或造成重大破坏。"
+      "5": "极端信念：调查员疯狂地执行某个信仰并采取极端行动。"
+      "6": "重要之人：调查员疯狂追求某个在意的人，不顾一切地接近。"
+      "7": "被收容：调查员在精神病院或警察局醒来，完全不记得发生了什么。"
+      "8": "逃避行为：调查员在远离原地点的地方醒来，可能身处荒郊野外或陌生城市。"
+      "9": "恐惧：调查员患上一种新的恐惧症（骰 1D100 或由守秘人选择）。"
+      "10": "躁狂：调查员患上一种新的躁狂症（骰 1D100 或由守秘人选择）。"
     check_result:
-      loss : |
-        SAN 指令结果
-      no_loss : |
-        SAN 指令结果
-      great_loss : |
-        SAN 指令结果
-      zero : |
-        SAN 指令结果
+      loss: |
+        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        损失 {expr}，当前 SAN：{new_san}
+      no_loss: |
+        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        损失 {expr}，SAN 保持稳定
+      great_loss: |
+        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        损失 {expr}，当前 SAN：{new_san}。请使用 .ti 抽取临时症状。
+      zero: |
+        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        损失 {expr}，SAN 已降至 0。
       
     temporary_insanity: |
       {name} 临时疯狂症状：
@@ -372,9 +378,11 @@ output:
   # ---------- 角色生成模板 ----------
   character_list:
     coc: |
-      角色生成结果
+      COC 角色属性生成结果：
+      {characters}
     dnd: |
-      角色生成结果
+      DnD 角色属性生成结果：
+      {characters}
       
   # ---------- 名字生成 ----------
   generated_names: "随机姓名生成结果 {num} {names}"
@@ -433,6 +441,9 @@ output:
       属性指令帮助文本
     dice : |
       掷骰指令帮助文本
+      .adv[+/-修正] : DnD 优势检定，例如 .adv+3
+      .dis[+/-修正] : DnD 劣势检定，例如 .dis-2
+      .ruleset [coc/dnd] : 切换本群规则系统；CoC 下 .r 默认 1d100，DnD 下 .r 默认 1d20。
     expr : |
       表达式指令帮助文本
     log : |
@@ -440,6 +451,8 @@ output:
 
     coc : |
       COC 指令帮助文本
+      .setcoc : 查看或设置 COC 检定规则，并把本群规则系统切回 CoC。
+      .ruleset [coc/dnd] : 查看或切换本群规则系统。
 
     dnd : |
       DND 指令帮助文本

@@ -606,9 +606,9 @@ def query_spell(raw_query: str) -> str:
     if not query:
         return (
             "法术查询用法：\n"
-            ".查询法术 火球术\n"
-            ".查询法术 dnd fireball\n"
-            ".查询法术 神话 驱逐实体\n"
+            ".find 火球术\n"
+            ".find dnd fireball\n"
+            ".find 神话 驱逐实体\n"
             "DND 查询基于 SRD；CoC 相关仅提供开放神话仪式摘要。"
         )
 

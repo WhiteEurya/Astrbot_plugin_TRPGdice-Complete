@@ -284,7 +284,8 @@ def roll_attribute(roll_times, skill_name, skill_value, group_id, name):
     head_str = get_output(
         "skill_check.normal.head",
         skill_name=skill_name,
-        name=name
+        name=name,
+        skill_value=skill_value,
     )
     
     results_list = [head_str] # 用头部初始化列表
@@ -322,7 +323,9 @@ def roll_attribute_penalty(roll_times, dice_count, skill_name, skill_value, grou
     head_str = get_output(
         "skill_check.penalty.head",
         skill_name=skill_name,
-        name=name
+        name=name,
+        skill_value=skill_value,
+        penalty_dice=dice_count,
     )
     
     results_list = [head_str] # 用头部初始化列表
@@ -367,7 +370,9 @@ def roll_attribute_bonus(roll_times, dice_count, skill_name, skill_value, group_
     head_str = get_output(
         "skill_check.bonus.head",
         skill_name=skill_name,
-        name=name
+        name=name,
+        skill_value=skill_value,
+        bonus_dice=dice_count,
     )
     
     results_list = [head_str] # 用头部初始化列表

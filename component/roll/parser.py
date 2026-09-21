@@ -16,7 +16,7 @@ class ParsedInlineCommand:
 def strip_command_prefix(message: str, prefixes: list[str]) -> Optional[str]:
     if not any(message.startswith(prefix) for prefix in prefixes):
         return None
-    return re.sub(r"\s+", "", message[1:])
+    return re.sub(r"\s+", " ", message[1:]).strip()
 
 
 def _split_skill_and_value(expr: str) -> tuple[str, Optional[str]]:
@@ -103,7 +103,7 @@ def _parse_check_command(message: str, prefix: str) -> ParsedInlineCommand:
     )
 
 
-def parse_inline_command(message: str) -> Optional[ParsedInlineCommand]:
+def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Optional[ParsedInlineCommand]:
     """Parse dot-style inline commands handled by identify_command."""
     m = re.match(r"^([a-z]+)", message, re.I)
     if not m:
@@ -129,6 +129,13 @@ def parse_inline_command(message: str) -> Optional[ParsedInlineCommand]:
     if cmd == "rau":
         return _parse_check_command(message, "rau")
 
+    if cmd in {"adv", "advantage", "dis", "disadvantage"}:
+        if not expr or re.fullmatch(r"[+-]\d+", expr):
+            return ParsedInlineCommand(
+                cmd="radv" if cmd in {"adv", "advantage"} else "rdis",
+                expr=expr,
+            )
+
     if cmd == "rb":
         return _parse_check_command(f"rab{message[2:]}", "ra")
 
@@ -149,13 +156,14 @@ def parse_inline_command(message: str) -> Optional[ParsedInlineCommand]:
 
     elif cmd[0:2] == "rd":
         raw = message[2:].strip()
-        dice_match = re.match(r"(\d+)", raw)
+        dice_match = re.match(r"(\d+)([\d#+\-*/().xXdkvbpBP]*)", raw, re.IGNORECASE)
         if dice_match:
             dice_size = dice_match.group(1)
-            expr = f"1d{dice_size}"
-            remark = raw[len(dice_size):].strip()
+            modifier = dice_match.group(2) or ""
+            expr = f"1d{dice_size}{modifier}"
+            remark = raw[dice_match.end():].strip()
         else:
-            expr = "1d100"
+            expr = default_roll_expr
             remark = raw.strip()
         cmd = "rd"
 
@@ -163,16 +171,17 @@ def parse_inline_command(message: str) -> Optional[ParsedInlineCommand]:
         is_hidden_roll = cmd == "rh"
         command_len = 2 if is_hidden_roll else 1
         content = message[command_len:].strip()
+        compact_content = re.sub(r"\s+", "", content)
         if not content:
-            expr = "1d100"
+            expr = default_roll_expr
             remark = ""
         else:
-            match = re.match(r"([\d#+\-*/().xXdkvbpBP]+)", content, re.IGNORECASE)
+            match = re.match(r"([\d#+\-*/().xXdkvbpBP]+)", compact_content, re.IGNORECASE)
             if match:
                 expr = match.group(1)
-                remark = content[match.end():].strip()
+                remark = compact_content[match.end():].strip()
             else:
-                expr = "1d100"
+                expr = default_roll_expr
                 remark = content.strip()
         cmd = "rh" if is_hidden_roll else "r"
 
