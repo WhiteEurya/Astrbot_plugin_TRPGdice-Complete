@@ -351,6 +351,7 @@ rm -rf backend/.venv
 - `data/sealdice-builtins/`：`.查询法术` 的 SeaDice DND/COC 资料来源。
 - `spellsearcher/`：图片版 `.查询法术` 使用的本地 HTML 法术书。
 - `data/velinithra.png`：`.bot` 信息图资源。
+- `data/d20-icon.svg`：TRPG Dice 插件 D20 图标资源。
 - `V20_char_sheet/setup.sql`：V20 角色卡建表模板。
 
 不应上传本地运行数据：`chara_data/`、`chara_data_/`、`data/group_logs/`、`data/settings/`、`*.db`、`config.yaml`、`node_modules/`、`dist/`。
