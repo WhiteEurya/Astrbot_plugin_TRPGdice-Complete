@@ -134,15 +134,42 @@ async def init():
 
 @register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "1.0.3")
 class DicePlugin(Star):
-    def __init__(self, context: Context):
+    def __init__(self, context: Context, config: dict = None):
         self.wakeup_prefix = [".", "。", "/", "!", "！"]
         self.uni_cache = {}
         self.initiative_manager = InitiativeManager()
+        self.config = config or {}
         self.plugin_dir = os.path.dirname(os.path.abspath(__file__))
         self.json_path = os.path.join(self.plugin_dir, "spellsearcher/SpellSourceFolder.json")
         self.htm_spells_dir = os.path.join(self.plugin_dir, "spellsearcher/HTMSpells")
 
         super().__init__(context)
+
+    @filter.event_message_type(EventMessageType.ALL)
+    async def send_bot_info_on_group_join(self, event: AstrMessageEvent):
+        if not self.config.get("auto_bot_on_join", True):
+            return
+
+        raw_message = getattr(getattr(event, "message_obj", None), "raw_message", None)
+        if not isinstance(raw_message, dict):
+            return
+        if raw_message.get("post_type") != "notice" or raw_message.get("notice_type") != "group_increase":
+            return
+        if str(raw_message.get("user_id")) != str(raw_message.get("self_id")):
+            return
+
+        group_id = str(raw_message.get("group_id") or event.get_group_id() or "")
+        if not group_id:
+            return
+
+        image_path = self._bot_image_path()
+        if image_path:
+            yield event.chain_result([
+                Image.fromFileSystem(image_path),
+                Plain(self._bot_info_text(event)),
+            ])
+        else:
+            yield event.plain_result(self._bot_info_text(event))
 
     async def save_log(self, group_id, content, event: AstrMessageEvent = None) :
         if not group_id:
@@ -238,6 +265,14 @@ class DicePlugin(Star):
         if not group_id:
             return True
         return self._is_bot_enabled(group_id)
+
+    def _allowed_when_disabled(self, command_text: str) -> bool:
+        command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
+        return command in {"bot on", "bot quit"}
+
+    def _is_native_reset_command(self, command_text: str) -> bool:
+        command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
+        return command in {"reset", "r eset"}
 
     def _normalize_rule_system(self, value: str) -> str:
         value = (value or "").strip().lower()
@@ -2608,6 +2643,8 @@ class DicePlugin(Star):
     @filter.command("bot")
     async def bot_cmd(self, event: AstrMessageEvent, action: str = None):
         action = (action or "").lower()
+        if not self._is_bot_enabled(self._group_id(event)) and action not in {"on", "quit"}:
+            return
         if not action:
             image_path = self._bot_image_path()
             if image_path:
@@ -2632,6 +2669,18 @@ class DicePlugin(Star):
             settings["enabled"] = False
             self._save_group_settings(group_id, settings)
             yield event.plain_result(get_output("bot.disabled"))
+            return
+
+        if action == "quit":
+            if not group_id:
+                yield event.plain_result(get_output("bot.quit_private"))
+                return
+            yield event.plain_result(get_output("bot.quit"))
+            try:
+                await event.bot.api.call_action("set_group_leave", group_id=group_id)
+            except Exception as exc:
+                logger.error(f"退群失败（群 {group_id}）：{exc}")
+                yield event.plain_result(get_output("bot.quit_error", error=exc))
             return
 
         if action == "status":
@@ -2876,6 +2925,11 @@ class DicePlugin(Star):
         command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
             return
+        if self._is_native_reset_command(command_text):
+            return
+        if not self._is_bot_enabled(self._group_id(event)) and not self._allowed_when_disabled(command_text):
+            self._stop_event(event)
+            return
         help_kind, help_target = self._resolve_help_request(command_text)
         if help_kind:
             if help_kind == "builtin":
@@ -2908,6 +2962,8 @@ class DicePlugin(Star):
 
         command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
+            return
+        if self._is_native_reset_command(command_text):
             return
         help_kind, help_target = self._resolve_help_request(command_text)
         if help_kind:

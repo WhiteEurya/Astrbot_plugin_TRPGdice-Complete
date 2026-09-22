@@ -95,6 +95,9 @@ output:
       当前状态：{status}
     enabled: "机器人状态指令结果"
     disabled: "机器人状态指令结果"
+    quit: "机器人即将退出当前群聊。"
+    quit_error: "机器人退群失败：{error}"
+    quit_private: "退群指令只能在群聊中使用。"
     status: "机器人状态指令结果 {status}"
     status_on: "开启"
     status_off: "关闭"
@@ -444,6 +447,8 @@ output:
       .adv[+/-修正] : DnD 优势检定，例如 .adv+3
       .dis[+/-修正] : DnD 劣势检定，例如 .dis-2
       .ruleset [coc/dnd] : 切换本群规则系统；CoC 下 .r 默认 1d100，DnD 下 .r 默认 1d20。
+      .bot on / .bot off : 开启或关闭本群骰子响应；关闭后只有 .bot on 会响应。
+      .bot quit : 让风铃退出当前群聊。
     expr : |
       表达式指令帮助文本
     log : |
@@ -456,6 +461,7 @@ output:
 
     dnd : |
       DND 指令帮助文本
+      .bot quit : 退出当前群聊
 
 
 

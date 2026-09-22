@@ -1,0 +1,8 @@
+{
+  "auto_bot_on_join": {
+    "type": "bool",
+    "description": "入群后自动发送 .bot 信息",
+    "default": true,
+    "hint": "机器人被拉入群聊后，自动发送 .bot 的图文信息；关闭后不自动发送。"
+  }
+}

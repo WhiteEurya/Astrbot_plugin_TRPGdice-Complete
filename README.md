@@ -130,6 +130,18 @@ RUN pip install playwright \
 .log end
 ```
 
+#### 群组控制
+
+```text
+.bot off
+.bot on
+.bot quit
+```
+
+`.bot off` 会让插件忽略当前群的其他指令，只有 `.bot on` 和 `.bot quit` 可以响应。`.bot quit` 会让机器人退出当前群聊。
+
+机器人被拉入新群后，默认会自动发送一次 `.bot` 信息。可以在 AstrBot 插件配置中关闭 `auto_bot_on_join`，关闭后不再自动发送入群提示。
+
 #### 法术查询
 
 ```text
@@ -344,6 +356,18 @@ rm -rf backend/.venv
 不应上传本地运行数据：`chara_data/`、`chara_data_/`、`data/group_logs/`、`data/settings/`、`*.db`、`config.yaml`、`node_modules/`、`dist/`。
 
 ### 更新日志
+
+#### V2.10（2026-09-22）
+
+```
+> 新增群组控制指令：.bot on / .bot off，用于开启或关闭当前群的插件响应。
+> .bot off 后，插件会忽略当前群的其他插件指令；.bot on 可恢复响应。
+> 新增 .bot quit 退群指令；即使当前处于 .bot off 状态，也可以使用该指令让机器人退出群聊。
+> .bot on、.bot off、.bot quit、退群失败和私聊误用均增加了可配置的风铃风格提示文案。
+> 兼容 AstrBot 原生 reset 指令：插件不会处理 reset 或 r eset，避免影响 AstrBot 原生功能。
+> 新增机器人入群欢迎功能：机器人被拉入 QQ 群后，默认自动发送一次 .bot 图文信息。
+> 新增 auto_bot_on_join 配置项，可在 AstrBot 插件配置中关闭入群自动提示。
+```
 
 #### V2.9（2026-09-21）
 
