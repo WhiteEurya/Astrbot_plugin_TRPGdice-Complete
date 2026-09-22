@@ -1,7 +1,7 @@
 name: astrbot_plugin_TRPGdice_Complete
 desc: 为跑团玩家设计的仿Dice!骰子插件[升级版！]
 help: 输入 /dicehelp 查看关键词回复帮助
-version: v2.2.8
+version: v2.10
 author: shiroling
 repo: https://github.com/WhiteEurya/Astrbot_plugin_TRPGdice-Complete
 icon_url: "./data/d20-icon.svg"
