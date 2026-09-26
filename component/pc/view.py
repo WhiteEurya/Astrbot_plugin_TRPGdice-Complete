@@ -2,7 +2,7 @@ import re
 from typing import Iterable, List
 
 from ..common.output import get_output
-from ..common.utils import SYNONYMS
+from .attributes import SYNONYMS, find_attribute_key
 
 
 def get_primary_attributes(attributes: dict) -> dict:
@@ -51,8 +51,9 @@ def format_named_attributes(chara_data: dict, keys: Iterable[str], header_prefix
     not_found_attrs: List[str] = []
 
     for key in keys:
-        if key in attributes:
-            found_attrs.append(get_output("pc.show.attr", attr=key, value=attributes[key]))
+        resolved_key = find_attribute_key(attributes, key)
+        if resolved_key is not None:
+            found_attrs.append(get_output("pc.show.attr", attr=key, value=attributes[resolved_key]))
         elif key not in chara_data.get("name", ""):
             not_found_attrs.append(key)
 

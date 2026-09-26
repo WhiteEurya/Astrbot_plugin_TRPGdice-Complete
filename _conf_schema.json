@@ -4,5 +4,21 @@
     "description": "入群后自动发送 .bot 信息",
     "default": true,
     "hint": "机器人被拉入群聊后，自动发送 .bot 的图文信息；关闭后不自动发送。"
+  },
+  "name_backend": {
+    "type": "string",
+    "description": "取名方式",
+    "default": "faker",
+    "options": [
+      "faker",
+      "llm"
+    ],
+    "hint": "faker：本地随机人名；llm：支持国籍＋数量和自由取名需求。"
+  },
+  "name_llm_provider_id": {
+    "type": "string",
+    "description": "取名 LLM 提供商 ID",
+    "default": "",
+    "hint": "仅 llm 模式生效；留空使用 AstrBot 当前提供商。填写 AstrBot 已配置的文本模型提供商 ID。"
   }
 }

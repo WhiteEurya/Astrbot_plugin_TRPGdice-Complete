@@ -6,6 +6,7 @@ import shutil
 import time
 
 from ..common.output import get_output
+from .attributes import SYNONYMS as ATTRIBUTE_SYNONYMS, find_attribute_key
 
 from astrbot.api import logger
 
@@ -71,6 +72,7 @@ COC_DEFAULT_SKILLS = {
 }
 
 COC_DEFAULT_SKILL_ALIASES = {
+    "侦察": "侦查",
     "计算机使用": "计算机",
     "电脑": "计算机",
     "信誉": "信用",
@@ -515,77 +517,7 @@ def save_character(group_id: str, user_id: str, chara_id: str, data: dict):
     path = _get_bound_character_path(group_id, user_id, chara_id)
 
     # 同义词组（每组第一个为“代表/优先检查字段”，但最终会把组内所有字段设为同一值）
-    SYNONYMS = [
-        ["力量", "str"],
-        ["敏捷", "dex"],
-        ["意志", "pow"],
-        ["体质", "con"],
-        ["外貌", "app"],
-        ["教育", "知识", "edu"],
-        ["体型", "siz"],
-        ["智力", "灵感", "int"],
-        ["san", "san值", "理智", "理智值"],
-        ["幸运", "运气"],
-        ["mp", "魔法"],
-        ["hp", "体力"],
-        ["max_hp"],
-        ["max_san"],
-
-        # 技能/替代名（根据你给出的列表合并）
-        ["计算机", "计算机使用", "电脑"],
-        ["会计"],
-        ["人类学"],
-        ["估价"],
-        ["考古学"],
-        ["取悦"],
-        ["攀爬"],
-        ["电脑", "计算机"],  # 重复安全
-        ["信用", "信誉", "信用评级"],
-        ["克苏鲁", "克苏鲁神话", "cm"],
-        ["乔装"],
-        ["闪避"],
-        ["汽车", "驾驶", "汽车驾驶"],
-        ["电气维修"],
-        ["电子学"],
-        ["话术"],
-        ["斗殴"],
-        ["手枪"],
-        ["急救"],
-        ["历史"],
-        ["恐吓"],
-        ["跳跃"],
-        ["拉丁语"],
-        ["母语"],
-        ["法律"],
-        ["图书馆", "图书馆使用"],
-        ["聆听"],
-        ["开锁", "撬锁", "锁匠"],
-        ["机械维修"],
-        ["医学"],
-        ["博物学", "自然学"],
-        ["领航", "导航"],
-        ["神秘学"],
-        ["重型操作", "重型机械", "操作重型机械", "重型"],
-        ["说服"],
-        ["精神分析"],
-        ["心理学"],
-        ["骑术"],
-        ["妙手"],
-        ["侦查"],
-        ["潜行"],
-        ["生存"],
-        ["游泳"],
-        ["投掷"],
-        ["追踪"],
-        ["驯兽"],
-        ["潜水"],
-        ["爆破"],
-        ["读唇"],
-        ["催眠"],
-        ["炮术"],
-        ["max_hp"],  # 已包含在 hp 组，但再列一次无伤
-        ["max_san"],  # 同上
-    ]
+    SYNONYMS = ATTRIBUTE_SYNONYMS.SYNONYM
 
     # helper: 给单个容器（dict）同步同义词组
     def sync_container(container: dict):
@@ -668,8 +600,9 @@ def get_skill_value(group_id: str, user_id: str, skill_name: str):
         return get_coc_default_skill_value(skill_name)
 
     attributes = chara_data["attributes"]
-    if skill_name in attributes:
-        return attributes[skill_name]
+    resolved_key = find_attribute_key(attributes, skill_name)
+    if resolved_key is not None:
+        return attributes[resolved_key]
 
     canonical_name = COC_DEFAULT_SKILL_ALIASES.get((skill_name or "").strip(), (skill_name or "").strip())
     if canonical_name in attributes:

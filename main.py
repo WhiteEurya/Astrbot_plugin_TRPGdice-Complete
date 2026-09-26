@@ -23,7 +23,7 @@ from .component.pc import store as charmod
 from .component.roll import dice as dice_mod
 from .component.coc import san as sanity
 from .component.common.output import get_output
-from .component.common.utils import generate_names, roll_character, format_character, roll_dnd_character, format_dnd_character, SYNONYMS
+from .component.common.utils import roll_character, format_character, roll_dnd_character, format_dnd_character, SYNONYMS
 from .component.coc.rules import modify_coc_great_sf_rule_command
 from .component.coc.checks import parse_difficulty_prefix, parse_versus_check, prepare_skill_check, split_skill_modifier
 from .component.logs.store import JSONLoggerCore
@@ -36,7 +36,9 @@ from .component.pc.view import (
     format_threshold_attributes,
 )
 from .component.pc.nick import build_card_by_mode, build_coc_card
+from .component.pc.names import USAGE as NAME_USAGE, parse_name_request, generate_faker_names, generate_llm_names
 from .component.pc.template import get_coc_st_template
+from .component.pc.attributes import parse_st_expression, find_attribute_key, set_attribute_value
 from .component.spells import query_coc_spell
 
 logger_core = JSONLoggerCore()
@@ -132,7 +134,7 @@ async def get_sender_nickname(client, group_id, sender_id) :
 async def init():
     await logger_core.initialize()
 
-@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "1.0.3")
+@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.2.11")
 class DicePlugin(Star):
     def __init__(self, context: Context, config: dict = None):
         self.wakeup_prefix = [".", "。", "/", "!", "！"]
@@ -941,79 +943,35 @@ class DicePlugin(Star):
 
         chara_data = charmod.load_character(group_id, user_id, chara_id)
         full_expr = self._strip_at_text((str(attributes) if attributes else "") + (str(exp) if exp else ""))
-        attributes_clean = re.sub(r'\s+', '', full_expr)
-
-        # --- 
-        # ⬇️ 多重赋值逻辑 ⬇️
-        # ---
-        multi_assign_pattern = r"^((?:[\u4e00-\u9fa5a-zA-Z/_]+)(\d+))+$"
-
-        # 1. 检查是否符合“严格”的多重赋值模式
-        if re.match(multi_assign_pattern, attributes_clean):
-            
-            matches = re.findall(r"([\u4e00-\u9fa5a-zA-Z/_]+)(\d+)", attributes_clean)
-            
-            derived_tips = None
-            
-            if len(matches) > 1:
-                
-                for match_pair in matches:
-                    attribute = match_pair[0]
-                    value_num = int(match_pair[1])
-
-                    if attribute not in chara_data["attributes"]:
-                        chara_data["attributes"][attribute] = 1
-                    
-                    new_value = value_num
-                    chara_data["attributes"][attribute] = max(0, new_value)
-
-                derived_tips = charmod.sync_derived_attributes(chara_data)
-
-                # (循环外) 一次性保存并发送汇总回执
-                charmod.save_character(group_id, user_id, chara_id, chara_data)
-                if event.get_platform_name() == "aiocqhttp":
-                    await self._update_user_nickname_card(event.bot, group_id, user_id)
-                
-                num_updates = len(matches)
-                response = get_output("pc.update.batch_success", count=num_updates)
-                if user_id != operator_user_id:
-                    response = get_output("pc.update.proxy_prefix", name=chara_data.get('name', user_id), content=response)
-                
-                if derived_tips:
-                        response += "\n" + get_output("pc.update.derived_suffix", tips=", ".join(derived_tips))
-                
-                await self.save_log(group_id=event.get_group_id(), content=response, event=event)
-                yield event.plain_result(response)
-                return # --- 多重更新结束 ---
-
-            # 3. 如果 len(matches) == 1 (例如 .st 力量100)
-            #    我们什么也不做 (pass)，让代码 *故意*
-            #    掉入下面的“旧的单一属性逻辑”中去处理，
-            #    以便它能输出 "力量: 0 -> 100" 的详细信息。
-
-        # --- 
-        # ⬆️ 多重赋值逻辑结束 ⬆️
-        # ---
-
-        # --- 
-        # ⬇️ 旧的单一属性逻辑 (现在也会处理 .st 力量100) ⬇️
-        # ---
-        
-        match = re.match(r"([\u4e00-\u9fa5a-zA-Z]+)\s*([+\-*]?)\s*(\d+(?:d\d+)?|\d*)", attributes_clean)
-        if not match:
+        try:
+            entries = parse_st_expression(full_expr)
+        except ValueError:
             yield event.plain_result(get_output("pc.update.error_format"))
             return
 
-        attribute = match.group(1)
-        operator = match.group(2) if match.group(2) else None
-        value_expr = match.group(3) if match.group(3) else None
+        if len(entries) > 1:
+            for attribute, _, value in entries:
+                set_attribute_value(chara_data["attributes"], attribute, int(value))
 
+            derived_tips = charmod.sync_derived_attributes(chara_data)
+            charmod.save_character(group_id, user_id, chara_id, chara_data)
+            if event.get_platform_name() == "aiocqhttp":
+                await self._update_user_nickname_card(event.bot, group_id, user_id)
+
+            response = get_output("pc.update.batch_success", count=len(entries))
+            if user_id != operator_user_id:
+                response = get_output("pc.update.proxy_prefix", name=chara_data.get('name', user_id), content=response)
+            if derived_tips:
+                response += "\n" + get_output("pc.update.derived_suffix", tips=", ".join(derived_tips))
+
+            await self.save_log(group_id=event.get_group_id(), content=response, event=event)
+            yield event.plain_result(response)
+            return
+
+        attribute, operator, value_expr = entries[0]
         derived_tips = None
-
-        if attribute not in chara_data["attributes"]:
-            chara_data["attributes"][attribute] = 1
-
-        current_value = chara_data["attributes"][attribute]
+        existing_key = find_attribute_key(chara_data["attributes"], attribute)
+        current_value = chara_data["attributes"].get(existing_key, 1)
 
         value_num = 0
         roll_detail = ""
@@ -1033,13 +991,6 @@ class DicePlugin(Star):
                 yield event.plain_result(get_output("pc.show.invalid_value", value=value_expr))
                 return
         
-        # (如果 value_expr 为空，例如 ".st san-")
-        # 此时 value_num 保持为 0，这在COC中可能是有效的 (e.g. 减去0)
-        # 如果你不希望这样，可以在这里加一个检查：
-        if operator and not value_expr:
-             yield event.plain_result(get_output("pc.update.error_format_no_value")) # 缺少值
-             return
-
         # 根据运算符计算新值
         if operator == "+":
             new_value = current_value + value_num
@@ -1050,17 +1001,8 @@ class DicePlugin(Star):
         else:  # 无运算符 (例如 .st 力量100)，直接赋值
             new_value = value_num
 
-        ### NEW : 更新所有的同义词
-        target_group = [attribute]
-        for group in SYNONYMS.SYNONYM:
-            if attribute in group:
-                target_group = group
-                break
-            
         new_val_final = max(0, new_value)
-        for attr_name in target_group:
-            if attr_name in chara_data["attributes"]:
-                chara_data["attributes"][attr_name] = new_val_final
+        set_attribute_value(chara_data["attributes"], attribute, new_val_final)
 
         derived_tips = charmod.sync_derived_attributes(chara_data)
         charmod.save_character(group_id, user_id, chara_id, chara_data)
@@ -1068,7 +1010,7 @@ class DicePlugin(Star):
         if event.get_platform_name() == "aiocqhttp":
             await self._update_user_nickname_card(event.bot, group_id, user_id)
 
-        response = get_output("pc.update.success", attr=attribute, old=current_value, new=new_value)
+        response = get_output("pc.update.success", attr=attribute, old=current_value, new=new_val_final)
         if user_id != operator_user_id:
             response = get_output("pc.update.proxy_prefix", name=chara_data.get('name', user_id), content=response)
         if roll_detail:
@@ -1191,8 +1133,9 @@ class DicePlugin(Star):
         not_found_attrs = []
         
         for key in valid_words:
-            if key in chara_attrs:
-                val = chara_attrs[key]
+            resolved_key = find_attribute_key(chara_attrs, key)
+            if resolved_key is not None:
+                val = chara_attrs[resolved_key]
                 found_attrs.append(get_output("pc.show.attr", attr=key, value=val))
             else:
                 # 二次防误伤：如果残留的名片名字带有空格（如 John Doe）被切碎了
@@ -2343,12 +2286,36 @@ class DicePlugin(Star):
     
     # ========================================================= #
 
-    @filter.command("name")
-    async def generate_name(self, event: AstrMessageEvent, language: str = "cn", num: int = 5, sex: str = None):
+    @filter.command("name", alias={"取名"})
+    async def generate_name(self, event: AstrMessageEvent):
         if not self._command_enabled(event):
             return
-        names = generate_names(language=language, num=num, sex=sex)
-        yield event.plain_result(get_output("generated_names", num = num, names=", ".join(names)))
+        # Read the whole message: command argument splitting would truncate free-form requests.
+        message = self._strip_at_text(event.get_message_str()).strip()
+        command = strip_command_prefix(message, self.wakeup_prefix) or message
+        args = re.sub(r"^(?:name|取名)(?:\s+|$)", "", command, count=1).strip()
+        try:
+            request = parse_name_request(args)
+            backend = str(self.config.get("name_backend", "faker")).strip().lower()
+            if backend == "faker":
+                names = generate_faker_names(request)
+                response = get_output("generated_names", num=len(names), names=", ".join(names))
+            elif backend == "llm":
+                provider_id = str(self.config.get("name_llm_provider_id", "") or "").strip()
+                response = await generate_llm_names(self.context, request, provider_id)
+            else:
+                raise ValueError("name_backend 配置须为 faker 或 llm。")
+        except ValueError as exc:
+            yield event.plain_result(f"{exc}\n{NAME_USAGE}")
+            return
+        except TimeoutError:
+            yield event.plain_result("取名请求超时，请稍后重试。")
+            return
+        except Exception as exc:
+            logger.error(f"name generation failed: {type(exc).__name__}")
+            yield event.plain_result("取名失败，请稍后重试或检查 LLM 提供商配置。")
+            return
+        yield event.plain_result(response)
 
     # ------------------ CoC角色生成 ------------------ #
     async def generate_coc_character(self, event: AstrMessageEvent, x: int = 1):
