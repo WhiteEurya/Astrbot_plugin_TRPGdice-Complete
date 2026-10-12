@@ -29,12 +29,27 @@ def build_coc_long_card(chara_data: Dict[str, Any]) -> str:
     )
 
 
+def build_dnd_card(chara_data: Dict[str, Any]) -> str:
+    attributes = chara_data.get("attributes", {})
+    hp = f"{attributes.get('hp', 0)}/{attributes.get('hpmax', '?')}"
+    temporary = attributes.get("thp", 0)
+    if temporary > 0:
+        hp += f"(+{temporary})"
+    level = f" Lv{attributes['等级']}" if "等级" in attributes else ""
+    return (
+        f"{chara_data.get('name', '')}{level} HP:{hp} "
+        f"AC:{attributes.get('ac', '?')} DC:{attributes.get('dc', '?')}"
+    )
+
+
 def build_card_by_mode(chara_data: Dict[str, Any], mode: str = "coc") -> str:
     mode = (mode or "coc").lower()
-    if mode == "cocl":
-        return build_coc_long_card(chara_data)
     if mode == "none":
         return chara_data.get("name", "")
     if mode == "off":
         return ""
+    if chara_data.get("rule_system") == "dnd":
+        return build_dnd_card(chara_data)
+    if mode == "cocl":
+        return build_coc_long_card(chara_data)
     return build_coc_card(chara_data)

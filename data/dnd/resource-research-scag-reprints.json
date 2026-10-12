@@ -1,0 +1,20 @@
+{
+  "schema_version": 1, "reviewed_on": "2026-10-12", "verification": "official_checked",
+  "source_root": "https://www.scribd.com/document/439373370/Sword-Coast-Adventurers-Guide", "scope": "核对原书资源条目及官方勘误，不代表运行时支持",
+  "additional_sources": ["https://media.wizards.com/2021/dnd/downloads/SCAG-Errata.pdf", "https://www.dndbeyond.com/posts/1048-wizard-101-bladesinging-from-tashas-cauldron-of"],
+  "entries": [
+    {"id": "scag:wizard:bladesinging:bladesong", "owners": ["scag:wizard:bladesinging"], "name": "剑歌：印次差异", "minimum_level": 2,
+     "kind": "source_variant_use_pool", "capacity": {"original_printing": 2, "official_errata_2021": "proficiency_bonus"},
+     "consumption": "启动扣1次，提前结束不返还", "recovery": {"original_printing": "短休或长休补满", "official_errata_2021": "仅长休补满"},
+     "notes": ["仅标剑湾不能确定印次，必须消歧；勘误后与TCE共用模型"], "implementation": "not_supported"},
+    {"id": "scag:wizard:bladesinging:defense", "owners": ["scag:wizard:bladesinging"], "name": "守御之歌", "minimum_level": 10,
+     "kind": "shared_slot_cost", "capacity": {"independent_pool": false}, "consumption": "反应花1个法术位减伤，减伤量为环阶乘5", "recovery": {"shared_pool": "法术位"}, "implementation": "not_supported"}
+  ],
+  "reviews": {
+    "scag:monk:way-of-the-sun-soul": {"page": "", "resources": [], "book_pages": [131, 132], "shared_resources": ["与XGE共用气费用：3级附赠双射1；6级燃烧之手2、升环每环加1、总费用上限floor(武僧等级/2)；11级日爆基础免费、增幅0至3"], "without_independent_resources": ["日盾无次数池"]},
+    "scag:rogue:mastermind": {"page": "", "resources": [], "book_pages": [135], "shared_resources": [], "without_independent_resources": ["全部特性均无独立休息次数池，与XGE资源模型相同"]},
+    "scag:rogue:swashbuckler": {"page": "", "resources": [], "book_pages": [135, 136], "shared_resources": ["决斗大师17级1次、短休或长休补满，与XGE相同"], "without_independent_resources": ["其余特性无次数池"]},
+    "scag:sorcerer:storm-sorcery": {"page": "", "resources": [], "book_pages": [137], "shared_resources": ["御风之魂18级分享飞行1次、短休或长休补满，与XGE相同"], "without_independent_resources": ["其他特性无独立次数池"]},
+    "scag:wizard:bladesinging": {"page": "", "resources": ["scag:wizard:bladesinging:bladesong", "scag:wizard:bladesinging:defense"], "book_pages": [142], "shared_resources": ["正常施法复用法师法术位"], "without_independent_resources": ["训练、额外攻击和胜利之歌无次数池"]}
+  }
+}

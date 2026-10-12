@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "scope": "逐条核查本地目录中的所有子职出版记录；只审查消耗资源及恢复，不实现特性效果。",
+  "reviewed_on": "2026-10-12",
+  "review_statuses": {
+    "reviewed": "已阅读对应来源的全部子职特性，并记录资源、共享消耗和无独立资源的特性。",
+    "pending": "未完成正文审查，不表示没有资源。"
+  },
+  "reviews": {
+    "phb2014:wizard:school-of-abjuration": {
+      "status": "reviewed", "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/防护学派.html",
+      "resources": ["phb2014:wizard:school-of-abjuration:arcane_ward"],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": ["投射守御使用奥术守御生命池"],
+      "without_independent_resources": ["防护学者", "精通防护", "法术抗性"],
+      "implementation_complete": false
+    },
+    "phb2014:wizard:school-of-divination": {
+      "status": "reviewed", "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/预言学派.html",
+      "resources": ["phb2014:wizard:school-of-divination:portent", "phb2014:wizard:school-of-divination:expert_divination", "phb2014:wizard:school-of-divination:third_eye"],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": ["高等预兆调整同一个预兆骰列表上限"],
+      "without_independent_resources": ["预言学者"],
+      "implementation_complete": false
+    },
+    "phb2014:wizard:school-of-enchantment": {
+      "status": "reviewed", "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/附魔学派.html",
+      "resources": ["phb2014:wizard:school-of-enchantment:hypnotic_gaze", "phb2014:wizard:school-of-enchantment:instinctive_charm"],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [],
+      "without_independent_resources": ["附魔学者", "分裂附魔", "编演记忆：每次符合条件的法术有一次修改机会，不是全局休息次数池"],
+      "implementation_complete": false
+    },
+    "phb2014:wizard:school-of-evocation": {
+      "status": "reviewed", "evidence": "official_checked",
+      "source_url": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014/classes#SchoolofEvocation",
+      "resources": ["wizard:evocation:overchannel"],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [],
+      "without_independent_resources": ["塑能学者", "法术塑形", "强力戏法", "强效塑能"],
+      "implementation_complete": false
+    },
+    "tcoe:wizard:bladesinging": {
+      "status": "reviewed", "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/剑咏.html",
+      "resources": ["tcoe:wizard:bladesinging:bladesong", "tcoe:wizard:bladesinging:song_of_defense"],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": ["守御之歌消耗普通法术位，不建独立池"],
+      "without_independent_resources": ["战歌训练", "额外攻击", "胜利之歌"],
+      "implementation_complete": false
+    },
+    "phb2024:wizard:evoker": {
+      "status": "reviewed", "evidence": "official_checked",
+      "source_url": "https://www.dndbeyond.com/sources/dnd/br-2024/character-classes#Evoker",
+      "resources": ["wizard:evocation:overchannel"],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [],
+      "without_independent_resources": ["塑能学者", "强力戏法", "法术塑形", "强效塑能"],
+      "implementation_complete": false
+    }
+  }
+}

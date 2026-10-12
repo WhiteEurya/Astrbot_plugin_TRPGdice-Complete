@@ -1,0 +1,42 @@
+{
+  "schema_version": 1, "reviewed_on": "2026-10-12", "verification": "translation_checked",
+  "source_root": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/", "scope": "资源资料核查，不代表运行时已支持",
+  "entries": [
+    {"id": "tcoe:ranger:fey-wanderer:fey", "owners": ["tcoe:ranger:fey-wanderer"], "name": "精宸所与", "minimum_level": 11,
+     "kind": "use_pool", "capacity": {"free_uses": 1}, "consumption": "免费施展精类召唤术扣1次，也能正常花环位施法；该特性施法均无需材料；选择免专注版本不额外扣资源", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"},
+    {"id": "tcoe:ranger:fey-wanderer:misty", "owners": ["tcoe:ranger:fey-wanderer"], "name": "雾行漫游", "minimum_level": 15,
+     "kind": "use_pool", "capacity": {"free_uses": "max(1, wisdom_modifier)"}, "consumption": "免费迷踪步扣1次；普通环位施展不扣免费机会；带同伴不额外扣次数", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"},
+    {"id": "tcoe:ranger:swarmkeeper:tide", "owners": ["tcoe:ranger:swarmkeeper"], "name": "翻腾浪涌", "minimum_level": 7,
+     "kind": "use_pool", "capacity": {"uses": "proficiency_bonus"}, "consumption": "启动飞行扣1次", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"},
+    {"id": "tcoe:ranger:swarmkeeper:dispersal", "owners": ["tcoe:ranger:swarmkeeper"], "name": "群逸逃散", "minimum_level": 15,
+     "kind": "use_pool", "capacity": {"uses": "proficiency_bonus"}, "consumption": "发动反应扣1次，与翻腾浪涌分别计数", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"},
+    {"id": "tcoe:rogue:phantom:wails", "owners": ["tcoe:rogue:phantom"], "name": "墓穴惊嚎", "minimum_level": 3,
+     "kind": "use_pool_with_token_alternative", "capacity": {"uses": "proficiency_bonus"}, "consumption": "发动扣1次；9级起可选择销毁1个魂器替代次数，不同时扣二者；17级增加受伤目标不增加费用", "recovery": {"long_rest": "次数补满"}, "implementation": "not_supported"},
+    {"id": "tcoe:rogue:phantom:tokens", "owners": ["tcoe:rogue:phantom"], "name": "逝者遗物：魂器", "minimum_level": 9,
+     "kind": "captured_consumable", "capacity": {"tokens": "proficiency_bonus"}, "consumption": "墓穴惊嚎替代费用、向灵魂提问、幽灵漫步额外使用各销毁1个；满额不能再生成，不自动挤掉旧魂器",
+     "recovery": {"visible_death_reaction": "符合死亡触发且手空闲、未满额时可捕获1个", "long_rest": "17级起，仅当前魂器数为0时生成1个；9至16级不恢复，已有魂器不清除"},
+     "state_fields": ["每个魂器标识及关联灵魂", "当前归属/持有数量"], "implementation": "not_supported"},
+    {"id": "tcoe:rogue:phantom:ghost_walk", "owners": ["tcoe:rogue:phantom"], "name": "幽灵漫步", "minimum_level": 13,
+     "kind": "use_pool_with_token_alternative", "capacity": {"free_uses": 1}, "consumption": "首次免费启动扣机会；额外启动可销毁1魂器，提前结束不退费用", "recovery": {"long_rest": "免费机会补满"}, "implementation": "not_supported"},
+    {"id": "tcoe:rogue:soulknife:dice", "owners": ["tcoe:rogue:soulknife"], "name": "魂刃灵能骰", "minimum_level": 3,
+     "kind": "dice_pool", "capacity": {"dice": "2 * proficiency_bonus", "die_faces": [[3, 6], [5, 8], [11, 10], [17, 12]]},
+     "consumption": "灵振诀窍与9级寻的攻击仅在加骰后成功时扣1骰；9级心灵传送必扣1骰；心灵低语额外使用1骰，13级心灵面纱额外使用1骰，17级撕裂心智额外使用3骰",
+     "recovery": {"long_rest": "补满所有骰", "short_rest": "不补骰，仅恢复单骰恢复机会", "bonus_action": "扣单骰恢复机会并恢复1个已耗骰"}, "implementation": "not_supported"},
+    {"id": "tcoe:rogue:soulknife:die_recovery", "owners": ["tcoe:rogue:soulknife"], "name": "魂刃单骰恢复机会", "minimum_level": 3,
+     "kind": "use_pool", "capacity": {"uses": 1}, "consumption": "以附赠动作恢复1个已耗本子职灵能骰时扣1次", "recovery": {"short_rest": "补满机会", "long_rest": "补满机会"}, "implementation": "not_supported"},
+    {"id": "tcoe:rogue:soulknife:free_powers", "owners": ["tcoe:rogue:soulknife"], "name": "魂刃异能免费机会", "minimum_level": 3,
+     "kind": "per_selection_pool", "capacity": {"powers": {"psychic_whispers": {"minimum_level": 3, "free_uses": 1}, "psychic_veil": {"minimum_level": 13, "free_uses": 1}, "rend_mind": {"minimum_level": 17, "free_uses": 1}}},
+     "consumption": "三项各自计数；心灵低语免费发动仍掷灵能骰定小时数，但不扣骰；用尽后支付对应骰费用；撕裂心智不论目标豁免结果均消耗机会或3骰",
+     "recovery": {"long_rest": "各项分别补满"}, "implementation": "not_supported"}
+  ],
+  "reviews": {
+    "tcoe:ranger:fey-wanderer": {"page": "游侠（TCE）/妖精漫游者.html", "resources": ["tcoe:ranger:fey-wanderer:fey", "tcoe:ranger:fey-wanderer:misty"],
+      "shared_resources": ["额外法术正常环位；免费施法不等于获得额外环位"], "without_independent_resources": ["哀惧灵袭每目标每回合限1次，不是休息池；妖冶嫺都无消耗；妖思魅缕仅占反应"]},
+    "tcoe:ranger:swarmkeeper": {"page": "游侠（TCE）/集群牧者.html", "resources": ["tcoe:ranger:swarmkeeper:tide", "tcoe:ranger:swarmkeeper:dispersal"],
+      "shared_resources": ["额外法术正常环位；法师之手戏法不耗环位"], "without_independent_resources": ["蜂聚集群每自己回合一次，无独立次数；壮大集群只增强蜂聚集群"]},
+    "tcoe:rogue:phantom": {"page": "游荡者（TCE）/鬼魅.html", "resources": ["tcoe:rogue:phantom:wails", "tcoe:rogue:phantom:tokens", "tcoe:rogue:phantom:ghost_walk"],
+      "shared_resources": [], "without_independent_resources": ["亡者余声在短休或长休选择1项临时熟练，不设次数池；携带魂器的豁免增益不消耗魂器"]},
+    "tcoe:rogue:soulknife": {"page": "游荡者（TCE）/魂刃.html", "resources": ["tcoe:rogue:soulknife:dice", "tcoe:rogue:soulknife:die_recovery", "tcoe:rogue:soulknife:free_powers"],
+      "shared_resources": ["本子职灵能骰与灵能武士独立，不能因同名合并"], "without_independent_resources": ["心灵之刃普通攻击及附赠攻击不消耗灵能骰"]}
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-12",
+  "verification": "translation_checked",
+  "source_root": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/",
+  "scope": "资料核查，不代表运行时已支持；只登记有限资源、共享消耗及恢复条件",
+  "entries": [
+    {
+      "id": "xgte:barbarian:path-of-the-ancestral-guardian:consult_spirits", "owners": ["xgte:barbarian:path-of-the-ancestral-guardian"],
+      "name": "问道精魂", "minimum_level": 10, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "卜筮术与鹰眼术共用1次免费施法；不扣环位及材料，不是每个法术各1次",
+      "recovery": {"short_rest": "补满", "long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:barbarian:path-of-the-zealot:fanatical_focus", "owners": ["xgte:barbarian:path-of-the-zealot"],
+      "name": "专心炽志", "minimum_level": 6, "kind": "per_activation_pool", "capacity": {"uses_per_rage": 1},
+      "consumption": "狂暴期间豁免失败后选择重投，扣本次狂暴内的1次机会",
+      "recovery": {"new_rage": "新一次狂暴重置为1；不因同次狂暴延长或休息直接重置"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:barbarian:path-of-the-zealot:zealous_presence", "owners": ["xgte:barbarian:path-of-the-zealot"],
+      "name": "狂热威仪", "minimum_level": 10, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "发动扣1次", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:bard:college-of-glamour:enthralling_performance", "owners": ["xgte:bard:college-of-glamour"],
+      "name": "醉人表演", "minimum_level": 3, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "发动扣1次，与目标数量及豁免结果无关",
+      "recovery": {"short_rest": "补满", "long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:bard:college-of-glamour:mantle_majesty", "owners": ["xgte:bard:college-of-glamour"],
+      "name": "统御光环", "minimum_level": 6, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "启动扣1次；本次持续期间的命令术不再扣环位或额外特性次数",
+      "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:bard:college-of-glamour:unbreakable_majesty", "owners": ["xgte:bard:college-of-glamour"],
+      "name": "绝对统御", "minimum_level": 14, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "启动扣1次，持续期间各攻击者豁免不额外扣次数",
+      "recovery": {"short_rest": "补满", "long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:bard:college-of-whispers:words_terror", "owners": ["xgte:bard:college-of-whispers"],
+      "name": "惊骇之语", "minimum_level": 3, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "发动扣1次，即使目标豁免成功也消耗",
+      "recovery": {"short_rest": "补满", "long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:bard:college-of-whispers:mantle_whispers", "owners": ["xgte:bard:college-of-whispers"],
+      "name": "低语光环", "minimum_level": 6, "kind": "captured_consumable",
+      "capacity": {"captures_per_rest": 1}, "consumption": "捕获影子扣捕获机会；使用时消耗所存影子，二者不能合成同一个次数字段",
+      "recovery": {"short_rest": "恢复捕获机会，但不清除未使用的影子", "long_rest": "恢复捕获机会并清除未使用的影子"},
+      "state_fields": ["捕获机会是否已用", "未使用影子列表及各自来源目标；原文未规定同时持有上限，不擅加只能存1道的限制"], "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:bard:college-of-whispers:shadow_lore", "owners": ["xgte:bard:college-of-whispers"],
+      "name": "阴暗学识", "minimum_level": 14, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "发动扣1次，即使豁免成功或自动成功也消耗",
+      "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:fighter:arcane-archer:arcane_shot", "owners": ["xgte:fighter:arcane-archer"],
+      "name": "奥术射击", "minimum_level": 3, "kind": "use_pool", "capacity": {"uses": 2},
+      "consumption": "全部箭技共用2次，每回合至多1次；已知箭技数量增加不增加使用次数",
+      "recovery": {"short_rest": "补满", "long_rest": "补满", "initiative": "15级起，若剩余为0则恢复1次，否则不恢复"},
+      "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:fighter:cavalier:unwavering_mark", "owners": ["xgte:fighter:cavalier"],
+      "name": "坚定之印：特殊攻击", "minimum_level": 3, "kind": "use_pool", "capacity": {"uses": "max(1, strength_modifier)"},
+      "consumption": "仅发动特殊附赠攻击时扣1次；赋予印记本身不扣次数",
+      "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:fighter:cavalier:warding_maneuver", "owners": ["xgte:fighter:cavalier"],
+      "name": "守护战技", "minimum_level": 7, "kind": "use_pool", "capacity": {"uses": "max(1, constitution_modifier)"},
+      "consumption": "发动反应扣1次，无论加AC后是否仍命中",
+      "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:fighter:samurai:fighting_spirit", "owners": ["xgte:fighter:samurai"],
+      "name": "战意", "minimum_level": 3, "kind": "use_pool", "capacity": {"uses": 3},
+      "consumption": "启动扣1次，授予临时生命不另收费",
+      "recovery": {"long_rest": "补满", "initiative": "10级起，若剩余为0则恢复1次，否则不恢复"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:fighter:samurai:strength_before_death", "owners": ["xgte:fighter:samurai"],
+      "name": "生死流转", "minimum_level": 18, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "符合触发条件时选择发动反应扣1次", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:monk:way-of-the-drunken-master:ki_costs", "owners": ["xgte:monk:way-of-the-drunken-master"],
+      "name": "醉拳气消耗", "minimum_level": 6, "kind": "shared_resource_cost", "capacity": {"independent_pool": false},
+      "consumption": {"redirect_attack": {"minimum_level": 6, "ki": 1}, "drunkards_luck": {"minimum_level": 11, "ki": 2}},
+      "recovery": {"shared_with": "基础武僧气池"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:monk:way-of-the-kensei:ki_costs", "owners": ["xgte:monk:way-of-the-kensei"],
+      "name": "剑圣气消耗", "minimum_level": 6, "kind": "shared_resource_cost", "capacity": {"independent_pool": false},
+      "consumption": {"deft_strike": {"minimum_level": 6, "ki": 1, "per_own_turn": 1}, "sharpen_blade": {"minimum_level": 11, "ki_range": [1, 3]}},
+      "recovery": {"shared_with": "基础武僧气池"}, "implementation": "not_supported"
+    },
+    {
+      "id": "xgte:monk:way-of-the-sun-soul:ki_costs", "owners": ["xgte:monk:way-of-the-sun-soul"],
+      "name": "日魂气消耗", "minimum_level": 3, "kind": "shared_resource_cost", "capacity": {"independent_pool": false},
+      "consumption": {"radiant_sun_bolt_bonus_attacks": {"minimum_level": 3, "ki": 1, "attacks": 2}, "searing_arc_strike": {"minimum_level": 6, "base_ki": 2, "extra_ki_per_spell_level": 1, "maximum_total_ki": "floor(monk_level / 2)"}, "searing_sunburst": {"minimum_level": 11, "ki_range": [0, 3]}},
+      "recovery": {"shared_with": "基础武僧气池"}, "implementation": "not_supported"
+    }
+  ],
+  "reviews": {
+    "xgte:barbarian:path-of-the-ancestral-guardian": {
+      "page": "野蛮人/先祖守卫道途.html", "resources": ["xgte:barbarian:path-of-the-ancestral-guardian:consult_spirits"],
+      "shared_resources": ["先祖护卫与精魂之盾使用既有狂暴状态，不另扣狂暴次数"],
+      "without_independent_resources": ["仇魂先祖复用精魂之盾反应，无独立使用次数"]
+    },
+    "xgte:barbarian:path-of-the-storm-herald": {
+      "page": "野蛮人/风暴先驱道途.html", "resources": [],
+      "shared_resources": ["风暴灵光随狂暴激活，持续中附赠激活不再扣狂暴", "冻原临时生命按野蛮人等级3/5/10/15/20为2/3/4/5/6，不叠加，不是可消耗次数池"],
+      "without_independent_resources": ["风暴之魂、风暴之盾、狂怒风暴无独立休息次数"]
+    },
+    "xgte:barbarian:path-of-the-zealot": {
+      "page": "野蛮人/狂热者道途.html", "resources": ["xgte:barbarian:path-of-the-zealot:fanatical_focus", "xgte:barbarian:path-of-the-zealot:zealous_presence"],
+      "shared_resources": ["神性之怒与怒不畏死依赖狂暴，不另扣狂暴"],
+      "without_independent_resources": ["神之勇者豁免复活材料支出，不建立免费复活次数"]
+    },
+    "xgte:bard:college-of-glamour": {
+      "page": "吟游诗人/迷惑学院.html", "resources": ["xgte:bard:college-of-glamour:enthralling_performance", "xgte:bard:college-of-glamour:mantle_majesty", "xgte:bard:college-of-glamour:unbreakable_majesty"],
+      "shared_resources": ["激励光环每次消耗1次吟游激励，不按目标数扣；临时生命在诗人3/5/10/15级为5/8/11/14"], "without_independent_resources": []
+    },
+    "xgte:bard:college-of-swords": {
+      "page": "吟游诗人/剑舞学院.html", "resources": [],
+      "shared_resources": ["3种剑舞每次消耗1次吟游激励；每回合最多一种剑舞", "14级剑舞大师可选免费d6模式，不扣激励；仍可选普通消耗模式"],
+      "without_independent_resources": ["附赠熟练项、战斗风格、额外攻击无独立次数"]
+    },
+    "xgte:bard:college-of-whispers": {
+      "page": "吟游诗人/低语学院.html", "resources": ["xgte:bard:college-of-whispers:words_terror", "xgte:bard:college-of-whispers:mantle_whispers", "xgte:bard:college-of-whispers:shadow_lore"],
+      "shared_resources": ["心灵之刃武器命中后可消耗1次吟游激励，每个自己的回合最多1次"], "without_independent_resources": []
+    },
+    "xgte:fighter:arcane-archer": {
+      "page": "战士/魔射手.html", "resources": ["xgte:fighter:arcane-archer:arcane_shot"], "shared_resources": [],
+      "without_independent_resources": ["魔箭学识、注魔箭矢、曲线射击不另扣奥术射击次数；曲线射击仅占附赠动作"]
+    },
+    "xgte:fighter:cavalier": {
+      "page": "战士/骑兵.html", "resources": ["xgte:fighter:cavalier:unwavering_mark", "xgte:fighter:cavalier:warding_maneuver"], "shared_resources": [],
+      "without_independent_resources": ["附赠熟练、生而为骑、坚守战线无独立次数", "冲锋陷阵每自己的回合1次，不是休息资源", "警戒守卫每其他生物回合提供特殊反应，不是休息资源"]
+    },
+    "xgte:fighter:samurai": {
+      "page": "战士/武士.html", "resources": ["xgte:fighter:samurai:fighting_spirit", "xgte:fighter:samurai:strength_before_death"], "shared_resources": [],
+      "without_independent_resources": ["雅臣、附赠熟练项无独立次数；燕返每回合一次，不是休息资源"]
+    },
+    "xgte:monk:way-of-the-drunken-master": {
+      "page": "武僧/醉拳宗.html", "resources": ["xgte:monk:way-of-the-drunken-master:ki_costs"],
+      "shared_resources": ["醉拳技巧与酣醉若狂复用疾风连击的1气，不额外扣气"],
+      "without_independent_resources": ["附赠熟练与鲤鱼打挺不消耗气"]
+    },
+    "xgte:monk:way-of-the-kensei": {
+      "page": "武僧/剑圣宗.html", "resources": ["xgte:monk:way-of-the-kensei:ki_costs"], "shared_resources": [],
+      "without_independent_resources": ["剑圣之途、剑气无气消耗；精妙剑法每自己回合一次免费重投，不是休息次数"]
+    },
+    "xgte:monk:way-of-the-sun-soul": {
+      "page": "武僧/日魂宗.html", "resources": ["xgte:monk:way-of-the-sun-soul:ki_costs"], "shared_resources": [],
+      "without_independent_resources": ["攻击动作中的耀阳箭不消耗气；太阳盾开关及反应不消耗气"]
+    }
+  }
+}

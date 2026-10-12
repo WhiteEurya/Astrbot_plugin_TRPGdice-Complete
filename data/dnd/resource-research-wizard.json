@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "kind": "research_only_not_runtime_rules",
+  "reviewed_on": "2026-10-12",
+  "scope": "法师第一批资源调查；不是完整子职覆盖，不自动启用任何计算。只记录资源与恢复，不实现特性效果。",
+  "verification_levels": {
+    "official_checked": "已读取所列官方网页；核实范围仅限所列规则版本和资源行为。",
+    "translation_checked": "已读取不全书对应出版物译文；仍需官方原文或勘误交叉核对。",
+    "pending": "正文未取得或版本差异未核实；不能据名称推导公式。"
+  },
+  "design_constraints": [
+    "相同的资源行为共用定义，仅有实际差异的项目另列版本。",
+    "主职业等级与职业总等级分开；剑歌的熟练加值按总等级推导。",
+    "核实状态与程序支持状态分开，已核实不代表已接入。",
+    "可选恢复需要玩家选择；不能在休息时擅自决定恢复哪些环位。",
+    "按目标限制的特性、触发恢复、生命池、骰值列表和递增计数不能强行建成普通次数池。"
+  ],
+  "sources": {
+    "basic2014": {"url": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014/classes", "authority": "official", "publication": "2014 Basic Rules"},
+    "basic2024": {"url": "https://www.dndbeyond.com/sources/dnd/br-2024/character-classes", "authority": "official", "publication": "2024 Basic Rules"},
+    "abjuration2014": {"url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/防护学派.html", "authority": "translation", "publication": "PHB 2014"},
+    "divination2014": {"url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/预言学派.html", "authority": "translation", "publication": "PHB 2014"},
+    "enchantment2014": {"url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/附魔学派.html", "authority": "translation", "publication": "PHB 2014"},
+    "evocation2014": {"url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/塑能学派.html", "authority": "translation", "publication": "PHB 2014"},
+    "bladesingingTCE": {"url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/剑咏.html", "authority": "translation", "publication": "TCE"}
+  },
+  "entries": [
+    {
+      "id": "wizard:spell_slots", "name": "普通法术位", "owners": ["wizard"], "versions": ["2014", "2024"], "minimum_level": 1,
+      "kind": "tiered_pool", "capacity": {"table": "resources.json:full_slots", "level_basis": "wizard_level", "multiclass": "使用兼职施法规则，不能把各职业法术位直接相加"},
+      "consumption": "按实际所用环位扣一个对应环位", "recovery": {"long_rest": "补满", "short_rest": "不直接恢复；其他特性另行处理"},
+      "state_fields": ["各环已消耗数量"], "verification": "official_checked", "sources": ["basic2014", "basic2024"], "implementation": "supported"
+    },
+    {
+      "id": "wizard:arcane_recovery:2014", "name": "奥术回想", "english": "Arcane Recovery", "owners": ["wizard"], "versions": ["2014"], "minimum_level": 1,
+      "kind": "selected_slot_recovery", "capacity": {"uses": 1, "combined_slot_levels": "ceil(wizard_level / 2)", "maximum_slot_level": 5},
+      "consumption": "完成短休时选择若干已消耗环位；合计环级不得超过预算，整次选择扣一次使用次数，不留存剩余预算",
+      "recovery": {"daily": "所列旧版官方基础规则写每天一次", "short_rest": "仅提供发动机会，不恢复使用次数"},
+      "state_fields": ["本日是否已用", "本次恢复的各环数量"], "verification": "official_checked", "sources": ["basic2014"], "implementation": "not_supported",
+      "open_questions": ["旧版官方基础规则及Essentials原文均为每天一次；自动化接入前必须明确游戏内日界策略，不能擅自等同长休或现实零点"],
+      "additional_sources": ["https://media.wizards.com/2020/dnd/downloads/dnd_essentials_rulebook.pdf"]
+    },
+    {
+      "id": "wizard:arcane_recovery:2024", "name": "奥术回想", "english": "Arcane Recovery", "owners": ["wizard"], "versions": ["2024"], "minimum_level": 1,
+      "kind": "selected_slot_recovery", "capacity": {"uses": 1, "combined_slot_levels": "ceil(wizard_level / 2)", "maximum_slot_level": 5},
+      "consumption": "完成短休时选择已消耗环位，校验合计环级与各环缺额后，一次性恢复并扣一次次数",
+      "recovery": {"long_rest": "恢复使用次数", "short_rest": "仅提供发动机会，不恢复使用次数"},
+      "state_fields": ["长休以来是否已用", "本次恢复的各环数量"], "verification": "official_checked", "sources": ["basic2024"], "implementation": "not_supported",
+      "version_difference": "相较所列2014基础规则，恢复使用次数的条件明确为长休；恢复预算与最高环级共用"
+    },
+    {
+      "id": "wizard:signature_spells", "name": "招牌法术", "english": "Signature Spells", "owners": ["wizard"], "versions": ["2014", "2024"], "minimum_level": 20,
+      "kind": "per_selection_pool", "capacity": {"selected_spells": 2, "spell_level": 3, "free_uses_per_spell": 1},
+      "consumption": "两个已选法术各自扣除免费次数；不得把一个法术的次数转给另一个；普通环位施放不扣免费次数",
+      "recovery": {"short_rest": "分别补满", "long_rest": "分别补满"},
+      "state_fields": ["已选法术标识", "每个法术的免费次数消耗"], "verification": "official_checked", "sources": ["basic2014", "basic2024"], "implementation": "not_supported"
+    },
+    {
+      "id": "phb2014:wizard:school-of-abjuration:arcane_ward", "name": "奥术守御", "english": "Arcane Ward", "owners": ["phb2014:wizard:school-of-abjuration"], "versions": ["2014"], "minimum_level": 2,
+      "kind": "conditional_life_pool", "capacity": {"hit_points": "2 * wizard_level + intelligence_modifier", "creations_per_long_rest": 1},
+      "consumption": "吸收伤害扣结界生命值；投射守御使用同一个结界池，不另设次数",
+      "recovery": {"abjuration_spell": "施放1环以上防护系法术时，现有结界恢复2倍所用环级的生命值，不超过上限", "long_rest": "旧结界结束，重获创建机会；必须由符合条件的施法创建，不能直接把新结界补满"},
+      "state_fields": ["本次长休后是否已创建", "结界是否存在", "结界当前生命值"], "verification": "translation_checked", "sources": ["abjuration2014"], "implementation": "not_supported"
+    },
+    {
+      "id": "phb2014:wizard:school-of-divination:portent", "name": "预兆", "english": "Portent", "owners": ["phb2014:wizard:school-of-divination"], "versions": ["2014"], "minimum_level": 2,
+      "kind": "rolled_value_list", "capacity": {"dice": [[2, 2], [14, 3]], "die_faces": 20},
+      "consumption": "选择并移除一个已保存骰值；仅统计次数会丢失这个资源的实际内容",
+      "recovery": {"long_rest": "丢弃未用旧骰，重新生成整组骰值", "short_rest": "不恢复"},
+      "state_fields": ["每颗骰的标识与骰值", "剩余骰列表"], "verification": "translation_checked", "sources": ["divination2014"], "implementation": "not_supported"
+    },
+    {
+      "id": "phb2014:wizard:school-of-divination:expert_divination", "name": "预言专家", "english": "Expert Divination", "owners": ["phb2014:wizard:school-of-divination"], "versions": ["2014"], "minimum_level": 6,
+      "kind": "conditional_slot_recovery", "capacity": {"independent_pool": false},
+      "consumption": "以至少2环法术位施放预言系法术后，可恢复一个更低环级且不高于5环的已消耗法术位",
+      "recovery": {"trigger": "合格的预言系施法；由玩家提供触发与目标环位，不因休息触发"},
+      "state_fields": ["本次施法环级", "恢复环位选择"], "verification": "translation_checked", "sources": ["divination2014"], "implementation": "not_supported"
+    },
+    {
+      "id": "phb2014:wizard:school-of-divination:third_eye", "name": "天眼通", "english": "The Third Eye", "owners": ["phb2014:wizard:school-of-divination"], "versions": ["2014"], "minimum_level": 10,
+      "kind": "use_pool", "capacity": {"uses": 1}, "consumption": "发动扣一次",
+      "recovery": {"short_rest": "补满", "long_rest": "补满"},
+      "state_fields": ["已消耗次数"], "verification": "translation_checked", "sources": ["divination2014"], "implementation": "not_supported"
+    },
+    {
+      "id": "phb2014:wizard:school-of-enchantment:hypnotic_gaze", "name": "催眠凝视", "english": "Hypnotic Gaze", "owners": ["phb2014:wizard:school-of-enchantment"], "versions": ["2014"], "minimum_level": 2,
+      "kind": "per_target_lockout", "capacity": {"global_use_limit": null}, "consumption": "目标首次豁免成功或效果结束后，记录不能再次对该目标使用；不是全局一次用量",
+      "recovery": {"long_rest": "清除目标限制", "short_rest": "不清除"},
+      "state_fields": ["受限制的目标标识集合"], "verification": "translation_checked", "sources": ["enchantment2014"], "implementation": "not_supported"
+    },
+    {
+      "id": "phb2014:wizard:school-of-enchantment:instinctive_charm", "name": "直觉魅惑", "english": "Instinctive Charm", "owners": ["phb2014:wizard:school-of-enchantment"], "versions": ["2014"], "minimum_level": 6,
+      "kind": "per_target_lockout", "capacity": {"global_use_limit": null}, "consumption": "仅当攻击者豁免成功时锁定该攻击者，不能把每次发动都当作消耗全局次数",
+      "recovery": {"long_rest": "清除目标限制", "short_rest": "不清除"},
+      "state_fields": ["受限制的攻击者标识集合"], "verification": "translation_checked", "sources": ["enchantment2014"], "implementation": "not_supported"
+    },
+    {
+      "id": "wizard:evocation:overchannel", "name": "超限导能", "english": "Overchannel", "owners": ["phb2014:wizard:school-of-evocation", "phb2024:wizard:evoker"], "versions": ["2014", "2024"], "minimum_level": 14,
+      "kind": "escalating_counter", "capacity": {"hard_use_limit": null, "cost_free_uses_per_long_rest": 1},
+      "consumption": "每次发动记录累计次数；首次无反噬，其后仍可发动，不能按普通余额为0时拒绝使用",
+      "recovery": {"long_rest": "累计次数归零", "short_rest": "不归零"},
+      "state_fields": ["本次长休以来发动次数"], "verification": "official_checked", "sources": ["basic2014", "basic2024", "evocation2014"], "implementation": "not_supported",
+      "version_difference": "这里只合并资源计数与重置条件，不声明伤害特性效果完全相同；不计算反噬伤害"
+    },
+    {
+      "id": "tcoe:wizard:bladesinging:bladesong", "name": "剑歌", "english": "Bladesong", "owners": ["tcoe:wizard:bladesinging"], "versions": ["TCE"], "minimum_level": 2,
+      "kind": "use_pool", "capacity": {"uses": "2 + floor((total_character_level - 1) / 4)"}, "consumption": "启动扣一次",
+      "recovery": {"long_rest": "补满", "short_rest": "不恢复"},
+      "state_fields": ["已消耗次数"], "verification": "translation_checked", "sources": ["bladesingingTCE"], "implementation": "supported"
+    },
+    {
+      "id": "tcoe:wizard:bladesinging:song_of_defense", "name": "守御之歌", "english": "Song of Defense", "owners": ["tcoe:wizard:bladesinging"], "versions": ["TCE"], "minimum_level": 10,
+      "kind": "shared_slot_cost", "capacity": {"independent_pool": false}, "consumption": "剑歌期间以反应消耗一个选择的法术位；只扣普通法术位，不另造守御之歌点数",
+      "recovery": {"shared_with": "普通法术位"},
+      "state_fields": ["选择的法术位环级"], "verification": "translation_checked", "sources": ["bladesingingTCE"], "implementation": "slot_deduction_only_no_feature_command"
+    }
+  ],
+  "pending_review": [],
+  "not_independent_resources": [
+    {"name": "法术精通", "reason": "符合条件的已选法术可无限次免费施放，不建立有限次数池；版本中的选法术条件不在本次资源范围"},
+    {"name": "投射守御", "reason": "复用现有奥术守御生命值，不新建池"},
+    {"name": "守御之歌", "reason": "复用法术位，已在条目中登记共享消耗关系"},
+    {"name": "被动加值、抗性、额外攻击、抄写优惠", "reason": "不消耗有限资源，不收进资源账本"}
+  ]
+}

@@ -16,7 +16,7 @@ class ParsedInlineCommand:
 def strip_command_prefix(message: str, prefixes: list[str]) -> Optional[str]:
     if not any(message.startswith(prefix) for prefix in prefixes):
         return None
-    return re.sub(r"\s+", " ", message[1:]).strip()
+    return re.sub(r"[ \t]+", " ", message[1:]).strip()
 
 
 def _split_skill_and_value(expr: str) -> tuple[str, Optional[str]]:
@@ -105,11 +105,20 @@ def _parse_check_command(message: str, prefix: str) -> ParsedInlineCommand:
 
 def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Optional[ParsedInlineCommand]:
     """Parse dot-style inline commands handled by identify_command."""
+    shortcut = re.match(r"^rc([bp]?)(\*)?(?![a-z])", message, re.I)
+    if default_roll_expr == "1d20" and shortcut:
+        body = message[shortcut.end():].strip()
+        if shortcut.group(1):
+            mode = "优势 " if shortcut.group(1).lower() == "b" else "劣势 "
+            body = re.sub(r"^(\d+#\s*)?", lambda m: (m.group(1) or "") + mode, body, count=1)
+        return ParsedInlineCommand(cmd="dnd_check", expr=(shortcut.group(2) or "") + body)
     m = re.match(r"^([a-z]+)", message, re.I)
     if not m:
         return None
 
     cmd = m.group(1).lower()
+    if cmd in {"res", "resource"}:
+        return None
     expr = message[m.end():].strip()
     remark = None
     skill_value: Optional[str] = ""
@@ -120,10 +129,10 @@ def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Opti
         sv_match = re.search(r"\d+$", message)
         if sv_match:
             skill_value = sv_match.group()
-            expr = message[2:len(message) - len(skill_value)]
+            expr = message[2:len(message) - len(skill_value)].strip()
         else:
             skill_value = None
-            expr = message[2:]
+            expr = message[2:].strip()
         cmd = "en"
 
     if cmd == "rau":
@@ -154,7 +163,7 @@ def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Opti
     elif cmd == "ri":
         expr = message[2:].strip()
 
-    elif cmd[0:2] == "rd":
+    elif cmd == "rd":
         raw = message[2:].strip()
         dice_match = re.match(r"(\d+)([\d#+\-*/().xXdkvbpBP]*)", raw, re.IGNORECASE)
         if dice_match:
@@ -167,7 +176,7 @@ def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Opti
             remark = raw.strip()
         cmd = "rd"
 
-    elif cmd[0] == "r":
+    elif cmd in {"r", "rh"}:
         is_hidden_roll = cmd == "rh"
         command_len = 2 if is_hidden_roll else 1
         content = message[command_len:].strip()

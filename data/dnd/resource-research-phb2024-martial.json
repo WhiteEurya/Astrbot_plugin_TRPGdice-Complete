@@ -1,0 +1,40 @@
+{
+  "schema_version": 1, "reviewed_on": "2026-10-12", "verification": "translation_checked",
+  "source_root": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/", "scope": "资源资料核查；与旧版相同部分共用模型，不声称特性效果相同或运行时已支持",
+  "entries": [
+    {"id": "phb2024:barbarian:path-of-the-berserker:presence", "owners": ["phb2024:barbarian:path-of-the-berserker"], "name": "威慑之姿", "minimum_level": 14,
+     "kind": "use_pool_with_shared_reset", "capacity": {"uses": 1}, "consumption": "发动扣1次；可无动作消耗1次狂暴重置使用权，不自动开启狂暴", "recovery": {"long_rest": "补满", "rage_use": "花1次狂暴重置"}, "implementation": "not_supported"},
+    {"id": "phb2024:barbarian:path-of-the-world-tree:travel", "owners": ["phb2024:barbarian:path-of-the-world-tree"], "name": "世界树之奇旅：强化传送", "minimum_level": 14,
+     "kind": "per_activation_pool", "capacity": {"uses_per_rage": 1}, "consumption": "强化为150尺并带至多6名生物时扣本次狂暴1次机会；普通60尺传送不扣此机会", "recovery": {"new_rage": "每次新狂暴恢复1次"}, "implementation": "not_supported"},
+    {"id": "phb2024:barbarian:path-of-the-zealot:healing", "owners": ["phb2024:barbarian:path-of-the-zealot"], "name": "神之勇者：治疗骰", "minimum_level": 3,
+     "kind": "dice_pool", "capacity": {"dice": [[3, 4], [6, 5], [12, 6], [17, 7]], "die_faces": 12}, "consumption": "附赠动作选择任意数量现有骰治疗自己，按实际骰数扣除", "recovery": {"long_rest": "补满骰数"}, "implementation": "not_supported"},
+    {"id": "phb2024:barbarian:path-of-the-zealot:presence", "owners": ["phb2024:barbarian:path-of-the-zealot"], "name": "狂热威仪", "minimum_level": 10,
+     "kind": "use_pool_with_shared_reset", "capacity": {"uses": 1}, "consumption": "发动扣1次；可无动作花1次狂暴重置使用权", "recovery": {"long_rest": "补满", "rage_use": "花1次狂暴重置，不开启狂暴"}, "implementation": "not_supported"},
+    {"id": "phb2024:barbarian:path-of-the-zealot:rage_gods", "owners": ["phb2024:barbarian:path-of-the-zealot"], "name": "神之狂暴", "minimum_level": 14,
+     "kind": "use_pool", "capacity": {"uses": 1}, "consumption": "进入狂暴时选择圣斗士姿态，扣1次特性和正常狂暴；姿态内回春反应另花1次狂暴，不再扣姿态次数", "recovery": {"long_rest": "姿态次数补满"}, "implementation": "not_supported"},
+    {"id": "phb2024:bard:college-of-glamour:beguiling", "owners": ["phb2024:bard:college-of-glamour"], "name": "惑心魔法", "minimum_level": 3,
+     "kind": "use_pool_with_shared_reset", "capacity": {"uses": 1}, "consumption": "合格施法后发动魅惑/恐慌扣1次，法术环位另正常消耗；可无动作花1次诗人激励重置使用权", "recovery": {"long_rest": "补满", "bardic_inspiration_use": "花1次激励重置"}, "implementation": "not_supported"},
+    {"id": "phb2024:bard:college-of-glamour:majesty", "owners": ["phb2024:bard:college-of-glamour"], "name": "威仪作锦", "minimum_level": 6,
+     "kind": "use_pool_with_slot_reset", "capacity": {"uses": 1}, "consumption": "启动扣1次；持续期间的命令术不额外花环位；可无动作花至少3环环位重置使用权", "recovery": {"long_rest": "补满", "spell_slot": "至少3环环位重置"}, "implementation": "not_supported"},
+    {"id": "phb2024:bard:college-of-lore:peerless", "owners": ["phb2024:bard:college-of-lore"], "name": "超凡技艺", "minimum_level": 14,
+     "kind": "success_consumed_shared_cost", "capacity": {"independent_pool": false}, "consumption": "失败的属性或攻击检定加入诗人激励骰；仅最终成功时消耗1次诗人激励，仍失败不扣", "recovery": {"shared_with": "基础诗人激励"}, "implementation": "not_supported"}
+  ],
+  "reviews": {
+    "phb2024:barbarian:path-of-the-berserker": {"page": "野蛮人/狂战士道途.htm", "resources": ["phb2024:barbarian:path-of-the-berserker:presence"],
+      "shared_resources": ["狂怒与无我狂暴共用狂暴，无额外消耗；新版狂怒不再附带旧版狂乱的力竭支出"], "without_independent_resources": ["报偿仅占反应；新版威慑不沿用旧版每目标24小时免疫模型"]},
+    "phb2024:barbarian:path-of-the-wild-heart": {"page": "野蛮人/兽心道途.htm", "resources": [],
+      "shared_resources": ["兽性狂暴和兽力威能共用基础狂暴，每次狂暴可选效果，不额外扣次数"], "without_independent_resources": ["动物语者与自然语者仅仪式施法，无环位或免费次数池；兽之形貌长休换选项无次数消耗"]},
+    "phb2024:barbarian:path-of-the-world-tree": {"page": "野蛮人/世界树道途.htm", "resources": ["phb2024:barbarian:path-of-the-world-tree:travel"],
+      "shared_resources": ["圣树活力依赖狂暴；自己进入狂暴获野蛮人等级临时生命；赐命每回合给另一目标狂暴伤害加值数量的d6临时生命，狂暴结束时赐命残余消失，不叠加"], "without_independent_resources": ["灵树枝杈仅占反应；根击千钧无次数；奇旅普通传送无额外狂暴支出"]},
+    "phb2024:barbarian:path-of-the-zealot": {"page": "野蛮人/狂热者道途.htm", "resources": ["phb2024:barbarian:path-of-the-zealot:healing", "phb2024:barbarian:path-of-the-zealot:presence", "phb2024:barbarian:path-of-the-zealot:rage_gods"],
+      "shared_resources": ["专心炽志共用XGE每次狂暴1次的模型，重投额外加值是效果变化不另设资源", "神性之怒共用狂暴，神之狂暴回春使用基础狂暴次数"], "without_independent_resources": ["神性之怒每自己的回合1次，无独立次数"]},
+    "phb2024:bard:college-of-dance": {"page": "吟游诗人/舞蹈学院.htm", "resources": [],
+      "shared_resources": ["鼓舞之移与协同舞步每次扣1诗人激励；协同舞步不按盟友人数扣", "灵巧打击附加于已消耗激励的动作，不再扣一次"], "without_independent_resources": ["诗人痛击仅用激励骰大小作伤害骰，不消耗激励；大舞蹈家、无甲防御、引导闪避无次数池"]},
+    "phb2024:bard:college-of-glamour": {"page": "吟游诗人/魅心学院.htm", "resources": ["phb2024:bard:college-of-glamour:beguiling", "phb2024:bard:college-of-glamour:majesty"],
+      "shared_resources": ["灵感织衣扣1诗人激励，每目标临时生命为本次骰值2倍，不额外按人数收费", "不破威仪共用XGE绝对统御1次短休或长休恢复的资源模型，不声明效果相同"], "without_independent_resources": ["始终准备的法术不等于免费施法"]},
+    "phb2024:bard:college-of-lore": {"page": "吟游诗人/逸闻学院.htm", "resources": ["phb2024:bard:college-of-lore:peerless"],
+      "shared_resources": ["语出惊人扣1诗人激励，模型与旧版共享；魔法探秘法术使用正常环位"], "without_independent_resources": ["附赠熟练无独立消耗"]},
+    "phb2024:bard:college-of-valor": {"page": "吟游诗人/勇气学院.htm", "resources": [],
+      "shared_resources": ["战斗激励复用已授予受助者的激励骰，使用时不再从诗人扣第二次；模型与2014共享"], "without_independent_resources": ["战争训练、额外攻击、战斗魔法无独立次数池"]}
+  }
+}

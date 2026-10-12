@@ -1,33 +1,78 @@
+# Neutral defaults; keys and placeholders follow component/config.yaml.
 output:
+  dnd:
+    common:
+      response: |-
+        <{name}> 的人物卡：
+        【{name}】
+        {detail}
+      error: |-
+        操作失败：
+        {reason}
+    sheet:
+      updated: |-
+        人物卡已更新。
+        【{name}】
+        {detail}
+      header: |-
+        <{name}> 的人物卡：
+        【{name}】
+      attribute_deleted: "已删除：{attribute}"
+      attribute_protected: "核心属性不可删除：{attribute}"
+      attribute_missing: "未录入：{attribute}"
+      nothing_to_clear: "没有可清理的属性。"
+    check:
+      head: |-
+        <{name}> 的【{skill_name}】检定：
+        【{name}】{skill_name}检定（{detail}，临时修正 {extra:+d}）
+      roll: "骰点结果：{dice}{bonus:+d}: {result}"
+      aside: ""
+      natural_20: "<{name}> 掷出天然 20！"
+      natural_1: "天然 1！"
+    resource:
+      header: |-
+        【冒险资源】
+        法术位与职业资源剩余次数：
+      changed: |-
+        资源已更新：
+        {balance}
+      restored: |-
+        {rest}的资源恢复已记录。
+        {resources}
+      note: "使用资源后请手动记录消耗；特性带来的恢复可用 .res 资源名+数量 补回。"
+    class:
+      updated: |-
+        职业已更新。
+        职业: {classes}
+        总等级: {level}
+      cleared: "已清除职业记录，保留当前总等级。"
   common:
     invalid_number: "非法数值"
     unnamed: "未命名"
     unknown: "未知"
     none: "无"
-    yes: "是"
-    no: "否"
-
-  # ---------- 技能判定 ----------
+    "yes": "是"
+    "no": "否"
   skill_check:
-    normal: 
-      head : |
-        技能检定结果 {name} {skill_name}
-      detail : | 
-        技能检定骰点结果 {roll_result} {skill_value} {result}
-    penalty:
-      head : |
-        惩罚骰技能检定结果 {name} {skill_name}
-      detail : |
-        惩罚骰骰面 {new_tens_digits}，最终结果 {final_y}/{skill_value}：{result}
-    bonus:
-      head : |
-        奖励骰技能检定结果 {name} {skill_name}
-      detail : |
-        奖励骰骰面 {new_tens_digits}，最终结果 {final_y}/{skill_value}：{result}
-
-    pistol_check:
+    normal:
       head: |
-        <{name}> 使用【{skill_name}】进行手枪连发检定，模式：{mode}。
+        <{name}> 的【{skill_name}】检定：
+      detail: |
+        {roll_result}/{skill_value}：{result}
+    penalty:
+      head: |
+        <{name}> 的【{skill_name}】惩罚骰检定：
+      detail: |
+        惩罚骰：{new_tens_digits} → {final_y}/{skill_value}：{result}
+    bonus:
+      head: |
+        <{name}> 的【{skill_name}】奖励骰检定：
+      detail: |
+        奖励骰：{new_tens_digits} → {final_y}/{skill_value}：{result}
+    pistol_check:
+      fire_detail: "第 {i} 发（{dice}）：候选 [{candidates}] → {roll}/{skill_value}：{result}"
+      head: |
+        <{name}> 的【{skill_name}】连射检定，模式：{mode}。
       detail: |
         第 {i} 发（{p}P）：{roll}{p_info}/{skill_value}：{result}
       mode_regular: "常规连射"
@@ -35,18 +80,17 @@ output:
       mode_accuracy: "精度下降"
       skill_specified: "手枪(指定)"
       skill_handgun: "手枪"
-
     error:
-      normal: "技能检定参数错误 {skill_name}"
-      penalty: "惩罚骰技能检定参数错误"
-      bonus: "奖励骰技能检定参数错误"
+      normal: "未找到技能或技能参数无效：【{skill_name}】。"
+      penalty: "请提供惩罚骰数量。"
+      bonus: "请提供奖励骰数量。"
     difficulty:
       hard: "困难"
       extreme: "极难"
     grow_up:
-      success: "成长检定成功结果 {skill_name} {en_value} {new_value}"
-      failure: "成长检定失败结果 {skill_name}"
-      boost_result: "成长检定掷骰结果 {roll_result} {skill_value} {result}"
+      success: "【{skill_name}】成长 {en_value} 点，当前值：{new_value}。"
+      failure: "【{skill_name}】成长检定失败，数值不变。"
+      boost_result: "成长检定：{roll_result}/{skill_value}：{result}"
     until_success:
       success: |
         {name} 的【{skill_name}】连续检定直到成功：
@@ -58,10 +102,9 @@ output:
         已达到 {max_attempts} 次上限，仍未成功。
         前10次结果：
         {results}
-    proxy_name: "{name}（由 <{operator}> 代投）"
+    proxy_name: "{name} (由 <{operator}> 代投)"
     hidden:
-      sent: "已进行暗中检定，结果已通过私聊发送。"
-
+      sent: "暗中检定结果已发送至私聊。"
   versus:
     no_winner: "双方均失败，无胜者"
     tie: "平局"
@@ -73,79 +116,129 @@ output:
     label:
       left: "发起方"
       right: "对抗方"
-    participant: "对抗检定结果 {name} {skill_name}"
+    participant: "<{name}> 的【{skill_name}】"
     error:
-      format: "对抗检定结果"
-      no_target: "对抗检定结果"
-      invalid_value: "对抗检定结果"
-
+      format: "请使用 .rav技能名a点数/b点数，或 .rav技能名 @对抗者。"
+      no_target: "请提供对方的 /b点数，或 @一名对抗者。"
+      invalid_value: "技能值必须是数字；a点数可省略，b点数或 @对抗者不能省略。"
   alias:
-    added: "技能别名指令结果 {alias} {target}"
-    deleted: "技能别名指令结果 {alias}"
-    not_found: "技能别名指令结果 {alias}"
-    empty: "当前没有记录。"
-    list: |
-      技能别名：
+    added: "已设置技能别名：【{alias}】 → 【{target}】。"
+    deleted: "已删除技能别名：【{alias}】。"
+    not_found: "未找到技能别名：【{alias}】。"
+    empty: "当前没有技能别名。"
+    list: |-
+      当前技能别名：
       {aliases}
-
   bot:
     info: |
-      TRPG 骰子插件。
+      TRPG 骰子插件，基于 AstrBot 框架。
       使用 .bothelp 查看帮助。
       当前状态：{status}
-    enabled: "机器人状态指令结果"
-    disabled: "机器人状态指令结果"
-    quit: "机器人即将退出当前群聊。"
-    quit_error: "机器人退群失败：{error}"
+    enabled: "骰子功能已开启。"
+    disabled: "骰子功能已关闭，使用 .bot on 可以重新开启。"
+    quit: "即将退出当前群聊。"
+    quit_error: "退出群聊失败：{error}"
     quit_private: "退群指令只能在群聊中使用。"
-    status: "机器人状态指令结果 {status}"
+    status: "骰子功能状态：{status}"
     status_on: "开启"
     status_off: "关闭"
-    usage: "机器人状态指令结果"
-
+    usage: "用法：.bot / .bot on / .bot off / .bot status"
   private:
-    unsupported: "私聊指令提示"
-
+    unsupported: "这条指令暂不支持私聊。"
+  group_post:
+    template_coc: |-
+      丨模组名：
+      丨规则类型：CoC7
+      丨kp：
+      丨期望人数：
+      丨预计长度：
+      丨开团时间：
+      丨联系方式：
+      丨跑团方式：
+      丨年代地点：
+      丨车卡要求：
+      丨推荐技能：
+      丨背景故事：
+      丨kp的建议：
+    template_dnd: |-
+      丨模组名：
+      丨游戏规则：DnD5e
+      丨扩充拓展：
+      丨等级资源：
+      丨联系方式：
+      丨跑团方式：
+      丨跑团平台：
+      丨期望人数：
+      丨开团时间：
+      丨预期长度：
+      丨故事地点：
+      丨背景简介：
+      丨备注：
+    empty: "挂团内容为空，请填写模板后提交。"
+    malformed_line: "字段格式错误：{line}。请使用 丨字段名：内容。"
+    unknown_fields: "不支持的字段：{fields}。请保留模板中的字段名。"
+    duplicate_fields: "重复字段：{fields}。每个字段只能填写一次。"
+    unknown_rule: "无法辨认规则，请填写规则类型（CoC）或游戏规则（DnD）。"
+    missing_fields: "{schema} 模板缺少必需字段：{fields}。"
+    invalid_schema: "请勿混用 CoC 与 DnD 模板字段。"
+    waiting: "请在 {seconds} 秒内发送完整的挂团模板。超时后取消本次填写。"
+    invalid: |-
+      挂团公告无法发布：{reason}
+      请补齐核心字段后重试。
+    admin_only: "只有本群管理员或群主可以发布挂团公告。"
+    bot_not_admin: "机器人不是本群管理员，无法发布群公告。请先授予管理员权限。"
+    permission_check_failed: "暂时无法确认你的群管理权限，挂团公告没有发布。"
+    publish_failed: "挂团公告发布失败：{error}"
+    invalid_format: "挂团公告格式不正确：请填写模组名、规则、期望人数、联系方式、跑团方式、预计长度、背景内容，以及对应规则的年代地点或等级资源。其它字段可以省略。"
+    created: "挂团公告已创建，编号：{post_id}，有效期为 30 天。"
+    deleted: "挂团公告已撤下，编号：{post_id}。"
+    not_found: "没有找到编号 {post_id} 的挂团公告。"
   spell:
     usage: |
-      指令帮助：.find <法术名> <版本标识>
-      2014版可使用：旧版、5e、2014。
-    searching: "法术查询结果 {spell_name}"
-    parse_error: "法术查询结果 {error}"
-    not_found: "法术查询结果 {spell_name}"
-    render_error: "法术查询结果 {error}"
-    reference: "法术查询结果"
+      指令帮助：.find <法术名> [版本标识，默认为2024版]
+      查询2014版法术时，请在法术名后输入“旧版”“5e”或“2014”。
+      CoC 法术查询示例：.find coc 动物魅惑法
+      暂不支持模糊查询。
+    searching: "正在查询法术：{spell_name}"
+    parse_error: "法术文本解析失败：{error}"
+    not_found: "未找到法术：{spell_name}"
+    render_error: "法术图像渲染失败：{error}"
+    reference: "数据来自 DND5E不全书 2026.2.12版"
     cantrip_level: "零"
     cantrip_suffix: "（戏法）"
-    level_line: "法术查询结果 {level} {cantrip_suffix} {school} {classes}"
+    level_line: "{level}环{cantrip_suffix} {school}学派（{classes}）"
     label:
-      casting_time: "法术查询结果"
-      range: "法术查询结果"
-      components: "法术查询结果"
-      duration: "法术查询结果"
-    sealdice_dnd_source: "法术查询结果"
-    sealdice_coc_source: "法术查询结果"
-    coc_result: "法术查询结果 {name} {content} {source}"
+      casting_time: "施法时间："
+      range: "施法距离："
+      components: "法术成分："
+      duration: "持续时间："
+    sealdice_dnd_source: "资料源：SeaDice sealdice-builtins DND 查询资料；D&D 系列资料整理者主要为 DicePP 项目组成员。"
+    sealdice_coc_source: "资料源：SeaDice sealdice-builtins CoC 魔法大典；整理者：魔骨、NULL、Dr.Amber。"
+    coc_result: |-
+      【COC法术】{name}
+      {content}
+      {source}
     cantrip_label: "戏法"
-    ring_level: "法术查询结果 {level}"
-    no_description: "法术查询结果"
-    dnd_title: "法术查询结果 {title}"
-    dnd_level_school: "法术查询结果 {level} {school}"
-    dnd_casting_range: "法术查询结果 {casting_time} {range}"
-    dnd_components: "法术查询结果 {components} {concentration} {ritual}"
-    dnd_duration: "法术查询结果 {duration}"
-    dnd_material: "法术查询结果 {material}"
-    dnd_effect: "法术查询结果 {desc}"
-    dnd_higher_level: "法术查询结果 {higher_level}"
-    dnd_api_source: "法术查询结果"
-    dnd_local_components: "法术查询结果 {components} {duration}"
-    dnd_local_summary: "法术查询结果 {summary}"
-    dnd_local_source: "法术查询结果"
-    dnd_network_skipped: "法术查询结果 {reason}"
-    dnd_not_found: "法术查询结果 {name}"
-    dnd_http_error: "法术查询结果 {code}"
-    dnd_error: "法术查询结果 {error}"
-
+    ring_level: "{level}环"
+    no_description: "暂无描述。"
+    dnd_title: "【DND法术】{title}"
+    dnd_level_school: "等级：{level}；学派：{school}"
+    dnd_casting_range: "施法时间：{casting_time}；距离：{range}"
+    dnd_components: "成分：{components}；专注：{concentration}；仪式：{ritual}"
+    dnd_duration: "持续时间：{duration}"
+    dnd_material: "材料：{material}"
+    dnd_effect: "效果：{desc}"
+    dnd_higher_level: "升环：{higher_level}"
+    dnd_api_source: "资料源：D&D 5e SRD API（SRD/CC-BY-4.0）；英文描述来自 SRD。"
+    dnd_local_components: "成分：{components}；持续时间：{duration}"
+    dnd_local_summary: "效果摘要：{summary}"
+    dnd_local_source: "资料源：D&D 5e SRD；当前为插件内置中文摘要。"
+    dnd_network_skipped: "联网查询未使用：{reason}"
+    dnd_not_found: |-
+      没有找到 DND SRD 法术：{name}
+      可以试试英文名，如 .find dnd fireball。
+    dnd_http_error: "DND 法术查询失败：HTTP {code}"
+    dnd_error: "DND 法术查询失败：{error}"
   coc_rule:
     rule_1: "严格规则"
     rule_2: "COC7版规则"
@@ -153,30 +246,21 @@ output:
     rule_4: "宽松规则"
     help: |
       setcoc帮助：
-      /setcoc 1 -> {rule_1}
-      /setcoc 2 -> {rule_2}
-      /setcoc 3 -> {rule_3}
-      /setcoc 4 -> {rule_4}
-      /setcoc 0 -> 默认规则：{default_rule}
+      /setcoc 1 → {rule_1}（大成功1，大失败100）
+      /setcoc 2 → {rule_2}（大成功1，阶段性大失败）
+      /setcoc 3 → {rule_3}（阶段性大成功，阶段性大失败）
+      /setcoc 4 → {rule_4}（大成功1~5，大失败96~100）
+      /setcoc 0 → 默认规则（当前为{default_rule}）
       当前规则：{current_rule}
-
-
-
-
-  # ---------- 运势 ----------
   rp:
-    today: "今日运势结果 {rp}"
-
-  # ---------- 火球术 ----------
+    today: "今日运势指数：{rp}"
   fireball:
     result: |
       # 火球术伤害
-      {ring} 环火球术伤害：{breakdown} = {total}
-    low: "火球术伤害结果"
-
-  # ---------- COC判定 ----------
+      {ring} 环火球术伤害：{breakdown} = {total} 点伤害。
+    low: "法术失败：火球环数不足。"
   coc_roll:
-    set_rule: "COC 检定结果 {rule}"
+    set_rule: "已设置 CoC 检定规则：{rule}"
     results:
       great_success: "大成功"
       extreme_success: "极难成功"
@@ -184,287 +268,378 @@ output:
       success: "成功"
       great_failure: "大失败"
       failure: "失败"
-      error: "COC 检定结果 {error}"
-      reset: "COC 检定结果 {rule}"
-
-  # ---------- 人格卡操作 ----------
+      error: "检定出错：{error}"
+      reset: "规则已重置为：{rule}"
   pc:
     create:
-      duplicate: "人物卡创建结果 {name}"
-      success: "人物卡创建结果 {name} {id}"
+      duplicate: "人物卡名称已存在：<{name}>。"
+      success: "已创建人物卡 <{name}>，编号：{id}。"
     show:
-      no_active: "人物卡查看结果"
-      target_no_active: "人物卡查看结果"
-      load_fail: "人物卡查看结果 {id}"
-      attribute_any: "人物卡查看结果"
-      attr_missing: "人物卡查看结果 {attribute}"
-      attr: "人物卡查看结果 {attr} {value}"
-      all: "人物卡查看结果 {name} {attributes}"
-      none_above : "人物卡查看结果 {num}"
-      above : "人物卡查看结果 {num}"
-      above_threshold_header : "人物卡查看结果 {num}"
-      invalid_value: "人物卡查看结果 {value}"
-      named_header: "人物卡查看结果 {name} {content}"
-      named_title: "人物卡查看结果 {name}"
+      no_active: "当前群组尚未绑定人物卡，请使用 .pc tag 绑定。"
+      target_no_active: "该玩家尚未在当前群组绑定人物卡。"
+      load_fail: "无法加载编号 {id} 的人物卡。"
+      attribute_any: "任何属性"
+      attr_missing: "人物卡未录入属性：{attribute}"
+      attr: "【{attr}】：{value}"
+      all: |-
+        <{name}> 的全部属性：
+        {attributes}
+      none_above: "没有大于 {num} 的属性。"
+      above: "大于 {num} 的属性："
+      above_threshold_header: "大于 {num} 的属性："
+      invalid_value: "无效数值：{value}"
+      named_header: |-
+        【{name}】的属性：
+        {content}
+      named_title: "【{name}】的属性："
     list:
-      empty: "当前没有记录。"
-      result: "人物卡列表结果 {list}"
-      tag_current: "人物卡列表结果"
-      tag_local: "人物卡列表结果"
-      tag_global: "人物卡列表结果"
+      empty: "当前没有人物卡，请使用 .pc new <名字> 创建。"
+      result: |-
+        人物卡列表：
+        {list}
+      tag_current: "当前"
+      tag_local: "隔离"
+      tag_global: "全局"
     tag:
-      cleared: "人物卡绑定结果"
-      not_found: "人物卡绑定结果 {identifier}"
-      success: "人物卡绑定结果"
+      cleared: "已解除当前群组的人物卡绑定。"
+      not_found: "未找到人物卡：{identifier}"
+      success: "已绑定人物卡至当前群组。"
     rename:
-      no_active: "人物卡重命名结果"
-      success: "人物卡重命名结果 {old_name} {new_name}"
-      duplicate: "人物卡重命名结果 {name}"
-      load_fail: "人物卡重命名结果"
+      no_active: "当前群组尚未绑定人物卡。"
+      success: "人物卡已从「{old_name}」重命名为「{new_name}」。"
+      duplicate: "重命名失败：当前群组已有名为「{name}」的人物卡。"
+      load_fail: "重命名失败：人物卡加载异常。"
     change:
-      missing: "人物卡切换结果 {name}"
-      success: "人物卡切换结果 {name}"
+      missing: "未找到人物卡：<{name}>。"
+      success: "已切换当前人物卡为：<{name}>。"
     update:
-      no_active: "人物卡更新结果"
-      error_format: "人物卡更新结果"
-      error_format_no_value: "人物卡更新结果"
-      success: "人物卡更新结果 {attr} {old} {new}"
-      batch_success: "人物卡更新结果 {count}"
-      attr_missing: "人物卡更新结果 {attr}"
-      proxy_prefix: "人物卡更新结果 {name} {content}"
-      derived_suffix: "人物卡更新结果 {tips}"
+      no_active: "当前群组尚未绑定人物卡，请使用 .pc tag 绑定后再修改。"
+      error_format: "属性表达式格式错误，例如：力量+1、外貌80。"
+      error_format_no_value: "请在加减号后填写数值。"
+      success: "【{attr}】：{old} → {new}"
+      batch_success: "已更新 {count} 项属性。"
+      attr_missing: "未找到属性：【{attr}】。"
+      proxy_prefix: |-
+        已代为更新 <{name}>：
+        {content}
+      derived_suffix: "自动更新: {tips}"
     delete:
-      not_found: "人物卡删除结果"
-      fail: "人物卡删除结果 {name}"
-      success: "人物卡删除结果 {name}"
+      not_found: "未找到人物卡。"
+      fail: "删除失败：未找到名为 <{name}> 的人物卡。"
+      success: "已删除人物卡：<{name}>。"
     grow:
-      no_active : "成长检定结果"
-      success: "成长检定结果 {skill_name} {en_value} {new_value}"
-      failure: "成长检定结果 {skill_name}"
-      boost_result: "成长检定结果 {roll_result} {skill_value} {result}"
-    export :
-      success: "人物卡操作结果 {name} {data}"
-    uni :
-      no_pc : "人物卡操作结果"
+      no_active: "当前未绑定人物卡，请先绑定或提供技能数值。"
+      success: "【{skill_name}】成长 {en_value} 点，当前值：{new_value}。"
+      failure: "【{skill_name}】成长检定失败，数值不变。"
+      boost_result: "成长检定：{roll_result}/{skill_value}：{result}"
+    export:
+      success: |-
+        <{name}> 的人物卡数据：
+        {data}
+    uni:
+      no_pc: "未找到人物卡。"
       source_global: "全局"
-      line: "人物卡操作结果 {index} {name} {source} {time}"
+      line: "{index}. {name} (最新来源:{source} | {time})"
       success: |
-        已找到以下人物卡：
+        跨群人物卡列表：
         {msg}
-        输入 .pc pull <序号> 可拉取人物卡。
-    push :
-      no_pc : "人物卡操作结果"
-      success : "人物卡操作结果"
-      global_success : "人物卡操作结果"
-      global_sync : "人物卡操作结果"
-      local_success : "人物卡操作结果"
-      fail : "人物卡操作结果"
-    pull :
-      no_pc : "人物卡操作结果"
-      exist : "人物卡操作结果"
-      success : "人物卡操作结果 {name}"
-      global_success : "人物卡操作结果 {name}"
-      sync : "人物卡操作结果 {name}"
-      fail : "人物卡操作结果"
+        使用 .pc pull <序号> 拉取人物卡。
+    push:
+      no_pc: "当前未绑定人物卡，无法上传。"
+      success: "人物卡数据已更新。"
+      global_success: "当前群组已使用全局人物卡，后续修改将同步至同一份档案。"
+      global_sync: "全局人物卡数据已同步。"
+      local_success: "已为当前群组创建本地副本，后续修改不影响全局档案。"
+      fail: "人物卡上传失败。"
+    pull:
+      no_pc: "未找到可拉取的人物卡。"
+      exist: "人物卡已存在，请使用 .pc tag 切换。"
+      success: "已拉取人物卡：<{name}>。"
+      global_success: "已将 <{name}> 作为全局人物卡绑定至当前群组。"
+      sync: "已同步人物卡：<{name}>。"
+      fail: "人物卡拉取失败。"
     del:
-      no_args: "属性删除结果"
-
-  st :
-    show :
-      no_active: "属性查看结果"
-      load_fail: "属性查看结果 {id}"
-    del :
-      success : "属性删除结果 {attr}"
-      not_found: "属性删除结果 {attr}"
-      protected: "属性删除结果 {attr}"
-    clr :
-      success: "属性清空结果 {name}"
-      nothing: "属性清空结果"
-
-  # ---------- 群昵称 ----------
+      no_args: "请提供要删除的属性名。"
+  st:
+    show:
+      no_active: "当前群组尚未绑定人物卡，请使用 .pc tag 绑定。"
+      load_fail: "无法加载编号 {id} 的人物卡。"
+    del:
+      success: "已删除属性：【{attr}】。"
+      not_found: "未找到属性：【{attr}】。"
+      protected: "基础属性不可删除：【{attr}】。"
+    clr:
+      success: "已清空 <{name}> 的属性。"
+      nothing: "没有可清空的属性。"
   nick:
-    platform_unsupported: "群昵称同步结果"
-    no_character: "群昵称同步结果 {id}"
-    success: "群昵称同步结果"
-
-  # ---------- 掷骰 ----------
+    platform_unsupported: "当前平台不支持修改群名片。"
+    no_character: "未找到编号 {id} 的人物卡，无法更新名片。"
+    success: "群名片已更新。"
   dice:
     normal:
       success: |
         <{name}> 的掷骰结果：
         {result}
-      success_remark : |
+      success_remark: |
         <{name}> 的【{remark}】掷骰结果：
         {result}
-      error: "掷骰结果 {error}"
+      error: "掷骰失败：{error}"
     vampire:
-      success: "掷骰结果 {name} {result}"
-      error: "掷骰结果 {error}"
+      success: "<{name}> 的吸血鬼规则掷骰结果：{result}"
+      error: "吸血鬼规则掷骰失败：{error}"
     hidden:
-      success: "暗骰结果 {result}"
-      error: "掷骰结果 {error}"
-      group: "掷骰结果"
-    detail: "掷骰结果 {detail}"
-    expression_error: "掷骰结果 {error}"
+      success: "暗骰结果：{result}"
+      error: "暗骰失败：{error}"
+      group: "已进行暗骰，结果将发送至私聊。"
+    detail: "骰点结果：{detail}"
+    expression_error: "{error}"
     expression:
-      format_error: "掷骰结果 {expr}"
-      range_error: "掷骰结果"
-      keep_error: "掷骰结果 {dice_count}"
-      vampire_arithmetic_error: "掷骰结果"
-      zero_division: "掷骰结果"
-      value_error: "掷骰结果 {error}"
-
+      format_error: "格式错误：`{expr}`"
+      range_error: "骰子个数须在 1-100 之间，面数须在 1-1000 之间。"
+      keep_error: "保留骰数量须在 1-{dice_count} 之间。"
+      vampire_arithmetic_error: "吸血鬼骰不能参与四则运算。"
+      zero_division: "除数不能为 0。"
+      value_error: "表达式错误：{error}"
   choice:
-    not_enough: "随机选择结果"
-    result: "随机选择结果 {choice}"
-
-  # ---------- SAN 理智 ----------
+    not_enough: "选择项不足：请使用 .choose 选项A 选项B，或用 /、|、逗号分隔。"
+    result: "随机选择：{choice}"
   san:
     result:
       success: "成功"
       failure: "失败"
-    specific_phobia: "具体恐惧症：{phobia}（骰值 {roll}）"
-    specific_mania: "具体躁狂症：{mania}（骰值 {roll}）"
+    specific_phobia: "→ 具体恐惧症：{phobia}（骰值 {roll}）"
+    specific_mania: "→ 具体躁狂症：{mania}（骰值 {roll}）"
     temporary:
       "1": "失忆：调查员只记得最后身处的安全地点，却没有任何来到这里的记忆。这将会持续 1D10 轮。"
       "2": "假性残疾：调查员陷入心理性的失明、失聪或躯体缺失感，持续 1D10 轮。"
-      "3": "暴力倾向：调查员对周围所有人展开攻击，持续 1D10 轮。"
-      "4": "偏执：调查员陷入严重的偏执妄想，持续 1D10 轮。"
-      "5": "人际依赖：调查员误认为某人是自己的重要之人，并据此行动，持续 1D10 轮。"
+      "3": "暴力倾向：调查员对周围所有人（敌人和同伴）展开攻击，持续 1D10 轮。"
+      "4": "偏执：调查员陷入严重的偏执妄想（所有人都想伤害他），持续 1D10 轮。"
+      "5": "人际依赖：调查员误认为某人是他的重要之人，并据此行动，持续 1D10 轮。"
       "6": "昏厥：调查员当场昏倒，1D10 轮后苏醒。"
-      "7": "逃避行为：调查员试图逃离当前场所，持续 1D10 轮。"
-      "8": "歇斯底里：调查员陷入极端情绪，持续 1D10 轮。"
-      "9": "恐惧：骰 1D100 或由守秘人选择一个恐惧症，持续 1D10 轮。"
-      "10": "躁狂：骰 1D100 或由守秘人选择一个躁狂症，持续 1D10 轮。"
+      "7": "逃避行为：调查员试图用任何方式逃离当前场所，持续 1D10 轮。"
+      "8": "歇斯底里：调查员陷入极端情绪（大笑、哭泣、尖叫等），持续 1D10 轮。"
+      "9": "恐惧：骰 1D100 或由守秘人选择一个恐惧症，调查员会想象它存在，持续 1D10 轮。"
+      "10": "躁狂：骰 1D100 或由守秘人选择一个躁狂症，调查员会沉溺其中，持续 1D10 轮。"
     long_term:
-      "1": "失忆：调查员发现自己身处陌生地方，并忘记自己是谁。"
-      "2": "被窃：调查员 1D10 小时后清醒，发现贵重物品丢失。"
-      "3": "遍体鳞伤：调查员 1D10 小时后清醒，身体有严重伤痕。"
+      "1": "失忆：调查员发现自己身处陌生地方，并忘记自己是谁。记忆会缓慢恢复。"
+      "2": "被窃：调查员 1D10 小时后清醒，发现自己身上贵重物品丢失。"
+      "3": "遍体鳞伤：调查员 1D10 小时后清醒，身体有严重伤痕（生命值剩一半）。"
       "4": "暴力倾向：调查员可能在疯狂期间杀人或造成重大破坏。"
-      "5": "极端信念：调查员疯狂地执行某个信仰并采取极端行动。"
-      "6": "重要之人：调查员疯狂追求某个在意的人，不顾一切地接近。"
+      "5": "极端信念：调查员疯狂地执行某个信仰（如宗教狂热、政治极端），并采取极端行动。"
+      "6": "重要之人：调查员疯狂追求某个他在意的人，不顾一切地接近该人。"
       "7": "被收容：调查员在精神病院或警察局醒来，完全不记得发生了什么。"
-      "8": "逃避行为：调查员在远离原地点的地方醒来，可能身处荒郊野外或陌生城市。"
+      "8": "逃避行为：调查员在远离原地点的地方醒来，可能在荒郊野外或陌生城市。"
       "9": "恐惧：调查员患上一种新的恐惧症（骰 1D100 或由守秘人选择）。"
       "10": "躁狂：调查员患上一种新的躁狂症（骰 1D100 或由守秘人选择）。"
     check_result:
       loss: |
-        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        <{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
         损失 {expr}，当前 SAN：{new_san}
       no_loss: |
-        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
-        损失 {expr}，SAN 保持稳定
+        <{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        损失 {expr}，SAN 保持不变。
       great_loss: |
-        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        <{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
         损失 {expr}，当前 SAN：{new_san}。请使用 .ti 抽取临时症状。
       zero: |
-        {name} 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
+        <{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}
         损失 {expr}，SAN 已降至 0。
-      
     temporary_insanity: |
-      {name} 临时疯狂症状：
+      {name} 疯狂发作 - 临时症状：
       {result}
     long_term_insanity: |
-      {name} 总结症状：
+      {name} 疯狂发作 - 总结症状：
       {result}
-
-  # ---------- 先攻 ----------
   initiative:
-    add: "先攻指令结果 {name} {value}"
-    remove_name: "先攻指令结果 {name}"
-    clear: "已清空。"
-    empty: "当前没有记录。"
-    list: "先攻指令结果 {content}"
-    next_turn: "先攻指令结果 {name} {value}"
-    turn_advance: "先攻指令结果 {current_name} {next_name} {value}"
-
-  # ---------- 角色生成模板 ----------
+    add: "已添加 <{name}>，先攻：{value}。"
+    remove_name: "已从先攻列表移除 <{name}>。"
+    clear: "先攻列表已清空。"
+    empty: "先攻列表为空。"
+    list: |-
+      当前先攻列表：
+      {content}
+    next_turn: "轮到 <{name}> 行动，先攻：{value}。"
+    turn_advance: |-
+      {current_name} 的回合结束。
+      轮到 <{next_name}> 行动，先攻：{value}。
   character_list:
     coc: |
-      COC 角色属性生成结果：
+      CoC 人物属性：
       {characters}
     dnd: |
-      DnD 角色属性生成结果：
+      DnD 人物属性：
       {characters}
-      
-  # ---------- 名字生成 ----------
-  generated_names: "随机姓名生成结果 {num} {names}"
-
-  # ---------- log 相关指令 ----------#
-
+  generated_names: "随机姓名（{num} 个）：{names}"
   log:
-    no_active_session: "日志指令结果"
-    message_added: "日志指令结果"
-    unfinished_session: "日志指令结果 {session_name}"
-    new_session: "日志指令结果 {session_name}"
-    session_not_found: "日志指令结果 {session_name}"
-    session_finished: "日志指令结果 {session_name}"
-    session_active: "日志指令结果 {session_name}"
-    session_resumed: "日志指令结果 {session_name}"
-    no_paused_session: "日志指令结果"
-    session_paused: "日志指令结果 {session_name}"
-    no_unfinished_session: "日志指令结果"
-    session_halted: "日志指令结果 {session_name}"
-    session_line: "日志指令结果 {session_name} {start_time} {status} {message_count}"
-    no_sessions: "日志指令结果"
-    already_active_session : "日志指令结果 {prev}"
-    session_deleted: "日志指令结果 {session_name}"
-    session_exported: "日志指令结果 {session_name} {file_name} {result_website}"
-    delete_error : "日志指令结果"
-    get_usage: "日志指令结果"
-    export_usage: "日志指令结果"
-    export_text_usage: "日志指令结果"
+    no_active_session: "当前没有正在记录的日志。"
+    message_added: "已记录消息。"
+    unfinished_session: "日志「{session_name}」尚未结束，可继续记录或新建日志。"
+    new_session: "已新建日志：{session_name}"
+    session_not_found: "未找到日志：{session_name}"
+    session_finished: "日志已结束：{session_name}"
+    session_active: "日志已在记录中：{session_name}"
+    session_resumed: "日志已恢复记录：{session_name}"
+    no_paused_session: "没有可恢复的暂停日志。"
+    session_paused: "日志已暂停：{session_name}"
+    no_unfinished_session: "没有未完成的日志。"
+    session_halted: "日志已终止：{session_name}"
+    session_line: "{session_name} · {start_time} · {status} · 消息 {message_count} 条"
+    no_sessions: "当前没有日志。"
+    already_active_session: "已有日志正在记录：{prev}"
+    session_deleted: "已删除日志：{session_name}"
+    session_exported: |-
+      日志「{session_name}」已导出为「{file_name}」。
+      染色器：{result_website}
+    delete_error: "请使用 .log del <日志名>。"
+    get_usage: "请使用 .log get <日志名>。"
+    export_usage: "请使用 .log export <日志名> 或 .log export text <日志名>。"
+    export_text_usage: "请使用 .log export text <日志名>。"
     status_finished: "已结束"
     status_active: "进行中"
     status_paused: "已暂停"
     stat:
-      line: "日志指令结果 {session_name} {message_count} {user_count} {dice_count} {observer_count} {image_count}"
+      line: "{session_name}: 消息 {message_count} 条 | 参与者 {user_count} 人 | 骰点 {dice_count} 条 | OB消息 {observer_count} 条 | 图片 {image_count} 张"
     text_export:
-      image_line: "日志指令结果 {image_url}"
-      success: "日志指令结果 {file_name}"
+      image_line: "[图片] {image_url}"
+      success: "导出成功：{file_name}"
     ob:
-      header: "当前 OB 列表："
-      empty: "当前没有记录。"
-      added: "日志指令结果 {nickname}"
-      removed: "日志指令结果 {nickname}"
-      not_found: "日志指令结果 {user_id}"
-      toggle_on: "日志指令结果 {nickname}"
-      toggle_off: "日志指令结果 {nickname}"
-      clear: "已清空。"
-      usage: "日志指令结果"
-      missing_target: "日志指令结果"
-
-  help :
+      header: "当前旁观者列表："
+      empty: "当前没有旁观者。"
+      added: "已添加旁观者：{nickname}"
+      removed: "已移除旁观者：{nickname}"
+      not_found: "未找到旁观者：{user_id}"
+      toggle_on: "{nickname} 已进入旁观模式。"
+      toggle_off: "{nickname} 已退出旁观模式。"
+      clear: "旁观者列表已清空。"
+      usage: "请使用 .log ob add/del/list/clear [@用户|QQ号]。"
+      missing_target: "请提供旁观者，例如 .log ob add @某人。"
+  help:
     index: |
-      帮助索引文本
-    pc : |
-      人物卡指令帮助文本
-      
-    st : |
-      属性指令帮助文本
-    dice : |
-      掷骰指令帮助文本
+      TRPG 骰子插件帮助
+      基础掷骰教程：.dicehelp roll
+      进阶掷骰表达式：.dicehelp expr
+      人物卡管理：.dicehelp pc
+      属性值管理：.dicehelp st
+      记录管理：.dicehelp log
+      其余杂项指令：.dicehelp coc
+      DnD 相关：.dicehelp dnd
+      其他规则：
+      `/rv 骰子数量 难度` - 进行吸血鬼规则掷骰判定
+    pc: |
+      角色管理
+      .pc new <角色名> : 创建空白人物卡，并绑定为当前人物卡。
+      .pc create <角色名> : 与 .pc new 相同，兼容 Dice! 习惯写法。
+      .pc tag [<角色名> | <角色序号>] : 将对应人物卡绑定为当前人物卡。
+      .pc change [<角色名> | <角色序号>] : 与 .pc tag 相同，兼容 Dice! 习惯写法。
+      .pc tag [不加参数] : 解除当前群组的人物卡绑定。
+      .pc list : 列出已保存的人物卡及其序号。
+      .pc show [<角色名> | <角色序号>] : 查看指定人物卡，不切换当前绑定。
+      .pc update <属性表达式> : 与 .st <属性表达式> 相同，兼容 Dice! 习惯写法。
+      .pc rename <新名字> : 重命名当前人物卡。
+      .pc del <角色名|序号> : 删除指定人物卡。
+      .pc push : 上传当前人物卡，覆盖已有档案。
+      .pc push global : 当前群使用全局档案，跨群修改同步至同一份人物卡。
+      .pc push local : 当前群使用隔离的本地副本，修改不影响全局档案。
+      .pc fetch : 查看跨群人物卡列表。
+      .pc pull : 拉取人物卡至当前群组。
+      .pc pull <序号> global : 将指定人物卡作为全局卡绑定至当前群组。
+    st: |
+      属性记录
+      .st <属性><数值> : 设置属性数值。
+      .st <属性><+|-><数值> : 增加或减少属性数值。
+      .st <属性><骰子表达式> : 掷骰并将结果写入属性。
+      .st <录入表达式> : 批量录入属性，可使用 CoC 人物卡的简化卡表达式。
+      .st show : 查看全部属性。
+      .st show <属性名> : 查看指定属性。
+      .st show <数字> : 查看大于指定数值的属性。
+      .st del <属性名> : 删除指定属性。
+      .st clr : 清空可清理的属性。
+      .st export : 导出可用于录入的属性表达式。
+    dice: |
+      .fire [normal/accuracy/recoil] [技能值] [+pN/+bN]：三次手枪检定；默认 accuracy（1/1/1 惩罚骰），normal 为 0/0/0，recoil 为 0/1/2。首个 p1/p2 兼容旧模式 accuracy/recoil；自定义修正推荐写 +pN（增加惩罚）或 +bN（增加奖励），每项 0～10 个，可叠加并相抵。例如 .fire recoil 60 +b1 → 1奖励/无/1惩罚；.fire normal 5 +p2 → 每发2惩罚。技能值 0～999；省略时读取人物卡手枪技能，无记录默认20。只检定，不计算伤害。
+      检定与掷骰
+      .r <表达式> : 投掷指定骰式并显示结果。
       .adv[+/-修正] : DnD 优势检定，例如 .adv+3
       .dis[+/-修正] : DnD 劣势检定，例如 .dis-2
+      .ra <技能名> [数值（可选）] : 进行技能检定，省略数值时读取人物卡。
+      .ra h技能名 / .ra e技能名 : 困难/极难检定短写，也可以继续写“困难技能名”“极难技能名”。
+      .rau <技能名> [数值（可选）] : 连续检定直到成功，输出总次数和前10次结果。
+      .rav <技能名>a<点数>/b<点数> : 进行对抗检定；a点数可省略，省略时读取自己的角色卡技能值。
+      .rav <技能名> @对抗者 : 使用双方当前角色卡中的同名技能进行对抗检定。
+      .rab [数量] <技能名> [数值（可选）] : 进行奖励骰检定，选择最小的十位结果。
+      .rap [数量] <技能名> [数值（可选）] : 进行惩罚骰检定，选择最大的十位结果。
+      .alias add <别名> <技能名> : 设置自己的技能别名；.alias list 查看，.alias del <别名> 删除。
       .ruleset [coc/dnd] : 切换本群规则系统；CoC 下 .r 默认 1d100，DnD 下 .r 默认 1d20。
-      .bot on / .bot off : 开启或关闭本群骰子响应；关闭后只有 .bot on 会响应。
-      .bot quit : 让风铃退出当前群聊。
-    expr : |
-      表达式指令帮助文本
-    log : |
-      日志指令帮助文本
-
-    coc : |
-      COC 指令帮助文本
-      .setcoc : 查看或设置 COC 检定规则，并把本群规则系统切回 CoC。
+      .bot : 查看骰子信息；.bot off / .bot on / .bot status 可关闭、开启或查看本群骰子响应状态。
+      .bot quit : 退出当前群聊。
+      未填写的 COC 常见技能会自动使用默认值，例如侦查25、图书馆20、闪避=敏捷/2；艺术/科学/外语/生存等专业技能也会识别括号内容。
+      Dice! 兼容短写：!r、.rb、.rp、.hl、.nn 也可以直接使用。
+      进阶骰式用法：.dicehelp expr
+      .sc <成功扣除>/<失败扣除> : 进行 SAN 检定并扣除理智。
+      .ti : 抽取临时疯狂症状。
+      .li : 抽取长期不定性疯狂症状。
+      .en <技能名> : 进行技能成长检定。
+      .rh <表达式> : 暗骰，结果发送至私聊。
+    expr: |
+      .r <算式>。如：1d6+5/2d6*3/(1d6+2)*3
+      .r <次数>#<表达式>。如：.r 3#1d10，连续掷3次1d10。
+      .ra <次数>#b<技能名>。如：.ra3#b2射击50，连续进行3次射击检定，每次带2个奖励骰。
+      .ra <次数>#p<技能名>。如：.ra3#p2射击50，连续进行3次射击检定，每次带2个惩罚骰。
+      .r <总数>d<面数>k<保留数>。如：.r4d6k3 保留最高的3个；.r4d6k-2 保留最低的2个。
+    log: |
+      日志管理
+      .log new <故事名> : 新建日志并开始记录。
+      .log end : 结束当前日志。
+      .log on [故事名] : 开始或继续记录指定日志，留空使用最近的日志。
+      .log off : 暂停记录当前日志。
+      .log list : 查看日志列表。
+      .log get <故事名> : 获取指定日志。
+      .log stat <故事名> : 查看消息及参与者等统计。
+      .log del <故事名> : 删除指定日志。
+    coc: |
+      CoC 与杂项设置
+      .setcoc : 查看或设置 CoC 检定规则，并把本群规则系统切回 CoC。
       .ruleset [coc/dnd] : 查看或切换本群规则系统。
-
-    dnd : |
-      DND 指令帮助文本
-      .bot quit : 退出当前群聊
-
-
-
-  # 后端网址
-  setting : 
-    website : http://localhost:5173
+      .coc <数目> : 生成指定数量的 CoC 人物属性。
+      .name <cn/en/us/jp> : 按地区随机生成姓名。
+      .d66 [次数] : 掷一次或多次 D66。
+      .find <名称> : 查询海豹内置资料中的 DND/COC 法术；未命中时会回退到 SRD 或开放神话仪式摘要。
+      .choose <选项A> <选项B> ... : 随机选择一个选项，也支持用 /、|、逗号分隔。
+      .挂团 : 开始填写挂团模板；.挂团 list 查看当前公告；.挂团 del <编号> 删除公告。
+    dnd: |
+      `.ruleset dnd` - 使用独立的 DnD 人物卡；.pc new <名字> 创建人物卡
+      `.st 力量:8 敏捷:18 智力*:14 感知*:19 熟练:3 察觉*:0 奥秘*:4` - 录入简化卡；属性星号是豁免熟练，技能数值是额外修正
+      `.st show [属性/技能/属性豁免]` - 查看属性和计算后的加值；奥秘*:4 在本例中最终为 +9
+      `.st template / .st 模板` - 获取 DnD 模板
+      `.st export` - 导出简化卡，保留星号和额外修正
+      `.st hp-7 / .st hp+5 / .st thp:6` - 伤害先扣临时 HP，治疗不超过 hpmax
+      `.st del <属性> / .st clr` - 清理非核心属性，保留六维、HP 和熟练加值
+      `.rc 察觉 / .rc 智力豁免 / .rc 力量` - 技能、豁免和属性检定
+      `.rc*智 / .rcb隐匿+2 / .rcp察觉 / .rc3#察觉` - 豁免、优势、劣势和重复检定的短写
+      `.rcb*敏 / .rcp*体 / .rc*3#智` - 优势豁免、劣势豁免、重复豁免；属性支持单字或全称
+      `.sn / .nn` - 按当前规则更新 QQ 群名片，显示 HP、临时 HP、AC、DC；属性保存后自动刷新
+      `.st 等级:5 / .st lv:5 / .st 等级+1` - 设置或增加总等级（1-20）；不自动修改熟练、HP 或 DC
+      `.pc class 战士:3/法师:2` - 设置职业及兼职，第一项为起始职业；总等级自动求和，有职业记录时升级请修改职业明细
+      `.pc class 奥法骑士:3/法师:2` - 特殊子职可直接录入；其他子职可写 战士(子职):3
+      `.pc class / .pc class list / .pc class clear` - 查看职业、查看支持说明、清除职业记录但保留总等级
+      `.pc class list 战士 / .pc class list 武僧 2024 / .pc class list 塔莎` - 按职业或来源查询官方子职目录
+      `.pc class 战士(战斗大师@2024):5` - 指定子职来源；同名多版本不自动选版
+      `.pc class 战士@2024:5/法师(剑咏@塔莎):3` - 仅有差异的项目标来源；可混合来源，不需要整卡选版本
+      `.res / .st show 资源` - 自动计算并查看普通环位、契约位及职业资源余额
+      `.res 一环 / .res 契约 / .res 术法点 2` - 扣除资源，次数默认 1；不足不扣
+      `.res recover 术法点 2` - 补回指定数量，不超过上限
+      `.res 短休 / .res 长休` - 数据库自动决定恢复量与次数限制，不修改 HP；有差异但缺来源的项目提示补录，不阻断其他资源
+      `.rc 优势 隐匿 / .rc 劣势 察觉 / .rc 3# 察觉+2` - 优势、劣势、重复检定、临时修正；支持 @代投
+      `.ri` - 读取人物卡先攻加值和名字；没有先攻时读取敏捷调整值
+      `.dnd x` - 生成 x 个 DnD 角色属性
+      `.find 火球术` - 查询 DND/COC 法术资料
+      `.init` - 显示当前先攻列表
+      `.init clr` - 清空先攻列表
+      `.init del [角色名]` - 删除角色先攻（默认为用户名）
+      `.ri +/- x` - 以 x 的调整值投掷先攻
+      `.ri x [角色名]` - 将角色（默认为用户名）的先攻设置为 x
+      `.ed` - 结束当前回合
+      `.fireball n` - 施放 n 环火球术，计算伤害
+      `.bot quit` - 退出当前群聊
+  setting:
+    website: "https://painter.velinithra.space"

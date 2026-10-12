@@ -1,3 +1,4 @@
+import logging
 import os
 try:
     import yaml
@@ -7,6 +8,7 @@ except ImportError:
 COMMON_DIR = os.path.dirname(__file__)
 COMPONENT_DIR = os.path.dirname(COMMON_DIR)
 PLUGIN_DIR = os.path.dirname(COMPONENT_DIR)
+logger = logging.getLogger(__name__)
 
 CONFIG_CANDIDATES = [
     os.path.join(COMPONENT_DIR, "config.yaml"),
@@ -91,6 +93,29 @@ def load_config():
     return {}
 
 _config = load_config()
+_ui_output = {}
+_ui_dnd_output = {}
+
+
+def configure_dnd_output(settings=None):
+    """Apply AstrBot UI overrides without modifying the YAML configuration."""
+    global _ui_dnd_output
+    _ui_dnd_output = settings if isinstance(settings, dict) else {}
+
+
+def configure_output(settings=None, legacy_dnd=None):
+    """Configure all UI templates, retaining the earlier DnD settings."""
+    global _ui_output
+    _ui_output = settings if isinstance(settings, dict) else {}
+    configure_dnd_output(legacy_dnd)
+
+
+def _find_template(settings, keys):
+    for key in keys:
+        if not isinstance(settings, dict):
+            return None
+        settings = settings.get(key)
+    return settings if isinstance(settings, str) else None
 
 def get_output(key: str, **kwargs):
     """
@@ -99,17 +124,17 @@ def get_output(key: str, **kwargs):
     如果 key 不存在则使用内置兜底或抛出错误。
     """
     keys = key.split(".")
-    template = _config.get("output", {})
-    for k in keys:
-        if not isinstance(template, dict):
-            template = {}
-            break
-        template = template.get(k, {})
+    template = _find_template(_ui_output, keys)
+    if not template and keys[0] == "dnd":
+        template = _find_template(_ui_dnd_output, keys[1:])
+    if not template:
+        template = _find_template(_config.get("output", {}), keys)
     if not isinstance(template, str):
         template = DEFAULT_OUTPUTS.get(key)
     if not isinstance(template, str):
         raise ValueError(f"{key} cannot be found in {CONFIG_PATH}")
     try:
         return template.format(**kwargs)
-    except Exception:
+    except (KeyError, IndexError, ValueError, TypeError, AttributeError) as exc:
+        logger.warning("Output template %s could not be formatted: %s", key, exc)
         return template

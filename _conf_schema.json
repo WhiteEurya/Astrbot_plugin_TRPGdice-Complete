@@ -1,9 +1,174 @@
 {
+  "dnd_output": {
+    "type": "object",
+    "description": "旧版 DnD 文案（兼容保留）",
+    "hint": "按功能分组。填写后优先使用 UI 文案；留空沿用 component/config.yaml。保存后 AstrBot 自动重载插件。",
+    "obvious_hint": true,
+    "items": {
+      "common": {
+        "type": "object",
+        "description": "通用回复",
+        "items": {
+          "response": {
+            "type": "text",
+            "description": "通用回复",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{name}、{detail}，请保留花括号和格式符。"
+          },
+          "error": {
+            "type": "text",
+            "description": "错误提示",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{reason}，请保留花括号和格式符。"
+          }
+        }
+      },
+      "sheet": {
+        "type": "object",
+        "description": "人物卡",
+        "items": {
+          "updated": {
+            "type": "text",
+            "description": "更新人物卡",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{name}、{detail}，请保留花括号和格式符。"
+          },
+          "header": {
+            "type": "text",
+            "description": "人物卡标题",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{name}，请保留花括号和格式符。"
+          },
+          "attribute_deleted": {
+            "type": "text",
+            "description": "属性已删除",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{attribute}，请保留花括号和格式符。"
+          },
+          "attribute_protected": {
+            "type": "text",
+            "description": "核心属性不可删除",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{attribute}，请保留花括号和格式符。"
+          },
+          "attribute_missing": {
+            "type": "text",
+            "description": "属性未录入",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{attribute}，请保留花括号和格式符。"
+          },
+          "nothing_to_clear": {
+            "type": "text",
+            "description": "没有可清理的属性",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。"
+          }
+        }
+      },
+      "check": {
+        "type": "object",
+        "description": "检定",
+        "items": {
+          "head": {
+            "type": "text",
+            "description": "检定开头",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{name}、{skill_name}、{detail}、{extra:+d}，请保留花括号和格式符。"
+          },
+          "roll": {
+            "type": "text",
+            "description": "骰点结果",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{dice}、{bonus:+d}、{result}，请保留花括号和格式符。"
+          },
+          "aside": {
+            "type": "text",
+            "description": "骰点后的普通吐槽",
+            "default": "",
+            "hint": "天然 1 时不显示。请将普通吐槽放在这里，不要放入骰点结果。留空沿用 YAML 文案，可用占位符：{name}、{skill_name}。"
+          },
+          "natural_20": {
+            "type": "text",
+            "description": "天然 20 特殊用语",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{name}、{skill_name}，请保留花括号和格式符。只看保留的 d20 原始点数，不改变检定成败。"
+          },
+          "natural_1": {
+            "type": "text",
+            "description": "天然 1 特殊用语",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{name}、{skill_name}，请保留花括号和格式符。只看保留的 d20 原始点数，不改变检定成败。"
+          }
+        }
+      },
+      "resource": {
+        "type": "object",
+        "description": "资源",
+        "items": {
+          "header": {
+            "type": "text",
+            "description": "资源列表标题",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。"
+          },
+          "changed": {
+            "type": "text",
+            "description": "资源变更",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{balance}，请保留花括号和格式符。"
+          },
+          "restored": {
+            "type": "text",
+            "description": "休息恢复",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{rest}、{resources}，请保留花括号和格式符。"
+          },
+          "note": {
+            "type": "text",
+            "description": "资源使用提示",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。"
+          }
+        }
+      },
+      "class": {
+        "type": "object",
+        "description": "职业",
+        "items": {
+          "updated": {
+            "type": "text",
+            "description": "职业已更新",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。可用占位符：{classes}、{level}，请保留花括号和格式符。"
+          },
+          "cleared": {
+            "type": "text",
+            "description": "职业已清除",
+            "default": "",
+            "hint": "留空沿用 YAML 文案。可直接换行。"
+          }
+        }
+      }
+    },
+    "invisible": true
+  },
   "auto_bot_on_join": {
     "type": "bool",
     "description": "入群后自动发送 .bot 信息",
     "default": true,
     "hint": "机器人被拉入群聊后，自动发送 .bot 的图文信息；关闭后不自动发送。"
+  },
+  "bot_image_path": {
+    "type": "string",
+    "description": ".bot 信息图路径",
+    "default": "data/bot.png",
+    "hint": "用于 .bot 回复与入群提示。填写插件目录内的相对路径或本机绝对路径；留空仅发送文字。文件不存在时也仅发送文字。"
+  },
+  "group_post_wait_seconds": {
+    "type": "int",
+    "description": "挂团填写等待时间",
+    "default": 120,
+    "hint": "发送 .挂团 后等待下一条公告内容的秒数，超时后静默放弃。"
   },
   "name_backend": {
     "type": "string",
@@ -20,5 +185,3017 @@
     "description": "取名 LLM 提供商 ID",
     "default": "",
     "hint": "仅 llm 模式生效；留空使用 AstrBot 当前提供商。填写 AstrBot 已配置的文本模型提供商 ID。"
+  },
+  "output": {
+    "type": "object",
+    "description": "回复文案与模板",
+    "hint": "按功能分类编辑全部输出。填写后优先使用 UI 内容；留空沿用 YAML。旧版 DnD UI 文案仍然有效，新界面的非空内容优先。保存后自动重载插件。",
+    "obvious_hint": true,
+    "items": {
+      "dnd": {
+        "type": "object",
+        "description": "DnD 人物卡、检定与资源",
+        "items": {
+          "common": {
+            "type": "object",
+            "description": "通用",
+            "items": {
+              "response": {
+                "type": "text",
+                "description": "回复正文",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{detail}、{name}。默认模板示例：<{name}> 的人物卡：\n【{name}】\n{detail}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "error": {
+                "type": "text",
+                "description": "错误提示",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{reason}。默认模板示例：操作失败：\n{reason}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "sheet": {
+            "type": "object",
+            "description": "人物卡",
+            "items": {
+              "updated": {
+                "type": "text",
+                "description": "更新完成",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{detail}、{name}。默认模板示例：人物卡已更新。\n【{name}】\n{detail}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "header": {
+                "type": "text",
+                "description": "标题",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：<{name}> 的人物卡：\n【{name}】",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "attribute_deleted": {
+                "type": "text",
+                "description": "attribute_deleted",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attribute}。默认模板示例：已删除：{attribute}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "attribute_protected": {
+                "type": "text",
+                "description": "attribute_protected",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attribute}。默认模板示例：核心属性不可删除：{attribute}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "attribute_missing": {
+                "type": "text",
+                "description": "attribute_missing",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attribute}。默认模板示例：未录入：{attribute}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "nothing_to_clear": {
+                "type": "text",
+                "description": "nothing_to_clear",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：没有可清理的属性。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "check": {
+            "type": "object",
+            "description": "检定",
+            "items": {
+              "head": {
+                "type": "text",
+                "description": "开头",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{detail}、{extra:+d}、{name}、{skill_name}。默认模板示例：<{name}> 的【{skill_name}】检定：\n【{name}】{skill_name}检定（{detail}，临时修正 {extra:+d}）",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "roll": {
+                "type": "text",
+                "description": "骰点结果",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{bonus:+d}、{dice}、{result}。默认模板示例：骰点结果：{dice}{bonus:+d}: {result}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "aside": {
+                "type": "text",
+                "description": "普通吐槽（天然 1 不显示）",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。天然 1 时跳过此项；不要把这句吐槽写进骰点结果。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "natural_20": {
+                "type": "text",
+                "description": "天然 20 特殊用语",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：<{name}> 掷出天然 20！",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "natural_1": {
+                "type": "text",
+                "description": "天然 1 特殊用语",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：天然 1！",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "resource": {
+            "type": "object",
+            "description": "资源",
+            "items": {
+              "header": {
+                "type": "text",
+                "description": "标题",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：【冒险资源】\n法术位与职业资源剩余次数：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "changed": {
+                "type": "text",
+                "description": "变更完成",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{balance}。默认模板示例：资源已更新：\n{balance}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "restored": {
+                "type": "text",
+                "description": "休息恢复",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{resources}、{rest}。默认模板示例：{rest}的资源恢复已记录。\n{resources}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "note": {
+                "type": "text",
+                "description": "补充说明",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：使用资源后请手动记录消耗；特性带来的恢复可用 .res 资源名+数量 补回。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "class": {
+            "type": "object",
+            "description": "职业",
+            "items": {
+              "updated": {
+                "type": "text",
+                "description": "更新完成",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{classes}、{level}。默认模板示例：职业已更新。\n职业: {classes}\n总等级: {level}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "cleared": {
+                "type": "text",
+                "description": "清除完成",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已清除职业记录，保留当前总等级。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "common": {
+        "type": "object",
+        "description": "通用词语",
+        "items": {
+          "invalid_number": {
+            "type": "text",
+            "description": "invalid_number",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：非法数值",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "unnamed": {
+            "type": "text",
+            "description": "unnamed",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：未命名",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "unknown": {
+            "type": "text",
+            "description": "unknown",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：未知",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "none": {
+            "type": "text",
+            "description": "none",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：无",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "yes": {
+            "type": "text",
+            "description": "yes",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：是",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "no": {
+            "type": "text",
+            "description": "no",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：否",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "skill_check": {
+        "type": "object",
+        "description": "CoC 技能检定",
+        "items": {
+          "normal": {
+            "type": "object",
+            "description": "普通检定",
+            "items": {
+              "head": {
+                "type": "text",
+                "description": "开头",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{skill_name}。默认模板示例：<{name}> 的【{skill_name}】检定：\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "detail": {
+                "type": "text",
+                "description": "详情",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{result}、{roll_result}、{skill_value}。默认模板示例：{roll_result}/{skill_value}：{result}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "penalty": {
+            "type": "object",
+            "description": "惩罚骰",
+            "items": {
+              "head": {
+                "type": "text",
+                "description": "开头",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{skill_name}。默认模板示例：<{name}> 的【{skill_name}】惩罚骰检定：\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "detail": {
+                "type": "text",
+                "description": "详情",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{final_y}、{new_tens_digits}、{result}、{skill_value}。默认模板示例：惩罚骰：{new_tens_digits} → {final_y}/{skill_value}：{result}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "bonus": {
+            "type": "object",
+            "description": "奖励骰",
+            "items": {
+              "head": {
+                "type": "text",
+                "description": "开头",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{skill_name}。默认模板示例：<{name}> 的【{skill_name}】奖励骰检定：\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "detail": {
+                "type": "text",
+                "description": "详情",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{final_y}、{new_tens_digits}、{result}、{skill_value}。默认模板示例：奖励骰：{new_tens_digits} → {final_y}/{skill_value}：{result}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "pistol_check": {
+            "type": "object",
+            "description": "手枪连射",
+            "items": {
+              "fire_detail": {
+                "type": "text",
+                "description": "fire_detail",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{candidates}、{dice}、{i}、{result}、{roll}、{skill_value}。默认模板示例：第 {i} 发（{dice}）：候选 [{candidates}] → {roll}/{skill_value}：{result}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "head": {
+                "type": "text",
+                "description": "开头",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{mode}、{name}、{skill_name}。默认模板示例：<{name}> 的【{skill_name}】连射检定，模式：{mode}。\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "detail": {
+                "type": "text",
+                "description": "详情",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{i}、{p_info}、{p}、{result}、{roll}、{skill_value}。默认模板示例：第 {i} 发（{p}P）：{roll}{p_info}/{skill_value}：{result}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "mode_regular": {
+                "type": "text",
+                "description": "mode_regular",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：常规连射",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "mode_recoil": {
+                "type": "text",
+                "description": "mode_recoil",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：后坐力递增",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "mode_accuracy": {
+                "type": "text",
+                "description": "mode_accuracy",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：精度下降",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "skill_specified": {
+                "type": "text",
+                "description": "skill_specified",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：手枪(指定)",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "skill_handgun": {
+                "type": "text",
+                "description": "skill_handgun",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：手枪",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "error": {
+            "type": "object",
+            "description": "错误提示",
+            "items": {
+              "normal": {
+                "type": "text",
+                "description": "普通检定",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{skill_name}。默认模板示例：未找到技能或技能参数无效：【{skill_name}】。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "penalty": {
+                "type": "text",
+                "description": "惩罚骰",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请提供惩罚骰数量。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "bonus": {
+                "type": "text",
+                "description": "奖励骰",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请提供奖励骰数量。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "difficulty": {
+            "type": "object",
+            "description": "难度",
+            "items": {
+              "hard": {
+                "type": "text",
+                "description": "hard",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：困难",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "extreme": {
+                "type": "text",
+                "description": "extreme",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：极难",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "grow_up": {
+            "type": "object",
+            "description": "技能成长",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{en_value}、{new_value}、{skill_name}。默认模板示例：【{skill_name}】成长 {en_value} 点，当前值：{new_value}。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "failure": {
+                "type": "text",
+                "description": "失败",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{skill_name}。默认模板示例：【{skill_name}】成长检定失败，数值不变。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "boost_result": {
+                "type": "text",
+                "description": "boost_result",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{result}、{roll_result}、{skill_value}。默认模板示例：成长检定：{roll_result}/{skill_value}：{result}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "until_success": {
+            "type": "object",
+            "description": "重复直到成功",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attempts}、{name}、{results}、{skill_name}。默认模板示例：{name} 的【{skill_name}】连续检定直到成功：\n第 {attempts} 次成功。\n前10次结果：\n{results}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "failure": {
+                "type": "text",
+                "description": "失败",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{max_attempts}、{name}、{results}、{skill_name}。默认模板示例：{name} 的【{skill_name}】连续检定直到成功：\n已达到 {max_attempts} 次上限，仍未成功。\n前10次结果：\n{results}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "proxy_name": {
+            "type": "text",
+            "description": "proxy_name",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{operator}。默认模板示例：{name} (由 <{operator}> 代投)",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "hidden": {
+            "type": "object",
+            "description": "暗骰",
+            "items": {
+              "sent": {
+                "type": "text",
+                "description": "sent",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：暗中检定结果已发送至私聊。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "versus": {
+        "type": "object",
+        "description": "对抗检定",
+        "items": {
+          "no_winner": {
+            "type": "text",
+            "description": "no_winner",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：双方均失败，无胜者",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "tie": {
+            "type": "text",
+            "description": "tie",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：平局",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "result": {
+            "type": "text",
+            "description": "result",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{left_name}、{left_result}、{left_roll}、{left_value}、{right_name}、{right_result}、{right_roll}、{right_value}、{winner}。默认模板示例：对抗检定结果：\n{left_name}：{left_roll}/{left_value}：{left_result}\n{right_name}：{right_roll}/{right_value}：{right_result}\n胜者：{winner}\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "label": {
+            "type": "object",
+            "description": "label",
+            "items": {
+              "left": {
+                "type": "text",
+                "description": "left",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：发起方",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "right": {
+                "type": "text",
+                "description": "right",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：对抗方",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "participant": {
+            "type": "text",
+            "description": "participant",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{skill_name}。默认模板示例：<{name}> 的【{skill_name}】",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "error": {
+            "type": "object",
+            "description": "错误提示",
+            "items": {
+              "format": {
+                "type": "text",
+                "description": "format",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请使用 .rav技能名a点数/b点数，或 .rav技能名 @对抗者。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "no_target": {
+                "type": "text",
+                "description": "no_target",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请提供对方的 /b点数，或 @一名对抗者。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "invalid_value": {
+                "type": "text",
+                "description": "invalid_value",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：技能值必须是数字；a点数可省略，b点数或 @对抗者不能省略。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "alias": {
+        "type": "object",
+        "description": "技能别名",
+        "items": {
+          "added": {
+            "type": "text",
+            "description": "added",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{alias}、{target}。默认模板示例：已设置技能别名：【{alias}】 → 【{target}】。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "deleted": {
+            "type": "text",
+            "description": "删除完成",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{alias}。默认模板示例：已删除技能别名：【{alias}】。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "not_found": {
+            "type": "text",
+            "description": "未找到",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{alias}。默认模板示例：未找到技能别名：【{alias}】。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "empty": {
+            "type": "text",
+            "description": "empty",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前没有技能别名。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "list": {
+            "type": "text",
+            "description": "list",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{aliases}。默认模板示例：当前技能别名：\n{aliases}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "bot": {
+        "type": "object",
+        "description": "机器人状态与入群",
+        "items": {
+          "info": {
+            "type": "text",
+            "description": "info",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{status}。默认模板示例：TRPG 骰子插件，基于 AstrBot 框架。\n使用 .bothelp 查看帮助。\n当前状态：{status}\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "enabled": {
+            "type": "text",
+            "description": "enabled",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：骰子功能已开启。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "disabled": {
+            "type": "text",
+            "description": "disabled",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：骰子功能已关闭，使用 .bot on 可以重新开启。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "quit": {
+            "type": "text",
+            "description": "quit",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：即将退出当前群聊。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "quit_error": {
+            "type": "text",
+            "description": "quit_error",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：退出群聊失败：{error}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "quit_private": {
+            "type": "text",
+            "description": "quit_private",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：退群指令只能在群聊中使用。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "status": {
+            "type": "text",
+            "description": "status",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{status}。默认模板示例：骰子功能状态：{status}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "status_on": {
+            "type": "text",
+            "description": "status_on",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：开启",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "status_off": {
+            "type": "text",
+            "description": "status_off",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：关闭",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "usage": {
+            "type": "text",
+            "description": "用法提示",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：用法：.bot / .bot on / .bot off / .bot status",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "private": {
+        "type": "object",
+        "description": "私聊",
+        "items": {
+          "unsupported": {
+            "type": "text",
+            "description": "unsupported",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：这条指令暂不支持私聊。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "group_post": {
+        "type": "object",
+        "description": "挂团回复与填写模板",
+        "items": {
+          "template_coc": {
+            "type": "text",
+            "description": "CoC 挂团填写模板",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。使用 丨字段名：内容；可修改提示内容与顺序，请勿删除必需字段或修改字段名。默认模板示例：丨模组名：\n丨规则类型：CoC7\n丨kp：\n丨期望人数：\n丨预计长度：\n丨开团时间：\n丨联系方式：\n丨跑团方式：\n丨年代地点：\n丨车卡要求：\n丨推荐技能：\n丨背景故事：\n丨kp的建议：",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "template_dnd": {
+            "type": "text",
+            "description": "DnD 挂团填写模板",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。使用 丨字段名：内容；可修改提示内容与顺序，请勿删除必需字段或修改字段名。默认模板示例：丨模组名：\n丨游戏规则：DnD5e\n丨扩充拓展：\n丨等级资源：\n丨联系方式：\n丨跑团方式：\n丨跑团平台：\n丨期望人数：\n丨开团时间：\n丨预期长度：\n丨故事地点：\n丨背景简介：\n丨备注：",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "empty": {
+            "type": "text",
+            "description": "empty",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：挂团内容为空，请填写模板后提交。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "malformed_line": {
+            "type": "text",
+            "description": "malformed_line",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{line}。默认模板示例：字段格式错误：{line}。请使用 丨字段名：内容。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "unknown_fields": {
+            "type": "text",
+            "description": "unknown_fields",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{fields}。默认模板示例：不支持的字段：{fields}。请保留模板中的字段名。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "duplicate_fields": {
+            "type": "text",
+            "description": "duplicate_fields",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{fields}。默认模板示例：重复字段：{fields}。每个字段只能填写一次。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "unknown_rule": {
+            "type": "text",
+            "description": "unknown_rule",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：无法辨认规则，请填写规则类型（CoC）或游戏规则（DnD）。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "missing_fields": {
+            "type": "text",
+            "description": "missing_fields",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{fields}、{schema}。默认模板示例：{schema} 模板缺少必需字段：{fields}。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "invalid_schema": {
+            "type": "text",
+            "description": "invalid_schema",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请勿混用 CoC 与 DnD 模板字段。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "waiting": {
+            "type": "text",
+            "description": "等待填写",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{seconds}。默认模板示例：请在 {seconds} 秒内发送完整的挂团模板。超时后取消本次填写。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "invalid": {
+            "type": "text",
+            "description": "无效内容",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{reason}。默认模板示例：挂团公告无法发布：{reason}\n请补齐核心字段后重试。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "admin_only": {
+            "type": "text",
+            "description": "admin_only",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：只有本群管理员或群主可以发布挂团公告。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "bot_not_admin": {
+            "type": "text",
+            "description": "bot_not_admin",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：机器人不是本群管理员，无法发布群公告。请先授予管理员权限。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "permission_check_failed": {
+            "type": "text",
+            "description": "permission_check_failed",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：暂时无法确认你的群管理权限，挂团公告没有发布。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "publish_failed": {
+            "type": "text",
+            "description": "publish_failed",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：挂团公告发布失败：{error}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "invalid_format": {
+            "type": "text",
+            "description": "invalid_format",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：挂团公告格式不正确：请填写模组名、规则、期望人数、联系方式、跑团方式、预计长度、背景内容，以及对应规则的年代地点或等级资源。其它字段可以省略。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "created": {
+            "type": "text",
+            "description": "创建完成",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{post_id}。默认模板示例：挂团公告已创建，编号：{post_id}，有效期为 30 天。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "deleted": {
+            "type": "text",
+            "description": "删除完成",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{post_id}。默认模板示例：挂团公告已撤下，编号：{post_id}。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "not_found": {
+            "type": "text",
+            "description": "未找到",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{post_id}。默认模板示例：没有找到编号 {post_id} 的挂团公告。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "spell": {
+        "type": "object",
+        "description": "法术查询",
+        "items": {
+          "usage": {
+            "type": "text",
+            "description": "用法提示",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：指令帮助：.find <法术名> [版本标识，默认为2024版]\n查询2014版法术时，请在法术名后输入“旧版”“5e”或“2014”。\nCoC 法术查询示例：.find coc 动物魅惑法\n暂不支持模糊查询。\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "searching": {
+            "type": "text",
+            "description": "searching",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{spell_name}。默认模板示例：正在查询法术：{spell_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "parse_error": {
+            "type": "text",
+            "description": "parse_error",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：法术文本解析失败：{error}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "not_found": {
+            "type": "text",
+            "description": "未找到",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{spell_name}。默认模板示例：未找到法术：{spell_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "render_error": {
+            "type": "text",
+            "description": "render_error",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：法术图像渲染失败：{error}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "reference": {
+            "type": "text",
+            "description": "reference",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：数据来自 DND5E不全书 2026.2.12版",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "cantrip_level": {
+            "type": "text",
+            "description": "cantrip_level",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：零",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "cantrip_suffix": {
+            "type": "text",
+            "description": "cantrip_suffix",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：（戏法）",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "level_line": {
+            "type": "text",
+            "description": "level_line",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{cantrip_suffix}、{classes}、{level}、{school}。默认模板示例：{level}环{cantrip_suffix} {school}学派（{classes}）",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "label": {
+            "type": "object",
+            "description": "label",
+            "items": {
+              "casting_time": {
+                "type": "text",
+                "description": "casting_time",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：施法时间：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "range": {
+                "type": "text",
+                "description": "range",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：施法距离：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "components": {
+                "type": "text",
+                "description": "components",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：法术成分：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "duration": {
+                "type": "text",
+                "description": "duration",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：持续时间：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "sealdice_dnd_source": {
+            "type": "text",
+            "description": "sealdice_dnd_source",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：资料源：SeaDice sealdice-builtins DND 查询资料；D&D 系列资料整理者主要为 DicePP 项目组成员。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "sealdice_coc_source": {
+            "type": "text",
+            "description": "sealdice_coc_source",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：资料源：SeaDice sealdice-builtins CoC 魔法大典；整理者：魔骨、NULL、Dr.Amber。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "coc_result": {
+            "type": "text",
+            "description": "coc_result",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{content}、{name}、{source}。默认模板示例：【COC法术】{name}\n{content}\n{source}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "cantrip_label": {
+            "type": "text",
+            "description": "cantrip_label",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：戏法",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "ring_level": {
+            "type": "text",
+            "description": "ring_level",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{level}。默认模板示例：{level}环",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "no_description": {
+            "type": "text",
+            "description": "no_description",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：暂无描述。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_title": {
+            "type": "text",
+            "description": "dnd_title",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{title}。默认模板示例：【DND法术】{title}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_level_school": {
+            "type": "text",
+            "description": "dnd_level_school",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{level}、{school}。默认模板示例：等级：{level}；学派：{school}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_casting_range": {
+            "type": "text",
+            "description": "dnd_casting_range",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{casting_time}、{range}。默认模板示例：施法时间：{casting_time}；距离：{range}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_components": {
+            "type": "text",
+            "description": "dnd_components",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{components}、{concentration}、{ritual}。默认模板示例：成分：{components}；专注：{concentration}；仪式：{ritual}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_duration": {
+            "type": "text",
+            "description": "dnd_duration",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{duration}。默认模板示例：持续时间：{duration}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_material": {
+            "type": "text",
+            "description": "dnd_material",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{material}。默认模板示例：材料：{material}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_effect": {
+            "type": "text",
+            "description": "dnd_effect",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{desc}。默认模板示例：效果：{desc}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_higher_level": {
+            "type": "text",
+            "description": "dnd_higher_level",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{higher_level}。默认模板示例：升环：{higher_level}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_api_source": {
+            "type": "text",
+            "description": "dnd_api_source",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：资料源：D&D 5e SRD API（SRD/CC-BY-4.0）；英文描述来自 SRD。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_local_components": {
+            "type": "text",
+            "description": "dnd_local_components",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{components}、{duration}。默认模板示例：成分：{components}；持续时间：{duration}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_local_summary": {
+            "type": "text",
+            "description": "dnd_local_summary",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{summary}。默认模板示例：效果摘要：{summary}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_local_source": {
+            "type": "text",
+            "description": "dnd_local_source",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：资料源：D&D 5e SRD；当前为插件内置中文摘要。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_network_skipped": {
+            "type": "text",
+            "description": "dnd_network_skipped",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{reason}。默认模板示例：联网查询未使用：{reason}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_not_found": {
+            "type": "text",
+            "description": "dnd_not_found",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：没有找到 DND SRD 法术：{name}\n可以试试英文名，如 .find dnd fireball。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_http_error": {
+            "type": "text",
+            "description": "dnd_http_error",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{code}。默认模板示例：DND 法术查询失败：HTTP {code}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd_error": {
+            "type": "text",
+            "description": "dnd_error",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：DND 法术查询失败：{error}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "coc_rule": {
+        "type": "object",
+        "description": "CoC 规则设置",
+        "items": {
+          "rule_1": {
+            "type": "text",
+            "description": "rule_1",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：严格规则",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "rule_2": {
+            "type": "text",
+            "description": "rule_2",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：COC7版规则",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "rule_3": {
+            "type": "text",
+            "description": "rule_3",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：阶段性规则",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "rule_4": {
+            "type": "text",
+            "description": "rule_4",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：宽松规则",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "help": {
+            "type": "text",
+            "description": "help",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{current_rule}、{default_rule}、{rule_1}、{rule_2}、{rule_3}、{rule_4}。默认模板示例：setcoc帮助：\n/setcoc 1 → {rule_1}（大成功1，大失败100）\n/setcoc 2 → {rule_2}（大成功1，阶段性大失败）\n/setcoc 3 → {rule_3}（阶段性大成功，阶段性大失败）\n/setcoc 4 → {rule_4}（大成功1~5，大失败96~100）\n/setcoc 0 → 默认规则（当前为{default_rule}）\n当前规则：{current_rule}\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "rp": {
+        "type": "object",
+        "description": "骰点池",
+        "items": {
+          "today": {
+            "type": "text",
+            "description": "today",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{rp}。默认模板示例：今日运势指数：{rp}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "fireball": {
+        "type": "object",
+        "description": "火球术",
+        "items": {
+          "result": {
+            "type": "text",
+            "description": "result",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{breakdown}、{ring}、{total}。默认模板示例：# 火球术伤害\n{ring} 环火球术伤害：{breakdown} = {total} 点伤害。\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "low": {
+            "type": "text",
+            "description": "low",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：法术失败：火球环数不足。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "coc_roll": {
+        "type": "object",
+        "description": "CoC 检定结果名称",
+        "items": {
+          "set_rule": {
+            "type": "text",
+            "description": "set_rule",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{rule}。默认模板示例：已设置 CoC 检定规则：{rule}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "results": {
+            "type": "object",
+            "description": "results",
+            "items": {
+              "great_success": {
+                "type": "text",
+                "description": "大成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：大成功",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "extreme_success": {
+                "type": "text",
+                "description": "extreme_success",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：极难成功",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "hard_success": {
+                "type": "text",
+                "description": "hard_success",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：困难成功",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：成功",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "great_failure": {
+                "type": "text",
+                "description": "大失败",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：大失败",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "failure": {
+                "type": "text",
+                "description": "失败",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：失败",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "error": {
+                "type": "text",
+                "description": "错误提示",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：检定出错：{error}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "reset": {
+                "type": "text",
+                "description": "reset",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{rule}。默认模板示例：规则已重置为：{rule}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "pc": {
+        "type": "object",
+        "description": "人物卡管理与同步",
+        "items": {
+          "create": {
+            "type": "object",
+            "description": "create",
+            "items": {
+              "duplicate": {
+                "type": "text",
+                "description": "duplicate",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：人物卡名称已存在：<{name}>。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{id}、{name}。默认模板示例：已创建人物卡 <{name}>，编号：{id}。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "show": {
+            "type": "object",
+            "description": "show",
+            "items": {
+              "no_active": {
+                "type": "text",
+                "description": "no_active",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前群组尚未绑定人物卡，请使用 .pc tag 绑定。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "target_no_active": {
+                "type": "text",
+                "description": "target_no_active",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：该玩家尚未在当前群组绑定人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "load_fail": {
+                "type": "text",
+                "description": "load_fail",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{id}。默认模板示例：无法加载编号 {id} 的人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "attribute_any": {
+                "type": "text",
+                "description": "attribute_any",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：任何属性",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "attr_missing": {
+                "type": "text",
+                "description": "attr_missing",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attribute}。默认模板示例：人物卡未录入属性：{attribute}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "attr": {
+                "type": "text",
+                "description": "attr",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attr}、{value}。默认模板示例：【{attr}】：{value}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "all": {
+                "type": "text",
+                "description": "all",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attributes}、{name}。默认模板示例：<{name}> 的全部属性：\n{attributes}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "none_above": {
+                "type": "text",
+                "description": "none_above",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{num}。默认模板示例：没有大于 {num} 的属性。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "above": {
+                "type": "text",
+                "description": "above",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{num}。默认模板示例：大于 {num} 的属性：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "above_threshold_header": {
+                "type": "text",
+                "description": "above_threshold_header",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{num}。默认模板示例：大于 {num} 的属性：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "invalid_value": {
+                "type": "text",
+                "description": "invalid_value",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{value}。默认模板示例：无效数值：{value}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "named_header": {
+                "type": "text",
+                "description": "named_header",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{content}、{name}。默认模板示例：【{name}】的属性：\n{content}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "named_title": {
+                "type": "text",
+                "description": "named_title",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：【{name}】的属性：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "list": {
+            "type": "object",
+            "description": "list",
+            "items": {
+              "empty": {
+                "type": "text",
+                "description": "empty",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前没有人物卡，请使用 .pc new <名字> 创建。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "result": {
+                "type": "text",
+                "description": "result",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{list}。默认模板示例：人物卡列表：\n{list}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "tag_current": {
+                "type": "text",
+                "description": "tag_current",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "tag_local": {
+                "type": "text",
+                "description": "tag_local",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：隔离",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "tag_global": {
+                "type": "text",
+                "description": "tag_global",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：全局",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "tag": {
+            "type": "object",
+            "description": "tag",
+            "items": {
+              "cleared": {
+                "type": "text",
+                "description": "清除完成",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已解除当前群组的人物卡绑定。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "not_found": {
+                "type": "text",
+                "description": "未找到",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{identifier}。默认模板示例：未找到人物卡：{identifier}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已绑定人物卡至当前群组。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "rename": {
+            "type": "object",
+            "description": "rename",
+            "items": {
+              "no_active": {
+                "type": "text",
+                "description": "no_active",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前群组尚未绑定人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{new_name}、{old_name}。默认模板示例：人物卡已从「{old_name}」重命名为「{new_name}」。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "duplicate": {
+                "type": "text",
+                "description": "duplicate",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：重命名失败：当前群组已有名为「{name}」的人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "load_fail": {
+                "type": "text",
+                "description": "load_fail",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：重命名失败：人物卡加载异常。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "change": {
+            "type": "object",
+            "description": "change",
+            "items": {
+              "missing": {
+                "type": "text",
+                "description": "missing",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：未找到人物卡：<{name}>。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：已切换当前人物卡为：<{name}>。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "update": {
+            "type": "object",
+            "description": "update",
+            "items": {
+              "no_active": {
+                "type": "text",
+                "description": "no_active",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前群组尚未绑定人物卡，请使用 .pc tag 绑定后再修改。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "error_format": {
+                "type": "text",
+                "description": "error_format",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：属性表达式格式错误，例如：力量+1、外貌80。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "error_format_no_value": {
+                "type": "text",
+                "description": "error_format_no_value",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请在加减号后填写数值。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attr}、{new}、{old}。默认模板示例：【{attr}】：{old} → {new}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "batch_success": {
+                "type": "text",
+                "description": "batch_success",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{count}。默认模板示例：已更新 {count} 项属性。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "attr_missing": {
+                "type": "text",
+                "description": "attr_missing",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attr}。默认模板示例：未找到属性：【{attr}】。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "proxy_prefix": {
+                "type": "text",
+                "description": "proxy_prefix",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{content}、{name}。默认模板示例：已代为更新 <{name}>：\n{content}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "derived_suffix": {
+                "type": "text",
+                "description": "derived_suffix",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{tips}。默认模板示例：自动更新: {tips}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "delete": {
+            "type": "object",
+            "description": "delete",
+            "items": {
+              "not_found": {
+                "type": "text",
+                "description": "未找到",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：未找到人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "fail": {
+                "type": "text",
+                "description": "fail",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：删除失败：未找到名为 <{name}> 的人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：已删除人物卡：<{name}>。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "grow": {
+            "type": "object",
+            "description": "grow",
+            "items": {
+              "no_active": {
+                "type": "text",
+                "description": "no_active",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前未绑定人物卡，请先绑定或提供技能数值。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{en_value}、{new_value}、{skill_name}。默认模板示例：【{skill_name}】成长 {en_value} 点，当前值：{new_value}。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "failure": {
+                "type": "text",
+                "description": "失败",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{skill_name}。默认模板示例：【{skill_name}】成长检定失败，数值不变。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "boost_result": {
+                "type": "text",
+                "description": "boost_result",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{result}、{roll_result}、{skill_value}。默认模板示例：成长检定：{roll_result}/{skill_value}：{result}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "export": {
+            "type": "object",
+            "description": "export",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{data}、{name}。默认模板示例：<{name}> 的人物卡数据：\n{data}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "uni": {
+            "type": "object",
+            "description": "uni",
+            "items": {
+              "no_pc": {
+                "type": "text",
+                "description": "no_pc",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：未找到人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "source_global": {
+                "type": "text",
+                "description": "source_global",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：全局",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "line": {
+                "type": "text",
+                "description": "line",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{index}、{name}、{source}、{time}。默认模板示例：{index}. {name} (最新来源:{source} | {time})",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{msg}。默认模板示例：跨群人物卡列表：\n{msg}\n使用 .pc pull <序号> 拉取人物卡。\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "push": {
+            "type": "object",
+            "description": "push",
+            "items": {
+              "no_pc": {
+                "type": "text",
+                "description": "no_pc",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前未绑定人物卡，无法上传。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：人物卡数据已更新。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "global_success": {
+                "type": "text",
+                "description": "global_success",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前群组已使用全局人物卡，后续修改将同步至同一份档案。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "global_sync": {
+                "type": "text",
+                "description": "global_sync",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：全局人物卡数据已同步。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "local_success": {
+                "type": "text",
+                "description": "local_success",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已为当前群组创建本地副本，后续修改不影响全局档案。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "fail": {
+                "type": "text",
+                "description": "fail",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：人物卡上传失败。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "pull": {
+            "type": "object",
+            "description": "pull",
+            "items": {
+              "no_pc": {
+                "type": "text",
+                "description": "no_pc",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：未找到可拉取的人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "exist": {
+                "type": "text",
+                "description": "exist",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：人物卡已存在，请使用 .pc tag 切换。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：已拉取人物卡：<{name}>。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "global_success": {
+                "type": "text",
+                "description": "global_success",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：已将 <{name}> 作为全局人物卡绑定至当前群组。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "sync": {
+                "type": "text",
+                "description": "sync",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：已同步人物卡：<{name}>。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "fail": {
+                "type": "text",
+                "description": "fail",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：人物卡拉取失败。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "del": {
+            "type": "object",
+            "description": "del",
+            "items": {
+              "no_args": {
+                "type": "text",
+                "description": "no_args",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请提供要删除的属性名。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "st": {
+        "type": "object",
+        "description": "属性操作",
+        "items": {
+          "show": {
+            "type": "object",
+            "description": "show",
+            "items": {
+              "no_active": {
+                "type": "text",
+                "description": "no_active",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前群组尚未绑定人物卡，请使用 .pc tag 绑定。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "load_fail": {
+                "type": "text",
+                "description": "load_fail",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{id}。默认模板示例：无法加载编号 {id} 的人物卡。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "del": {
+            "type": "object",
+            "description": "del",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attr}。默认模板示例：已删除属性：【{attr}】。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "not_found": {
+                "type": "text",
+                "description": "未找到",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attr}。默认模板示例：未找到属性：【{attr}】。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "protected": {
+                "type": "text",
+                "description": "protected",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{attr}。默认模板示例：基础属性不可删除：【{attr}】。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "clr": {
+            "type": "object",
+            "description": "clr",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：已清空 <{name}> 的属性。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "nothing": {
+                "type": "text",
+                "description": "nothing",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：没有可清空的属性。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "nick": {
+        "type": "object",
+        "description": "群名片",
+        "items": {
+          "platform_unsupported": {
+            "type": "text",
+            "description": "platform_unsupported",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前平台不支持修改群名片。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "no_character": {
+            "type": "text",
+            "description": "no_character",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{id}。默认模板示例：未找到编号 {id} 的人物卡，无法更新名片。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "success": {
+            "type": "text",
+            "description": "成功",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：群名片已更新。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "dice": {
+        "type": "object",
+        "description": "普通掷骰与暗骰",
+        "items": {
+          "normal": {
+            "type": "object",
+            "description": "普通检定",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{result}。默认模板示例：<{name}> 的掷骰结果：\n{result}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success_remark": {
+                "type": "text",
+                "description": "success_remark",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{remark}、{result}。默认模板示例：<{name}> 的【{remark}】掷骰结果：\n{result}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "error": {
+                "type": "text",
+                "description": "错误提示",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：掷骰失败：{error}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "vampire": {
+            "type": "object",
+            "description": "vampire",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{result}。默认模板示例：<{name}> 的吸血鬼规则掷骰结果：{result}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "error": {
+                "type": "text",
+                "description": "错误提示",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：吸血鬼规则掷骰失败：{error}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "hidden": {
+            "type": "object",
+            "description": "暗骰",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{result}。默认模板示例：暗骰结果：{result}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "error": {
+                "type": "text",
+                "description": "错误提示",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：暗骰失败：{error}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "group": {
+                "type": "text",
+                "description": "group",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已进行暗骰，结果将发送至私聊。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "detail": {
+            "type": "text",
+            "description": "详情",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{detail}。默认模板示例：骰点结果：{detail}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "expression_error": {
+            "type": "text",
+            "description": "expression_error",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：{error}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "expression": {
+            "type": "object",
+            "description": "expression",
+            "items": {
+              "format_error": {
+                "type": "text",
+                "description": "format_error",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{expr}。默认模板示例：格式错误：`{expr}`",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "range_error": {
+                "type": "text",
+                "description": "range_error",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：骰子个数须在 1-100 之间，面数须在 1-1000 之间。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "keep_error": {
+                "type": "text",
+                "description": "keep_error",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{dice_count}。默认模板示例：保留骰数量须在 1-{dice_count} 之间。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "vampire_arithmetic_error": {
+                "type": "text",
+                "description": "vampire_arithmetic_error",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：吸血鬼骰不能参与四则运算。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "zero_division": {
+                "type": "text",
+                "description": "zero_division",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：除数不能为 0。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "value_error": {
+                "type": "text",
+                "description": "value_error",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{error}。默认模板示例：表达式错误：{error}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "choice": {
+        "type": "object",
+        "description": "随机选择",
+        "items": {
+          "not_enough": {
+            "type": "text",
+            "description": "not_enough",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：选择项不足：请使用 .choose 选项A 选项B，或用 /、|、逗号分隔。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "result": {
+            "type": "text",
+            "description": "result",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{choice}。默认模板示例：随机选择：{choice}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "san": {
+        "type": "object",
+        "description": "理智检定与疯狂",
+        "items": {
+          "result": {
+            "type": "object",
+            "description": "result",
+            "items": {
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：成功",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "failure": {
+                "type": "text",
+                "description": "失败",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：失败",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "specific_phobia": {
+            "type": "text",
+            "description": "specific_phobia",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{phobia}、{roll}。默认模板示例：→ 具体恐惧症：{phobia}（骰值 {roll}）",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "specific_mania": {
+            "type": "text",
+            "description": "specific_mania",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{mania}、{roll}。默认模板示例：→ 具体躁狂症：{mania}（骰值 {roll}）",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "temporary": {
+            "type": "object",
+            "description": "temporary",
+            "items": {
+              "1": {
+                "type": "text",
+                "description": "1",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：失忆：调查员只记得最后身处的安全地点，却没有任何来到这里的记忆。这将会持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "2": {
+                "type": "text",
+                "description": "2",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：假性残疾：调查员陷入心理性的失明、失聪或躯体缺失感，持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "3": {
+                "type": "text",
+                "description": "3",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：暴力倾向：调查员对周围所有人（敌人和同伴）展开攻击，持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "4": {
+                "type": "text",
+                "description": "4",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：偏执：调查员陷入严重的偏执妄想（所有人都想伤害他），持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "5": {
+                "type": "text",
+                "description": "5",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：人际依赖：调查员误认为某人是他的重要之人，并据此行动，持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "6": {
+                "type": "text",
+                "description": "6",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：昏厥：调查员当场昏倒，1D10 轮后苏醒。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "7": {
+                "type": "text",
+                "description": "7",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：逃避行为：调查员试图用任何方式逃离当前场所，持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "8": {
+                "type": "text",
+                "description": "8",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：歇斯底里：调查员陷入极端情绪（大笑、哭泣、尖叫等），持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "9": {
+                "type": "text",
+                "description": "9",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：恐惧：骰 1D100 或由守秘人选择一个恐惧症，调查员会想象它存在，持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "10": {
+                "type": "text",
+                "description": "10",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：躁狂：骰 1D100 或由守秘人选择一个躁狂症，调查员会沉溺其中，持续 1D10 轮。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "long_term": {
+            "type": "object",
+            "description": "long_term",
+            "items": {
+              "1": {
+                "type": "text",
+                "description": "1",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：失忆：调查员发现自己身处陌生地方，并忘记自己是谁。记忆会缓慢恢复。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "2": {
+                "type": "text",
+                "description": "2",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：被窃：调查员 1D10 小时后清醒，发现自己身上贵重物品丢失。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "3": {
+                "type": "text",
+                "description": "3",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：遍体鳞伤：调查员 1D10 小时后清醒，身体有严重伤痕（生命值剩一半）。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "4": {
+                "type": "text",
+                "description": "4",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：暴力倾向：调查员可能在疯狂期间杀人或造成重大破坏。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "5": {
+                "type": "text",
+                "description": "5",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：极端信念：调查员疯狂地执行某个信仰（如宗教狂热、政治极端），并采取极端行动。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "6": {
+                "type": "text",
+                "description": "6",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：重要之人：调查员疯狂追求某个他在意的人，不顾一切地接近该人。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "7": {
+                "type": "text",
+                "description": "7",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：被收容：调查员在精神病院或警察局醒来，完全不记得发生了什么。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "8": {
+                "type": "text",
+                "description": "8",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：逃避行为：调查员在远离原地点的地方醒来，可能在荒郊野外或陌生城市。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "9": {
+                "type": "text",
+                "description": "9",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：恐惧：调查员患上一种新的恐惧症（骰 1D100 或由守秘人选择）。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "10": {
+                "type": "text",
+                "description": "10",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：躁狂：调查员患上一种新的躁狂症（骰 1D100 或由守秘人选择）。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "check_result": {
+            "type": "object",
+            "description": "check_result",
+            "items": {
+              "loss": {
+                "type": "text",
+                "description": "loss",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{expr}、{name}、{new_san}、{result_msg}、{roll_result}、{san_value}。默认模板示例：<{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}\n损失 {expr}，当前 SAN：{new_san}\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "no_loss": {
+                "type": "text",
+                "description": "no_loss",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{expr}、{name}、{result_msg}、{roll_result}、{san_value}。默认模板示例：<{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}\n损失 {expr}，SAN 保持不变。\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "great_loss": {
+                "type": "text",
+                "description": "great_loss",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{expr}、{name}、{new_san}、{result_msg}、{roll_result}、{san_value}。默认模板示例：<{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}\n损失 {expr}，当前 SAN：{new_san}。请使用 .ti 抽取临时症状。\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "zero": {
+                "type": "text",
+                "description": "zero",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{expr}、{name}、{result_msg}、{roll_result}、{san_value}。默认模板示例：<{name}> 的 SAN 检定：{roll_result}/{san_value}，{result_msg}\n损失 {expr}，SAN 已降至 0。\n",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "temporary_insanity": {
+            "type": "text",
+            "description": "temporary_insanity",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{result}。默认模板示例：{name} 疯狂发作 - 临时症状：\n{result}\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "long_term_insanity": {
+            "type": "text",
+            "description": "long_term_insanity",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{result}。默认模板示例：{name} 疯狂发作 - 总结症状：\n{result}\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "initiative": {
+        "type": "object",
+        "description": "先攻与回合",
+        "items": {
+          "add": {
+            "type": "text",
+            "description": "add",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{value}。默认模板示例：已添加 <{name}>，先攻：{value}。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "remove_name": {
+            "type": "text",
+            "description": "remove_name",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}。默认模板示例：已从先攻列表移除 <{name}>。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "clear": {
+            "type": "text",
+            "description": "clear",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：先攻列表已清空。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "empty": {
+            "type": "text",
+            "description": "empty",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：先攻列表为空。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "list": {
+            "type": "text",
+            "description": "list",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{content}。默认模板示例：当前先攻列表：\n{content}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "next_turn": {
+            "type": "text",
+            "description": "next_turn",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{name}、{value}。默认模板示例：轮到 <{name}> 行动，先攻：{value}。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "turn_advance": {
+            "type": "text",
+            "description": "turn_advance",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{current_name}、{next_name}、{value}。默认模板示例：{current_name} 的回合结束。\n轮到 <{next_name}> 行动，先攻：{value}。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "character_list": {
+        "type": "object",
+        "description": "人物属性生成",
+        "items": {
+          "coc": {
+            "type": "text",
+            "description": "CoC 与杂项",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{characters}。默认模板示例：CoC 人物属性：\n{characters}\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd": {
+            "type": "text",
+            "description": "dnd",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{characters}。默认模板示例：DnD 人物属性：\n{characters}\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "generated_names": {
+        "type": "text",
+        "description": "随机取名回复",
+        "default": "",
+        "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{names}、{num}。默认模板示例：随机姓名（{num} 个）：{names}",
+        "editor_mode": true,
+        "editor_language": "plaintext"
+      },
+      "log": {
+        "type": "object",
+        "description": "日志与旁观者",
+        "items": {
+          "no_active_session": {
+            "type": "text",
+            "description": "no_active_session",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前没有正在记录的日志。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "message_added": {
+            "type": "text",
+            "description": "message_added",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已记录消息。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "unfinished_session": {
+            "type": "text",
+            "description": "unfinished_session",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：日志「{session_name}」尚未结束，可继续记录或新建日志。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "new_session": {
+            "type": "text",
+            "description": "new_session",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：已新建日志：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_not_found": {
+            "type": "text",
+            "description": "session_not_found",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：未找到日志：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_finished": {
+            "type": "text",
+            "description": "session_finished",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：日志已结束：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_active": {
+            "type": "text",
+            "description": "session_active",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：日志已在记录中：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_resumed": {
+            "type": "text",
+            "description": "session_resumed",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：日志已恢复记录：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "no_paused_session": {
+            "type": "text",
+            "description": "no_paused_session",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：没有可恢复的暂停日志。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_paused": {
+            "type": "text",
+            "description": "session_paused",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：日志已暂停：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "no_unfinished_session": {
+            "type": "text",
+            "description": "no_unfinished_session",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：没有未完成的日志。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_halted": {
+            "type": "text",
+            "description": "session_halted",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：日志已终止：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_line": {
+            "type": "text",
+            "description": "session_line",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{message_count}、{session_name}、{start_time}、{status}。默认模板示例：{session_name} · {start_time} · {status} · 消息 {message_count} 条",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "no_sessions": {
+            "type": "text",
+            "description": "no_sessions",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前没有日志。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "already_active_session": {
+            "type": "text",
+            "description": "already_active_session",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{prev}。默认模板示例：已有日志正在记录：{prev}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_deleted": {
+            "type": "text",
+            "description": "session_deleted",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{session_name}。默认模板示例：已删除日志：{session_name}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "session_exported": {
+            "type": "text",
+            "description": "session_exported",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{file_name}、{result_website}、{session_name}。默认模板示例：日志「{session_name}」已导出为「{file_name}」。\n染色器：{result_website}",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "delete_error": {
+            "type": "text",
+            "description": "delete_error",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请使用 .log del <日志名>。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "get_usage": {
+            "type": "text",
+            "description": "get_usage",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请使用 .log get <日志名>。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "export_usage": {
+            "type": "text",
+            "description": "export_usage",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请使用 .log export <日志名> 或 .log export text <日志名>。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "export_text_usage": {
+            "type": "text",
+            "description": "export_text_usage",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请使用 .log export text <日志名>。",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "status_finished": {
+            "type": "text",
+            "description": "status_finished",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已结束",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "status_active": {
+            "type": "text",
+            "description": "status_active",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：进行中",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "status_paused": {
+            "type": "text",
+            "description": "status_paused",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：已暂停",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "stat": {
+            "type": "object",
+            "description": "统计",
+            "items": {
+              "line": {
+                "type": "text",
+                "description": "line",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{dice_count}、{image_count}、{message_count}、{observer_count}、{session_name}、{user_count}。默认模板示例：{session_name}: 消息 {message_count} 条 | 参与者 {user_count} 人 | 骰点 {dice_count} 条 | OB消息 {observer_count} 条 | 图片 {image_count} 张",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "text_export": {
+            "type": "object",
+            "description": "纯文本导出",
+            "items": {
+              "image_line": {
+                "type": "text",
+                "description": "image_line",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{image_url}。默认模板示例：[图片] {image_url}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "success": {
+                "type": "text",
+                "description": "成功",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{file_name}。默认模板示例：导出成功：{file_name}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          },
+          "ob": {
+            "type": "object",
+            "description": "旁观者",
+            "items": {
+              "header": {
+                "type": "text",
+                "description": "标题",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前旁观者列表：",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "empty": {
+                "type": "text",
+                "description": "empty",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前没有旁观者。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "added": {
+                "type": "text",
+                "description": "added",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{nickname}。默认模板示例：已添加旁观者：{nickname}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "removed": {
+                "type": "text",
+                "description": "removed",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{nickname}。默认模板示例：已移除旁观者：{nickname}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "not_found": {
+                "type": "text",
+                "description": "未找到",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{user_id}。默认模板示例：未找到旁观者：{user_id}",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "toggle_on": {
+                "type": "text",
+                "description": "toggle_on",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{nickname}。默认模板示例：{nickname} 已进入旁观模式。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "toggle_off": {
+                "type": "text",
+                "description": "toggle_off",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。请保留占位符：{nickname}。默认模板示例：{nickname} 已退出旁观模式。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "clear": {
+                "type": "text",
+                "description": "clear",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：旁观者列表已清空。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "usage": {
+                "type": "text",
+                "description": "用法提示",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请使用 .log ob add/del/list/clear [@用户|QQ号]。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              },
+              "missing_target": {
+                "type": "text",
+                "description": "missing_target",
+                "default": "",
+                "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：请提供旁观者，例如 .log ob add @某人。",
+                "editor_mode": true,
+                "editor_language": "plaintext"
+              }
+            }
+          }
+        }
+      },
+      "help": {
+        "type": "object",
+        "description": "帮助页面",
+        "items": {
+          "index": {
+            "type": "text",
+            "description": "总目录",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：TRPG 骰子插件帮助\n基础掷骰教程：.dicehelp roll\n进阶掷骰表达式：.dicehelp expr\n人物卡管理：.dicehelp pc\n属性值管理：.dicehelp st\n记录管理：.dicehelp log\n其余杂项指令：.dicehelp coc\nDnD 相关：.dicehelp dnd\n其他规则：\n`/rv 骰子数量 难度` - 进行吸血鬼规则掷骰判定\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "pc": {
+            "type": "text",
+            "description": "pc",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：角色管理\n.pc new <角色名> : 创建空白人物卡，并绑定为当前人物卡。\n.pc create <角色名> : 与 .pc new 相同，兼容 Dice! 习惯写法。\n.pc tag [<角色名> | <角色序号>] : 将对应人物卡绑定为当前人物卡。\n.pc change [<角色名> | <角色序号>] : 与 .pc tag 相同，兼容 Dice! 习惯写法。\n.pc tag [不加参数] : 解除当前群组的人物卡绑定。\n.pc list : 列出已保存的人物卡及",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "st": {
+            "type": "text",
+            "description": "st",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：属性记录\n.st <属性><数值> : 设置属性数值。\n.st <属性><+|-><数值> : 增加或减少属性数值。\n.st <属性><骰子表达式> : 掷骰并将结果写入属性。\n.st <录入表达式> : 批量录入属性，可使用 CoC 人物卡的简化卡表达式。\n.st show : 查看全部属性。\n.st show <属性名> : 查看指定属性。\n.st show <数字> : 查看大于指定数值的属性。\n.st del <属性名> : 删除指定属性。\n.st clr : 清空可",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dice": {
+            "type": "text",
+            "description": "dice",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：.fire [normal/accuracy/recoil] [技能值] [+pN/+bN]：三次手枪检定；默认 accuracy（1/1/1 惩罚骰），normal 为 0/0/0，recoil 为 0/1/2。首个 p1/p2 兼容旧模式 accuracy/recoil；自定义修正推荐写 +pN（增加惩罚）或 +bN（增加奖励），每项 0～10 个，可叠加并相抵。例如 .fire recoil 60 +b1 → 1奖励/无/1惩罚；.fire normal 5 +p2 →",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "expr": {
+            "type": "text",
+            "description": "骰式说明",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：.r <算式>。如：1d6+5/2d6*3/(1d6+2)*3\n.r <次数>#<表达式>。如：.r 3#1d10，连续掷3次1d10。\n.ra <次数>#b<技能名>。如：.ra3#b2射击50，连续进行3次射击检定，每次带2个奖励骰。\n.ra <次数>#p<技能名>。如：.ra3#p2射击50，连续进行3次射击检定，每次带2个惩罚骰。\n.r <总数>d<面数>k<保留数>。如：.r4d6k3 保留最高的3个；.r4d6k-2 保留最低的2个。\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "log": {
+            "type": "text",
+            "description": "log",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：日志管理\n.log new <故事名> : 新建日志并开始记录。\n.log end : 结束当前日志。\n.log on [故事名] : 开始或继续记录指定日志，留空使用最近的日志。\n.log off : 暂停记录当前日志。\n.log list : 查看日志列表。\n.log get <故事名> : 获取指定日志。\n.log stat <故事名> : 查看消息及参与者等统计。\n.log del <故事名> : 删除指定日志。\n",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "coc": {
+            "type": "text",
+            "description": "CoC 与杂项",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：CoC 与杂项设置\n.setcoc : 查看或设置 CoC 检定规则，并把本群规则系统切回 CoC。\n.ruleset [coc/dnd] : 查看或切换本群规则系统。\n.coc <数目> : 生成指定数量的 CoC 人物属性。\n.name <cn/en/us/jp> : 按地区随机生成姓名。\n.d66 [次数] : 掷一次或多次 D66。\n.find <名称> : 查询海豹内置资料中的 DND/COC 法术；未命中时会回退到 SRD 或开放神话仪式摘要。\n.choose <",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          },
+          "dnd": {
+            "type": "text",
+            "description": "dnd",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：`.ruleset dnd` - 使用独立的 DnD 人物卡；.pc new <名字> 创建人物卡\n`.st 力量:8 敏捷:18 智力*:14 感知*:19 熟练:3 察觉*:0 奥秘*:4` - 录入简化卡；属性星号是豁免熟练，技能数值是额外修正\n`.st show [属性/技能/属性豁免]` - 查看属性和计算后的加值；奥秘*:4 在本例中最终为 +9\n`.st template / .st 模板` - 获取 DnD 模板\n`.st export` - 导出简化卡，保留",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      },
+      "setting": {
+        "type": "object",
+        "description": "染色器与其他设置",
+        "items": {
+          "website": {
+            "type": "text",
+            "description": "染色器前端地址",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：https://painter.velinithra.space",
+            "editor_mode": true,
+            "editor_language": "plaintext"
+          }
+        }
+      }
+    }
   }
 }

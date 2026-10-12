@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>风铃配置中心</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand"><img src="./assets/d20.svg" alt="" width="34" height="34"><div><h1>风铃配置中心</h1><span>TRPG DICE</span></div></div>
+      <div class="actions">
+        <span id="save-state" role="status">正在连接</span>
+        <button id="reload" class="icon-button" title="重新读取配置" aria-label="重新读取配置" disabled><span data-icon="refresh-cw"></span></button>
+        <button id="save" class="primary" disabled><span data-icon="save"></span>保存修改</button>
+      </div>
+    </header>
+    <div id="banner" role="alert" hidden></div>
+    <div class="workspace">
+      <aside>
+        <label class="search"><span data-icon="search"></span><input id="search" type="search" placeholder="搜索文案、字段或分类" aria-label="搜索配置"></label>
+        <div class="nav-caption">配置分类 <span id="category-count"></span></div>
+        <nav id="categories" aria-label="配置分类"></nav>
+      </aside>
+      <main>
+        <div class="section-heading"><div><div class="eyebrow" id="section-path">SETTINGS</div><h2 id="section-title">基本设置</h2></div><span id="field-count"></span></div>
+        <div id="fields" aria-busy="true"><p class="empty">正在读取配置…</p></div>
+      </main>
+    </div>
+    <dialog id="discard-dialog">
+      <h2>放弃未保存的修改？</h2>
+      <p>重新读取后，当前修改不会保留。</p>
+      <div class="dialog-actions"><button id="cancel-discard">继续编辑</button><button id="confirm-discard" class="primary">放弃并刷新</button></div>
+    </dialog>
+    <dialog id="hint-dialog">
+      <h2 id="hint-title"></h2><p id="hint-text"></p>
+      <div class="dialog-actions"><button id="close-hint">关闭</button></div>
+    </dialog>
+    <script type="module" src="./app.bundle.js"></script>
+  </body>
+</html>

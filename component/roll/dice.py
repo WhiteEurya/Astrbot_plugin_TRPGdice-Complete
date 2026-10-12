@@ -619,77 +619,37 @@ def choose_option(raw_options: str) -> str:
     return get_output("choice.result", choice=choice)
 
 
-def handle_pistol_fire(full_args: str, name: str, chara_data: dict = None) -> str:
-    """
-    手枪三连发后端逻辑 - 适配感性语词模板
-    """
-    # 1. 解析模式与惩罚规律
-    penalty_pattern = [0, 0, 0]
-    mode_label = get_output("skill_check.pistol_check.mode_regular")
-    if 'p2' in full_args:
-        penalty_pattern = [0, 1, 2]
-        mode_label = get_output("skill_check.pistol_check.mode_recoil")
-    else :
-        penalty_pattern = [1, 1, 1]
-        mode_label = get_output("skill_check.pistol_check.mode_accuracy")
+def handle_pistol_fire(full_args: str, name: str, chara_data: dict = None, group_id: str = "") -> str:
+    from .fire import FIRE_HELP, parse_fire_args, roll_fire_percentile
+    from ..pc.attributes import find_attribute_key
 
-    # 2. 确定技能值与名称
-    skill_val_match = re.search(r'(?<!p)(\d{2,3})', full_args)
-    if skill_val_match:
-        skill_value = int(skill_val_match.group(1))
-        skill_name = get_output("skill_check.pistol_check.skill_specified")
-    elif chara_data:
-        attrs = chara_data.get("attributes", {})
-        # 依次查找：手枪、射击(手枪)、射击
-        skill_value = attrs.get("手枪", attrs.get("射击(手枪)", attrs.get("射击", 20)))
-        skill_name = get_output("skill_check.pistol_check.skill_handgun")
-    else:
-        skill_value = 20
-        skill_name = get_output("skill_check.pistol_check.skill_handgun")
-
-    # 3. 生成头部 (Head)
-    head_str = get_output(
-        "skill_check.pistol_check.head", 
-        name=name, 
-        skill_name=skill_name, 
-        mode=mode_label
-    )
-    results_list = [head_str]
-
-    # 4. 生成每一发的结果 (Detail)
-    for i, p_count in enumerate(penalty_pattern):
-        # 基础 1D100
-        tens = random.randint(0, 9)
-        ones = random.randint(0, 9)
-        base_roll = 100 if (tens == 0 and ones == 0) else (tens * 10 + ones)
-        
-        final_roll = base_roll
-        p_info = ""
-
-        # 惩罚骰逻辑：十位取最高
-        if p_count > 0:
-            original_tens = tens if base_roll != 100 else 0
-            p_tens_list = [random.randint(0, 9) for _ in range(p_count)]
-            final_tens = max([original_tens] + p_tens_list)
-            
-            # 重新组合结果
-            final_roll = 100 if (final_tens == 0 and ones == 0) else (final_tens * 10 + ones)
-            p_info = f"[{tens}, {', '.join(map(str, p_tens_list))}]"
-
-        # 判定成功等级 (调用你之前的 get_roll_result)
-        # 这里的 group_id 传入空字符串或当前群ID
-        result_level = get_roll_result(final_roll, skill_value, "")
-
-        # 拼接详情
-        detail_str = get_output(
-            "skill_check.pistol_check.detail",
-            i=i+1,
-            p=p_count,
-            roll=final_roll,
-            p_info=p_info,
-            skill_value=skill_value,
-            result=result_level
-        )
-        results_list.append(detail_str)
-
-    return "".join(results_list)
+    try:
+        request = parse_fire_args(full_args)
+    except ValueError as exc:
+        return f"{exc}\n{FIRE_HELP}"
+    skill_value = request.skill
+    if skill_value is None:
+        attrs = (chara_data or {}).get("attributes", {})
+        key = find_attribute_key(attrs, "手枪")
+        skill_value = attrs[key] if key is not None else attrs.get("射击", 20)
+    try:
+        skill_value = int(skill_value)
+    except (TypeError, ValueError):
+        return "人物卡手枪技能值不是整数，请先修正人物卡。"
+    mode_key = {"normal": "regular", "accuracy": "accuracy", "recoil": "recoil"}[request.mode]
+    results = [get_output(
+        "skill_check.pistol_check.head", name=name,
+        skill_name=get_output("skill_check.pistol_check.skill_specified" if request.skill is not None
+                              else "skill_check.pistol_check.skill_handgun"),
+        mode=get_output(f"skill_check.pistol_check.mode_{mode_key}"),
+    ).rstrip()]
+    for i, penalty in enumerate(request.penalties, 1):
+        roll, candidates = roll_fire_percentile(penalty)
+        label = f"{penalty}个惩罚骰" if penalty > 0 else f"{-penalty}个奖励骰" if penalty < 0 else "无奖励/惩罚骰"
+        result = get_roll_result(roll, skill_value, group_id)
+        results.append(get_output(
+            "skill_check.pistol_check.fire_detail", i=i, dice=label,
+            roll=roll, candidates=", ".join(map(str, candidates)),
+            skill_value=skill_value, result=result,
+        ).rstrip())
+    return "\n".join(results)

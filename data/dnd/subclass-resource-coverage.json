@@ -1,0 +1,3321 @@
+{
+  "schema_version": 1,
+  "scope": "逐条核查本地目录中的所有子职出版记录；只审查消耗资源及恢复，不实现特性效果。",
+  "reviewed_on": "2026-10-12",
+  "complete": true,
+  "counts": {
+    "total": 160,
+    "reviewed": 160,
+    "pending": 0
+  },
+  "books": {
+    "phb2014": 40,
+    "scag": 11,
+    "xgte": 31,
+    "tcoe": 30,
+    "phb2024": 48
+  },
+  "subclasses": [
+    {
+      "id": "phb2014:barbarian:path-of-the-berserker",
+      "name": "狂战士",
+      "class_id": "barbarian",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/野蛮人/狂战士道途.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:barbarian:path-of-the-berserker:intimidating_presence"
+      ],
+      "shared_resources": [
+        "狂怒复用狂暴，结束后增加一级力竭；不独立登记狂怒次数"
+      ],
+      "without_independent_resources": [
+        "无我狂暴",
+        "报偿"
+      ]
+    },
+    {
+      "id": "phb2014:barbarian:path-of-the-totem-warrior",
+      "name": "图腾武者",
+      "class_id": "barbarian",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/野蛮人/图腾武者道途.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "图腾精魄与图腾同调依附狂暴"
+      ],
+      "without_independent_resources": [
+        "精魄寻者仪式施法",
+        "兽之形",
+        "精魄行者仪式施法"
+      ]
+    },
+    {
+      "id": "phb2014:bard:college-of-lore",
+      "name": "逸闻学院",
+      "class_id": "bard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/吟游诗人/逸闻学院.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "3级语出惊人与14级超凡技艺各消耗一次诗人激励"
+      ],
+      "without_independent_resources": [
+        "附赠熟练项",
+        "额外魔法奥秘不提供额外免费施法次数"
+      ]
+    },
+    {
+      "id": "phb2014:bard:college-of-valor",
+      "name": "勇气学院",
+      "class_id": "bard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/吟游诗人/勇气学院.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "战斗激励复用已经给予的诗人激励骰，不额外扣第二次激励"
+      ],
+      "without_independent_resources": [
+        "附赠熟练项",
+        "额外攻击",
+        "战斗魔法"
+      ]
+    },
+    {
+      "id": "phb2014:cleric:knowledge-domain",
+      "name": "知识领域",
+      "class_id": "cleric",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/牧师/知识领域.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:cleric:knowledge-domain:read_thoughts",
+        "phb2014:cleric:knowledge-domain:visions"
+      ],
+      "shared_resources": [
+        "2级岁月知识及6级读心各使用一次引导神力；读心附带的暗示术不另扣法术位"
+      ],
+      "without_independent_resources": [
+        "知识祝福",
+        "强力施法"
+      ]
+    },
+    {
+      "id": "phb2014:cleric:life-domain",
+      "name": "生命领域",
+      "class_id": "cleric",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/牧师/生命领域.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "维持生命消耗引导神力；5倍牧师等级是单次分配预算，不是可跨次积存的生命池"
+      ],
+      "without_independent_resources": [
+        "附赠熟练项",
+        "生命门徒",
+        "神佑医者",
+        "神圣打击",
+        "极效治疗"
+      ]
+    },
+    {
+      "id": "phb2014:cleric:light-domain",
+      "name": "光明领域",
+      "class_id": "cleric",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/牧师/光明领域.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:cleric:light-domain:flare"
+      ],
+      "shared_resources": [
+        "黎明曙光使用引导神力",
+        "精通闪光复用守御闪光次数"
+      ],
+      "without_independent_resources": [
+        "附赠戏法",
+        "强力施法",
+        "光冕没有独立次数限制"
+      ]
+    },
+    {
+      "id": "phb2014:cleric:nature-domain",
+      "name": "自然领域",
+      "class_id": "cleric",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/牧师/自然领域.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "魅惑动植物使用引导神力"
+      ],
+      "without_independent_resources": [
+        "自然侍僧",
+        "附赠熟练项",
+        "抑制元素",
+        "神圣打击",
+        "自然大师"
+      ]
+    },
+    {
+      "id": "phb2014:cleric:tempest-domain",
+      "name": "风暴领域",
+      "class_id": "cleric",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/牧师/风暴领域.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:cleric:tempest-domain:wrath"
+      ],
+      "shared_resources": [
+        "毁灭狂怒使用引导神力"
+      ],
+      "without_independent_resources": [
+        "附赠熟练项",
+        "雷鸣打击",
+        "神圣打击",
+        "风暴降生"
+      ]
+    },
+    {
+      "id": "phb2014:cleric:trickery-domain",
+      "name": "诡术领域",
+      "class_id": "cleric",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/牧师/诡术领域.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "召唤分身及幽影斗篷使用引导神力",
+        "精通分身不增加消耗次数"
+      ],
+      "without_independent_resources": [
+        "诡术祝福",
+        "神圣打击"
+      ]
+    },
+    {
+      "id": "phb2014:cleric:war-domain",
+      "name": "战争领域",
+      "class_id": "cleric",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/牧师/战争领域.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:cleric:war-domain:priest"
+      ],
+      "shared_resources": [
+        "导引打击及战神祝福使用引导神力"
+      ],
+      "without_independent_resources": [
+        "额外熟练项",
+        "神圣打击",
+        "战斗化身"
+      ]
+    },
+    {
+      "id": "phb2014:druid:circle-of-the-land",
+      "name": "大地结社",
+      "class_id": "druid",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/德鲁伊/大地结社.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:druid:circle-of-the-land:natural_recovery",
+        "phb2014:druid:circle-of-the-land:sanctuary"
+      ],
+      "shared_resources": [
+        "结社法术使用普通法术位"
+      ],
+      "without_independent_resources": [
+        "附赠戏法",
+        "大地行者",
+        "自然之护"
+      ]
+    },
+    {
+      "id": "phb2014:druid:circle-of-the-moon",
+      "name": "月亮结社",
+      "class_id": "druid",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/德鲁伊/月亮结社.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "2级战斗荒野形态仍扣一次荒野形态",
+        "形态内治疗消耗一个选定环位",
+        "10级元素荒野形态扣两次荒野形态"
+      ],
+      "without_independent_resources": [
+        "结社形态",
+        "原初打击",
+        "千面相无限次变身术"
+      ]
+    },
+    {
+      "id": "phb2014:fighter:champion",
+      "name": "勇士",
+      "class_id": "fighter",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/战士/勇士.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "精通重击",
+        "运动健将",
+        "额外战斗风格",
+        "高效重击",
+        "生还者为条件触发生命恢复，不是有限次数池"
+      ]
+    },
+    {
+      "id": "phb2014:fighter:battle-master",
+      "name": "战斗大师",
+      "class_id": "fighter",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/战士/战斗大师.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:fighter:battle-master:superiority"
+      ],
+      "shared_resources": [
+        "所有战技复用卓越骰",
+        "精通卓越战技修改骰面，不另建池"
+      ],
+      "without_independent_resources": [
+        "战争学徒",
+        "知己知彼"
+      ]
+    },
+    {
+      "id": "phb2014:fighter:eldritch-knight",
+      "name": "奥法骑士",
+      "class_id": "fighter",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/战士/奥法骑士.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:fighter:eldritch-knight:slots"
+      ],
+      "shared_resources": [
+        "15级秘法冲锋依附动作如潮，不增加独立使用次数"
+      ],
+      "without_independent_resources": [
+        "武器联结",
+        "战争魔法",
+        "秘法打击",
+        "精通战争魔法"
+      ]
+    },
+    {
+      "id": "phb2014:monk:way-of-the-open-hand",
+      "name": "散打宗",
+      "class_id": "monk",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/武僧/散打宗.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:monk:way-of-the-open-hand:wholeness"
+      ],
+      "shared_resources": [
+        "散打技巧复用疾风连击已花费的气",
+        "17级渗透劲每次施加消耗3气"
+      ],
+      "without_independent_resources": [
+        "宁神境为长休触发效果，不是额外次数池"
+      ]
+    },
+    {
+      "id": "phb2014:monk:way-of-shadow",
+      "name": "暗影宗",
+      "class_id": "monk",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/武僧/暗影宗.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "3级暗影技艺的四种指定法术各花2气；次级幻影为免费戏法"
+      ],
+      "without_independent_resources": [
+        "暗影步",
+        "幽影斗篷",
+        "趁虚而入"
+      ]
+    },
+    {
+      "id": "phb2014:monk:way-of-the-four-elements",
+      "name": "四象宗",
+      "class_id": "monk",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/武僧/四象宗.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:monk:way-of-the-four-elements:disciplines"
+      ],
+      "shared_resources": [
+        "所有元素法门统一扣武僧气，不建元素点"
+      ],
+      "without_independent_resources": [
+        "元素同调不消耗气"
+      ]
+    },
+    {
+      "id": "phb2014:paladin:oath-of-devotion",
+      "name": "奉献之誓",
+      "class_id": "paladin",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/圣武士/奉献之誓.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:paladin:oath-of-devotion:nimbus"
+      ],
+      "shared_resources": [
+        "神圣武器及驱散不洁使用引导神力",
+        "誓言法术使用普通法术位"
+      ],
+      "without_independent_resources": [
+        "奉献灵光",
+        "纯净之魂"
+      ]
+    },
+    {
+      "id": "phb2014:paladin:oath-of-the-ancients",
+      "name": "古贤之誓",
+      "class_id": "paladin",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/圣武士/古贤之誓.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:paladin:oath-of-the-ancients:sentinel",
+        "phb2014:paladin:oath-of-the-ancients:champion"
+      ],
+      "shared_resources": [
+        "自然之怒及驱散无信使用引导神力",
+        "誓言法术使用普通法术位"
+      ],
+      "without_independent_resources": [
+        "守御灵光",
+        "不灭哨卫的衰老保护部分为被动效果"
+      ]
+    },
+    {
+      "id": "phb2014:paladin:oath-of-vengeance",
+      "name": "复仇之誓",
+      "class_id": "paladin",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/圣武士/复仇之誓.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:paladin:oath-of-vengeance:angel"
+      ],
+      "shared_resources": [
+        "破胆斥喝及仇敌誓言使用引导神力",
+        "誓言法术使用普通法术位"
+      ],
+      "without_independent_resources": [
+        "坚韧复仇",
+        "复仇之魂"
+      ]
+    },
+    {
+      "id": "phb2014:ranger:hunter",
+      "name": "猎人",
+      "class_id": "ranger",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/游侠/猎人.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "猎人猎物",
+        "防守战术",
+        "多重攻击",
+        "高效猎人防术；均为被动或回合动作限制，不建立休息次数池"
+      ]
+    },
+    {
+      "id": "phb2014:ranger:beast-master",
+      "name": "驯兽师",
+      "class_id": "ranger",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/游侠/驯兽师.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:ranger:beast-master:companion"
+      ],
+      "shared_resources": [
+        "法术共享使用原本施法的环位，不重复扣除"
+      ],
+      "without_independent_resources": [
+        "特殊训练",
+        "兽性狂怒"
+      ]
+    },
+    {
+      "id": "phb2014:rogue:thief",
+      "name": "盗贼",
+      "class_id": "rogue",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/游荡者/盗贼.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "魔法物品自带充能另属装备数据，不由盗贼等级凭空生成"
+      ],
+      "without_independent_resources": [
+        "快手",
+        "梁上君子",
+        "极效潜行",
+        "使用魔法装置",
+        "盗贼本能为战斗首轮额外回合，不是休息次数池"
+      ]
+    },
+    {
+      "id": "phb2014:rogue:assassin",
+      "name": "刺客",
+      "class_id": "rogue",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/游荡者/刺客.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "9级专业渗透每个伪造身份花费25gp及7天，不建职业次数池"
+      ],
+      "without_independent_resources": [
+        "附赠熟练项",
+        "刺杀",
+        "冒名顶替",
+        "致命一击"
+      ]
+    },
+    {
+      "id": "phb2014:rogue:arcane-trickster",
+      "name": "诡术师",
+      "class_id": "rogue",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/游荡者/诡术师.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:rogue:arcane-trickster:slots",
+        "phb2014:rogue:arcane-trickster:spell_thief"
+      ],
+      "shared_resources": [
+        "窃得法术仍以正常法术位施放"
+      ],
+      "without_independent_resources": [
+        "法师之手诈术",
+        "诡术伏击",
+        "万能诡术"
+      ]
+    },
+    {
+      "id": "phb2014:sorcerer:draconic-bloodline",
+      "name": "龙族血脉",
+      "class_id": "sorcerer",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/术士/龙族血脉.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [],
+      "shared_resources": [
+        "6级元素亲和的可选抗性消耗1术法点",
+        "18级真龙姿态消耗5术法点；目标通过豁免后有24小时免疫，属于效果目标状态"
+      ],
+      "without_independent_resources": [
+        "巨龙先祖",
+        "龙族体魄",
+        "龙翼无独立次数"
+      ]
+    },
+    {
+      "id": "phb2014:sorcerer:wild-magic",
+      "name": "狂野魔法",
+      "class_id": "sorcerer",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/术士/狂野魔法.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:sorcerer:wild-magic:tides"
+      ],
+      "shared_resources": [
+        "6级扭转机运消耗2术法点",
+        "浪涌表有恢复最低环位及全部术法点的结果；不能因掷浪涌就一律恢复"
+      ],
+      "without_independent_resources": [
+        "狂野魔法浪涌不设硬次数上限",
+        "驾驭混沌",
+        "法术轰击"
+      ]
+    },
+    {
+      "id": "phb2014:warlock:the-archfey",
+      "name": "至高妖精",
+      "class_id": "warlock",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/邪术师/至高妖精.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:warlock:the-archfey:presence",
+        "phb2014:warlock:the-archfey:escape",
+        "phb2014:warlock:the-archfey:delirium"
+      ],
+      "shared_resources": [
+        "扩展法术只扩展选择，不送独立法术位"
+      ],
+      "without_independent_resources": [
+        "斗转星移"
+      ]
+    },
+    {
+      "id": "phb2014:warlock:the-fiend",
+      "name": "邪魔",
+      "class_id": "warlock",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/邪术师/邪魔.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:warlock:the-fiend:luck",
+        "phb2014:warlock:the-fiend:hell"
+      ],
+      "shared_resources": [
+        "扩展法术只扩展选择，不送独立法术位"
+      ],
+      "without_independent_resources": [
+        "黑暗赐福为条件触发临时生命值",
+        "邪魔体魄"
+      ]
+    },
+    {
+      "id": "phb2014:warlock:the-great-old-one",
+      "name": "旧日支配者",
+      "class_id": "warlock",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/邪术师/旧日支配者.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:warlock:the-great-old-one:ward"
+      ],
+      "shared_resources": [
+        "扩展法术只扩展选择，不送独立法术位"
+      ],
+      "without_independent_resources": [
+        "唤醒心灵",
+        "思维之盾",
+        "创造奴仆无休息次数限制但同一时间维持一个目标"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-abjuration",
+      "name": "防护学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/防护学派.html",
+      "resources": [
+        "phb2014:wizard:school-of-abjuration:arcane_ward"
+      ],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [
+        "投射守御使用奥术守御生命池"
+      ],
+      "without_independent_resources": [
+        "防护学者",
+        "精通防护",
+        "法术抗性"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-conjuration",
+      "name": "咒法学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/咒法学派.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:wizard:school-of-conjuration:transposition"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "咒法学者",
+        "次级咒术",
+        "专注咒术",
+        "强韧召唤"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-divination",
+      "name": "预言学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/预言学派.html",
+      "resources": [
+        "phb2014:wizard:school-of-divination:portent",
+        "phb2014:wizard:school-of-divination:expert_divination",
+        "phb2014:wizard:school-of-divination:third_eye"
+      ],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [
+        "高等预兆调整同一个预兆骰列表上限"
+      ],
+      "without_independent_resources": [
+        "预言学者"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-enchantment",
+      "name": "惑控学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/附魔学派.html",
+      "resources": [
+        "phb2014:wizard:school-of-enchantment:hypnotic_gaze",
+        "phb2014:wizard:school-of-enchantment:instinctive_charm"
+      ],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [],
+      "without_independent_resources": [
+        "附魔学者",
+        "分裂附魔",
+        "编演记忆：每次符合条件的法术有一次修改机会，不是全局休息次数池"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-evocation",
+      "name": "塑能学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "official_checked",
+      "source_url": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014/classes#SchoolofEvocation",
+      "resources": [
+        "wizard:evocation:overchannel"
+      ],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [],
+      "without_independent_resources": [
+        "塑能学者",
+        "法术塑形",
+        "强力戏法",
+        "强效塑能"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-illusion",
+      "name": "幻术学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/幻术学派.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:wizard:school-of-illusion:self"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "幻术学者",
+        "精通次级幻影",
+        "易变幻象",
+        "亦真亦幻"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-necromancy",
+      "name": "死灵学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/死灵学派.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:wizard:school-of-necromancy:command"
+      ],
+      "shared_resources": [
+        "不死奴仆复用活化死尸的法术位"
+      ],
+      "without_independent_resources": [
+        "死灵学者",
+        "夺命收割为条件触发恢复",
+        "不死适应"
+      ]
+    },
+    {
+      "id": "phb2014:wizard:school-of-transmutation",
+      "name": "变化学派",
+      "class_id": "wizard",
+      "source": "phb2014",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/玩家手册/职业/法师/变化学派.html",
+      "resource_file": "resource-research-phb2014.json",
+      "resources": [
+        "phb2014:wizard:school-of-transmutation:shapechanger",
+        "phb2014:wizard:school-of-transmutation:stone"
+      ],
+      "shared_resources": [
+        "变化宗师的各选项统一消耗同一颗变化师之石"
+      ],
+      "without_independent_resources": [
+        "变化学者",
+        "次级炼金"
+      ]
+    },
+    {
+      "id": "scag:barbarian:path-of-the-battlerager",
+      "name": "狂怒战士",
+      "class_id": "barbarian",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/剑湾冒险者指南/职业/野蛮人-战狂.html",
+      "resource_file": "resource-research-scag.json",
+      "resources": [
+        "scag:barbarian:path-of-the-battlerager:reckless_abandon"
+      ],
+      "shared_resources": [
+        "狂暴期间能力共用基础狂暴，不另外扣子职次数"
+      ],
+      "without_independent_resources": [
+        "战狂装甲、战狂冲锋、钉刺反冲无独立次数池"
+      ]
+    },
+    {
+      "id": "scag:cleric:arcana-domain",
+      "name": "奥秘领域",
+      "class_id": "cleric",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/剑湾冒险者指南/职业/牧师-奥秘领域.html",
+      "resource_file": "resource-research-scag.json",
+      "resources": [],
+      "shared_resources": [
+        "奥秘阻绝消耗1次基础引导神力；奥秘放逐是其升级效果，不二次扣费",
+        "破法者复用触发治疗法术的环位，不额外收费",
+        "领域法术与奥术精通不授予免费施法次数"
+      ],
+      "without_independent_resources": [
+        "奥术传承、强力施法无独立次数池"
+      ]
+    },
+    {
+      "id": "scag:fighter:purple-dragon-knight",
+      "name": "紫龙骑士",
+      "class_id": "fighter",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/剑湾冒险者指南/职业/战士-紫龙骑士.html",
+      "resource_file": "resource-research-scag.json",
+      "resources": [],
+      "shared_resources": [
+        "重整姿态复用回气",
+        "振奋之潮复用动作如潮，18级增加受益盟友数而非次数",
+        "意志壁垒复用不屈，不为盟友重投再扣一次"
+      ],
+      "without_independent_resources": [
+        "皇家特使无独立次数池"
+      ]
+    },
+    {
+      "id": "scag:monk:way-of-the-long-death",
+      "name": "长死宗",
+      "class_id": "monk",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/剑湾冒险者指南/职业/武僧-永亡宗.html",
+      "resource_file": "resource-research-scag.json",
+      "resources": [
+        "scag:monk:way-of-the-long-death:touch_of_death",
+        "scag:monk:way-of-the-long-death:ki_costs"
+      ],
+      "shared_resources": [
+        "握生死与永亡触扣基础武僧气，不建立子职气池"
+      ],
+      "without_independent_resources": [
+        "索命镰无气消耗，也无休息使用次数限制"
+      ]
+    },
+    {
+      "id": "scag:monk:way-of-the-sun-soul",
+      "name": "日魂宗",
+      "class_id": "monk",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "official_checked",
+      "source_url": "https://www.scribd.com/document/439373370/Sword-Coast-Adventurers-Guide",
+      "resource_file": "resource-research-scag-reprints.json",
+      "resources": [],
+      "book_pages": [
+        131,
+        132
+      ],
+      "shared_resources": [
+        "与XGE共用气费用：3级附赠双射1；6级燃烧之手2、升环每环加1、总费用上限floor(武僧等级/2)；11级日爆基础免费、增幅0至3"
+      ],
+      "without_independent_resources": [
+        "日盾无次数池"
+      ]
+    },
+    {
+      "id": "scag:paladin:oath-of-the-crown",
+      "name": "王冠之誓",
+      "class_id": "paladin",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/剑湾冒险者指南/职业/圣武士-王冠之誓.html",
+      "resource_file": "resource-research-scag.json",
+      "resources": [
+        "scag:paladin:oath-of-the-crown:exalted_champion"
+      ],
+      "shared_resources": [
+        "捍卫挑战与扭转局势各扣基础引导神力1次",
+        "神圣誓忠转移实际伤害到人物生命，不设独立点数",
+        "誓言法术使用正常环位"
+      ],
+      "without_independent_resources": [
+        "顽强精神无独立有限资源"
+      ]
+    },
+    {
+      "id": "scag:rogue:mastermind",
+      "name": "策士",
+      "class_id": "rogue",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "official_checked",
+      "source_url": "https://www.scribd.com/document/439373370/Sword-Coast-Adventurers-Guide",
+      "resource_file": "resource-research-scag-reprints.json",
+      "resources": [],
+      "book_pages": [
+        135
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "全部特性均无独立休息次数池，与XGE资源模型相同"
+      ]
+    },
+    {
+      "id": "scag:rogue:swashbuckler",
+      "name": "剑客",
+      "class_id": "rogue",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "official_checked",
+      "source_url": "https://www.scribd.com/document/439373370/Sword-Coast-Adventurers-Guide",
+      "resource_file": "resource-research-scag-reprints.json",
+      "resources": [],
+      "book_pages": [
+        135,
+        136
+      ],
+      "shared_resources": [
+        "决斗大师17级1次、短休或长休补满，与XGE相同"
+      ],
+      "without_independent_resources": [
+        "其余特性无次数池"
+      ]
+    },
+    {
+      "id": "scag:sorcerer:storm-sorcery",
+      "name": "风暴术法",
+      "class_id": "sorcerer",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "official_checked",
+      "source_url": "https://www.scribd.com/document/439373370/Sword-Coast-Adventurers-Guide",
+      "resource_file": "resource-research-scag-reprints.json",
+      "resources": [],
+      "book_pages": [
+        137
+      ],
+      "shared_resources": [
+        "御风之魂18级分享飞行1次、短休或长休补满，与XGE相同"
+      ],
+      "without_independent_resources": [
+        "其他特性无独立次数池"
+      ]
+    },
+    {
+      "id": "scag:warlock:the-undying",
+      "name": "不朽者",
+      "class_id": "warlock",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/剑湾冒险者指南/职业/邪术师-不朽者.html",
+      "resource_file": "resource-research-scag.json",
+      "resources": [
+        "scag:warlock:the-undying:among_the_dead",
+        "scag:warlock:the-undying:defy_death",
+        "scag:warlock:the-undying:indestructible_life"
+      ],
+      "shared_resources": [
+        "扩展列表不授予免费法术；使用正常契约魔法资源"
+      ],
+      "without_independent_resources": [
+        "维生术戏法与不朽之理无独立次数池；不需睡眠不等于不需长休"
+      ]
+    },
+    {
+      "id": "scag:wizard:bladesinging",
+      "name": "剑咏",
+      "class_id": "wizard",
+      "source": "scag",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "official_checked",
+      "source_url": "https://www.scribd.com/document/439373370/Sword-Coast-Adventurers-Guide",
+      "resource_file": "resource-research-scag-reprints.json",
+      "resources": [
+        "scag:wizard:bladesinging:bladesong",
+        "scag:wizard:bladesinging:defense"
+      ],
+      "book_pages": [
+        142
+      ],
+      "shared_resources": [
+        "正常施法复用法师法术位"
+      ],
+      "without_independent_resources": [
+        "训练、额外攻击和胜利之歌无次数池"
+      ]
+    },
+    {
+      "id": "xgte:barbarian:path-of-the-ancestral-guardian",
+      "name": "先祖守卫",
+      "class_id": "barbarian",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/野蛮人/先祖守卫道途.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:barbarian:path-of-the-ancestral-guardian:consult_spirits"
+      ],
+      "shared_resources": [
+        "先祖护卫与精魂之盾使用既有狂暴状态，不另扣狂暴次数"
+      ],
+      "without_independent_resources": [
+        "仇魂先祖复用精魂之盾反应，无独立使用次数"
+      ]
+    },
+    {
+      "id": "xgte:barbarian:path-of-the-storm-herald",
+      "name": "风暴先驱",
+      "class_id": "barbarian",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/野蛮人/风暴先驱道途.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [],
+      "shared_resources": [
+        "风暴灵光随狂暴激活，持续中附赠激活不再扣狂暴",
+        "冻原临时生命按野蛮人等级3/5/10/15/20为2/3/4/5/6，不叠加，不是可消耗次数池"
+      ],
+      "without_independent_resources": [
+        "风暴之魂、风暴之盾、狂怒风暴无独立休息次数"
+      ]
+    },
+    {
+      "id": "xgte:barbarian:path-of-the-zealot",
+      "name": "狂热者",
+      "class_id": "barbarian",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/野蛮人/狂热者道途.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:barbarian:path-of-the-zealot:fanatical_focus",
+        "xgte:barbarian:path-of-the-zealot:zealous_presence"
+      ],
+      "shared_resources": [
+        "神性之怒与怒不畏死依赖狂暴，不另扣狂暴"
+      ],
+      "without_independent_resources": [
+        "神之勇者豁免复活材料支出，不建立免费复活次数"
+      ]
+    },
+    {
+      "id": "xgte:bard:college-of-glamour",
+      "name": "魅惑学院",
+      "class_id": "bard",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/吟游诗人/迷惑学院.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:bard:college-of-glamour:enthralling_performance",
+        "xgte:bard:college-of-glamour:mantle_majesty",
+        "xgte:bard:college-of-glamour:unbreakable_majesty"
+      ],
+      "shared_resources": [
+        "激励光环每次消耗1次吟游激励，不按目标数扣；临时生命在诗人3/5/10/15级为5/8/11/14"
+      ],
+      "without_independent_resources": []
+    },
+    {
+      "id": "xgte:bard:college-of-swords",
+      "name": "剑舞学院",
+      "class_id": "bard",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/吟游诗人/剑舞学院.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [],
+      "shared_resources": [
+        "3种剑舞每次消耗1次吟游激励；每回合最多一种剑舞",
+        "14级剑舞大师可选免费d6模式，不扣激励；仍可选普通消耗模式"
+      ],
+      "without_independent_resources": [
+        "附赠熟练项、战斗风格、额外攻击无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:bard:college-of-whispers",
+      "name": "低语学院",
+      "class_id": "bard",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/吟游诗人/低语学院.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:bard:college-of-whispers:words_terror",
+        "xgte:bard:college-of-whispers:mantle_whispers",
+        "xgte:bard:college-of-whispers:shadow_lore"
+      ],
+      "shared_resources": [
+        "心灵之刃武器命中后可消耗1次吟游激励，每个自己的回合最多1次"
+      ],
+      "without_independent_resources": []
+    },
+    {
+      "id": "xgte:cleric:forge-domain",
+      "name": "锻造领域",
+      "class_id": "cleric",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/牧师/锻造领域.html",
+      "resource_file": "resource-research-xgte-divine.json",
+      "resources": [
+        "xgte:cleric:forge-domain:blessing"
+      ],
+      "shared_resources": [
+        "铁匠祝福消耗1次引导神力以及等值金属材料；不创造可休息恢复的金币池",
+        "领域法术正常消耗环位"
+      ],
+      "without_independent_resources": [
+        "额外熟练、锻造之魂、神圣打击、火与钢的圣徒无独立休息次数"
+      ]
+    },
+    {
+      "id": "xgte:cleric:grave-domain",
+      "name": "坟墓领域",
+      "class_id": "cleric",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/牧师/坟墓领域.html",
+      "resource_file": "resource-research-xgte-divine.json",
+      "resources": [
+        "xgte:cleric:grave-domain:eyes_grave",
+        "xgte:cleric:grave-domain:sentinel"
+      ],
+      "shared_resources": [
+        "往墓之途扣1次基础引导神力；领域法术正常消耗环位",
+        "引魂明灯治疗目标生命，使用后须等自己下回合开始，不是休息池"
+      ],
+      "without_independent_resources": [
+        "生死轮回与强力施法无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:druid:circle-of-dreams",
+      "name": "梦境结社",
+      "class_id": "druid",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/德鲁伊/梦境结社.html",
+      "resource_file": "resource-research-xgte-divine.json",
+      "resources": [
+        "xgte:druid:circle-of-dreams:balm",
+        "xgte:druid:circle-of-dreams:hidden_paths",
+        "xgte:druid:circle-of-dreams:walker"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "月光阴影的炉心随休息发动，不设独立次数或消耗荒野形态"
+      ]
+    },
+    {
+      "id": "xgte:druid:circle-of-the-shepherd",
+      "name": "牧者结社",
+      "class_id": "druid",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/德鲁伊/牧人结社.html",
+      "resource_file": "resource-research-xgte-divine.json",
+      "resources": [
+        "xgte:druid:circle-of-the-shepherd:spirit_totem",
+        "xgte:druid:circle-of-the-shepherd:faithful_summons"
+      ],
+      "shared_resources": [
+        "独角兽图腾治疗触发法术正常扣环位，不再扣图腾次数",
+        "全能牧者额外生命每召唤生物生命骰+2；精魂守卫回合末治疗floor(德鲁伊等级/2)，不消耗独立点数"
+      ],
+      "without_independent_resources": [
+        "林地之语无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:fighter:arcane-archer",
+      "name": "奥术射手",
+      "class_id": "fighter",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/战士/魔射手.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:fighter:arcane-archer:arcane_shot"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "魔箭学识、注魔箭矢、曲线射击不另扣奥术射击次数；曲线射击仅占附赠动作"
+      ]
+    },
+    {
+      "id": "xgte:fighter:cavalier",
+      "name": "骑士",
+      "class_id": "fighter",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/战士/骑兵.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:fighter:cavalier:unwavering_mark",
+        "xgte:fighter:cavalier:warding_maneuver"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "附赠熟练、生而为骑、坚守战线无独立次数",
+        "冲锋陷阵每自己的回合1次，不是休息资源",
+        "警戒守卫每其他生物回合提供特殊反应，不是休息资源"
+      ]
+    },
+    {
+      "id": "xgte:fighter:samurai",
+      "name": "武士",
+      "class_id": "fighter",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/战士/武士.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:fighter:samurai:fighting_spirit",
+        "xgte:fighter:samurai:strength_before_death"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "雅臣、附赠熟练项无独立次数；燕返每回合一次，不是休息资源"
+      ]
+    },
+    {
+      "id": "xgte:monk:way-of-the-drunken-master",
+      "name": "醉拳宗",
+      "class_id": "monk",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/武僧/醉拳宗.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:monk:way-of-the-drunken-master:ki_costs"
+      ],
+      "shared_resources": [
+        "醉拳技巧与酣醉若狂复用疾风连击的1气，不额外扣气"
+      ],
+      "without_independent_resources": [
+        "附赠熟练与鲤鱼打挺不消耗气"
+      ]
+    },
+    {
+      "id": "xgte:monk:way-of-the-kensei",
+      "name": "剑圣宗",
+      "class_id": "monk",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/武僧/剑圣宗.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:monk:way-of-the-kensei:ki_costs"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "剑圣之途、剑气无气消耗；精妙剑法每自己回合一次免费重投，不是休息次数"
+      ]
+    },
+    {
+      "id": "xgte:monk:way-of-the-sun-soul",
+      "name": "日魂宗",
+      "class_id": "monk",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/武僧/日魂宗.html",
+      "resource_file": "resource-research-xgte.json",
+      "resources": [
+        "xgte:monk:way-of-the-sun-soul:ki_costs"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "攻击动作中的耀阳箭不消耗气；太阳盾开关及反应不消耗气"
+      ]
+    },
+    {
+      "id": "xgte:paladin:oath-of-conquest",
+      "name": "征服之誓",
+      "class_id": "paladin",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/圣武士/征服之誓.html",
+      "resource_file": "resource-research-xgte-divine.json",
+      "resources": [
+        "xgte:paladin:oath-of-conquest:invincible"
+      ],
+      "shared_resources": [
+        "征服威压与导引打击各扣基础引导神力1次；誓言法术正常环位"
+      ],
+      "without_independent_resources": [
+        "征服灵光与轻蔑呵斥无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:paladin:oath-of-redemption",
+      "name": "救赎之誓",
+      "class_id": "paladin",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/圣武士/救赎之誓.html",
+      "resource_file": "resource-research-xgte-divine.json",
+      "resources": [
+        "xgte:paladin:oath-of-redemption:emissary"
+      ],
+      "shared_resources": [
+        "和平使节与斥喝暴力各扣基础引导神力1次；誓言法术正常环位",
+        "护卫灵光转移真实伤害到自己生命；守护之魂满足战斗回合末条件时治疗1d6+floor(圣武士等级/2)，无独立点数"
+      ],
+      "without_independent_resources": []
+    },
+    {
+      "id": "xgte:ranger:gloom-stalker",
+      "name": "幽暗追猎者",
+      "class_id": "ranger",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/游侠/幽域追踪者.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [],
+      "shared_resources": [
+        "额外法术使用普通环位"
+      ],
+      "without_independent_resources": [
+        "恐惧伏击限每场战斗首回合，不是休息池",
+        "阴影视野、钢铁意志、追猎如风、如影随行不消耗独立次数"
+      ]
+    },
+    {
+      "id": "xgte:ranger:horizon-walker",
+      "name": "地平线行者",
+      "class_id": "ranger",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/游侠/边界行者.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:ranger:horizon-walker:detect_portal",
+        "xgte:ranger:horizon-walker:ethereal_step"
+      ],
+      "shared_resources": [
+        "额外法术使用普通环位"
+      ],
+      "without_independent_resources": [
+        "位面战士、闪现打击、灵体防御无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:ranger:monster-slayer",
+      "name": "怪物猎手",
+      "class_id": "ranger",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/游侠/怪物杀手.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:ranger:monster-slayer:hunter_sense",
+        "xgte:ranger:monster-slayer:nemesis"
+      ],
+      "shared_resources": [
+        "额外法术使用普通环位"
+      ],
+      "without_independent_resources": [
+        "狩猎开始可重新指定目标，无休息次数；休息结束旧指定效应",
+        "异能防护与杀手反制无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:rogue:inquisitive",
+      "name": "洞察者",
+      "class_id": "rogue",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/游荡者/审判官.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:rogue:inquisitive:unerring_eye"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "辨谎之耳、鉴识之眼、战术洞悉、目不转睛、伺隙锐瞳无独立休息次数"
+      ]
+    },
+    {
+      "id": "xgte:rogue:mastermind",
+      "name": "策士",
+      "class_id": "rogue",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/游荡者/策士.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "谋陷大师、战术大师、帷幄之士、误导、瞒天之魂均无独立休息次数或点数消耗"
+      ]
+    },
+    {
+      "id": "xgte:rogue:scout",
+      "name": "斥候",
+      "class_id": "rogue",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/游荡者/斥候.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "散兵战术占反应，生存专家和优异灵活为被动；伏击大师与瞬息打击无休息次数；偷袭限制不是消耗池"
+      ]
+    },
+    {
+      "id": "xgte:rogue:swashbuckler",
+      "name": "剑客",
+      "class_id": "rogue",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/游荡者/游荡剑客.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:rogue:swashbuckler:master_duelist"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "梦幻舞步、潇洒无畏、潇洒气质、优雅战技无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:sorcerer:divine-soul",
+      "name": "神圣之魂",
+      "class_id": "sorcerer",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/术士/神圣之魂.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:sorcerer:divine-soul:favored",
+        "xgte:sorcerer:divine-soul:recovery",
+        "xgte:sorcerer:divine-soul:healing_cost"
+      ],
+      "shared_resources": [
+        "神圣魔法额外法术正常用环位，不授予引导神力或牧师职业资源"
+      ],
+      "without_independent_resources": [
+        "异界光翼无点数及次数消耗"
+      ]
+    },
+    {
+      "id": "xgte:sorcerer:shadow-magic",
+      "name": "暗影魔法",
+      "class_id": "sorcerer",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/术士/幽影魔法.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:sorcerer:shadow-magic:strength_grave",
+        "xgte:sorcerer:shadow-magic:sorcery_costs"
+      ],
+      "shared_resources": [
+        "凶兆猎犬临时生命floor(术士等级/2)，召唤消耗术法点，不是独立召唤次数池"
+      ],
+      "without_independent_resources": [
+        "幽暗之瞳黑暗视觉与幽影漫步无点数消耗"
+      ]
+    },
+    {
+      "id": "xgte:sorcerer:storm-sorcery",
+      "name": "风暴术法",
+      "class_id": "sorcerer",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/术士/风暴术法.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:sorcerer:storm-sorcery:wind_soul"
+      ],
+      "shared_resources": [
+        "风暴魔法与风暴之心依赖合格施法，不额外扣术法点"
+      ],
+      "without_independent_resources": [
+        "风语者、风暴导向、暴风狂怒无独立次数或点数"
+      ]
+    },
+    {
+      "id": "xgte:warlock:the-celestial",
+      "name": "天界",
+      "class_id": "warlock",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/邪术师/天界.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:warlock:the-celestial:healing_light",
+        "xgte:warlock:the-celestial:searing_vengeance",
+        "xgte:warlock:the-celestial:resilience"
+      ],
+      "shared_resources": [
+        "扩展法术使用普通契约位，不授予免费次数"
+      ],
+      "without_independent_resources": [
+        "额外戏法与光耀之魂无独立次数"
+      ]
+    },
+    {
+      "id": "xgte:warlock:the-hexblade",
+      "name": "咒剑",
+      "class_id": "warlock",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/邪术师/咒剑.html",
+      "resource_file": "resource-research-xgte-arcane.json",
+      "resources": [
+        "xgte:warlock:the-hexblade:curse",
+        "xgte:warlock:the-hexblade:specter"
+      ],
+      "shared_resources": [
+        "扩展法术使用普通契约位；巫咒盔甲占反应但不扣诅咒次数"
+      ],
+      "without_independent_resources": [
+        "巫咒战士长休选择武器不设点数；巫咒大师转移共用既有诅咒"
+      ]
+    },
+    {
+      "id": "xgte:wizard:war-magic",
+      "name": "战争魔法",
+      "class_id": "wizard",
+      "source": "xgte",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/珊娜萨的万事指南/角色选项/法师/战争魔法.html",
+      "resource_file": "resource-research-wizard-supplement.json",
+      "resources": [
+        "xgte:wizard:war-magic:power_surge"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "奥术偏斜受反应及下回合施法限制，不是休息恢复次数池",
+        "战术之智、耐久魔法、偏斜罩幕无独立有限资源"
+      ]
+    },
+    {
+      "id": "tcoe:artificer:alchemist",
+      "name": "炼金师",
+      "class_id": "artificer",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/奇械师/炼金师.html",
+      "resource_file": "resource-research-tcoe-artificer.json",
+      "resources": [
+        "tcoe:artificer:alchemist:elixirs",
+        "tcoe:artificer:alchemist:restorative",
+        "tcoe:artificer:alchemist:mastery"
+      ],
+      "shared_resources": [
+        "炼金师法术正常环位；9级饮用灵药额外临时生命2d6+智力调整值最低1，不再扣资源"
+      ],
+      "without_independent_resources": [
+        "工具精通、炼金术掌握、化学专家抗性无独立次数"
+      ]
+    },
+    {
+      "id": "tcoe:artificer:armorer",
+      "name": "装甲师",
+      "class_id": "artificer",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/奇械师/装甲师.html",
+      "resource_file": "resource-research-tcoe-artificer.json",
+      "resources": [
+        "tcoe:artificer:armorer:field",
+        "tcoe:artificer:armorer:infusion_capacity",
+        "tcoe:artificer:armorer:perfected"
+      ],
+      "shared_resources": [
+        "装甲师法术正常环位；装甲部位注法复用基础注法规则"
+      ],
+      "without_independent_resources": [
+        "本职工具、奥能装甲转化、休息换型号、额外攻击无次数池；渗透者武器与其他效果无独立消耗"
+      ]
+    },
+    {
+      "id": "tcoe:artificer:artillerist",
+      "name": "炮术师",
+      "class_id": "artificer",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/奇械师/魔炮师.html",
+      "resource_file": "resource-research-tcoe-artificer.json",
+      "resources": [
+        "tcoe:artificer:artillerist:cannon"
+      ],
+      "shared_resources": [
+        "魔炮师法术正常环位；防御者授予1d8+智力调整值最低1临时生命，不叠加，不扣炮台创建次数"
+      ],
+      "without_independent_resources": [
+        "工具精通、奥法火器无独立次数；高爆炮台与要塞阵地复用现存炮台"
+      ]
+    },
+    {
+      "id": "tcoe:artificer:battle-smith",
+      "name": "战斗铁匠",
+      "class_id": "artificer",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/奇械师/战地匠师.html",
+      "resource_file": "resource-research-tcoe-artificer.json",
+      "resources": [
+        "tcoe:artificer:battle-smith:defender",
+        "tcoe:artificer:battle-smith:repair",
+        "tcoe:artificer:battle-smith:jolt"
+      ],
+      "shared_resources": [
+        "战地匠师法术正常环位；复活守卫另消耗环位"
+      ],
+      "without_independent_resources": [
+        "工具精通、战斗准备、额外攻击无次数；守卫偏转攻击仅占其反应，15级改良守卫的反击伤害不额外收费"
+      ]
+    },
+    {
+      "id": "tcoe:barbarian:path-of-the-beast",
+      "name": "兽之道途",
+      "class_id": "barbarian",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/野蛮人（TCE）/野兽道途.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:barbarian:path-of-the-beast:infectious_fury",
+        "tcoe:barbarian:path-of-the-beast:call_hunt"
+      ],
+      "shared_resources": [
+        "野兽之形共用狂暴；啃咬满足条件治疗熟练加值点生命，每自己回合1次，无独立次数"
+      ],
+      "without_independent_resources": [
+        "兽性之魂休息选择环境增益，无消耗池；尾击仅占反应"
+      ]
+    },
+    {
+      "id": "tcoe:barbarian:path-of-wild-magic",
+      "name": "狂野魔法道途",
+      "class_id": "barbarian",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/野蛮人（TCE）/狂野魔法道途.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:barbarian:path-of-wild-magic:awareness",
+        "tcoe:barbarian:path-of-wild-magic:bolstering"
+      ],
+      "shared_resources": [
+        "狂野浪潮随狂暴触发，不另扣次数；1号结果临时生命1d12不叠加"
+      ],
+      "without_independent_resources": [
+        "无常反冲只占反应，掌控浪潮仅改变掷表方式，均不消耗独立次数；与术士狂野浪涌不是同一张表"
+      ]
+    },
+    {
+      "id": "tcoe:bard:college-of-creation",
+      "name": "创造学院",
+      "class_id": "bard",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/创造学院.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:bard:college-of-creation:performance_creation",
+        "tcoe:bard:college-of-creation:animating"
+      ],
+      "shared_resources": [
+        "潜能微尘依附已授予的激励骰，使用时不再扣一次诗人激励；为舞空物品下令不扣激励"
+      ],
+      "without_independent_resources": [
+        "渐强创音修改造物上限，不是新资源池"
+      ]
+    },
+    {
+      "id": "tcoe:bard:college-of-eloquence",
+      "name": "雄辩学院",
+      "class_id": "bard",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/吟游诗人（TCE）/雄辩学院.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:bard:college-of-eloquence:universal_speech",
+        "tcoe:bard:college-of-eloquence:infectious_inspiration"
+      ],
+      "shared_resources": [
+        "扰神之词扣1次诗人激励；不竭鼓舞让受助者失败后保留已授予的激励骰，不退还诗人授予次数"
+      ],
+      "without_independent_resources": [
+        "巧舌如簧不消耗资源"
+      ]
+    },
+    {
+      "id": "tcoe:cleric:order-domain",
+      "name": "秩序领域",
+      "class_id": "cleric",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/秩序领域.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:cleric:order-domain:embodiment"
+      ],
+      "shared_resources": [
+        "秩序之令扣1次基础引导神力；权威之音复用触发法术环位，不额外收费；领域法术正常用环位"
+      ],
+      "without_independent_resources": [
+        "附赠熟练、神圣打击、秩序之怒无独立次数池"
+      ]
+    },
+    {
+      "id": "tcoe:cleric:peace-domain",
+      "name": "和平领域",
+      "class_id": "cleric",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/和平领域.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:cleric:peace-domain:bond"
+      ],
+      "shared_resources": [
+        "和平抚慰扣1次引导神力，不按治疗人数扣；保护联结转移生命伤害，不额外扣联结次数；领域法术普通环位"
+      ],
+      "without_independent_resources": [
+        "和平执行、强力施法无独立资源；增强联结只修改既有联结"
+      ]
+    },
+    {
+      "id": "tcoe:cleric:twilight-domain",
+      "name": "暮光领域",
+      "class_id": "cleric",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/牧师（TCE）/暮光领域.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:cleric:twilight-domain:eyes_night",
+        "tcoe:cleric:twilight-domain:steps_night"
+      ],
+      "shared_resources": [
+        "暮光圣域扣1次引导神力，持续中授予1d6+牧师等级临时生命或解除状态不再收费；领域法术普通环位"
+      ],
+      "without_independent_resources": [
+        "警觉赐福可重新指定目标，无休息次数；附赠熟练、神圣打击、暮光守护无独立资源"
+      ]
+    },
+    {
+      "id": "tcoe:druid:circle-of-spores",
+      "name": "孢子结社",
+      "class_id": "druid",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/孢子结社.html",
+      "resource_file": "resource-research-tcoe-divine.json",
+      "resources": [
+        "tcoe:druid:circle-of-spores:symbiotic",
+        "tcoe:druid:circle-of-spores:infestation"
+      ],
+      "shared_resources": [
+        "结社法术正常使用环位"
+      ],
+      "without_independent_resources": [
+        "孢子环绕仅占反应；扩散孢子复用共生状态不再扣形态；真菌之躯无消耗"
+      ]
+    },
+    {
+      "id": "tcoe:druid:circle-of-stars",
+      "name": "星辰结社",
+      "class_id": "druid",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/星辰结社.html",
+      "resource_file": "resource-research-tcoe-divine.json",
+      "resources": [
+        "tcoe:druid:circle-of-stars:guiding_bolt",
+        "tcoe:druid:circle-of-stars:starry_form",
+        "tcoe:druid:circle-of-stars:cosmic_omen"
+      ],
+      "shared_resources": [
+        "圣杯治疗随合格消耗环位的治疗法术发动，不额外扣次数"
+      ],
+      "without_independent_resources": [
+        "神导术与重制星图仪式无次数；闪耀星座、灿若繁星仅修改星耀形态"
+      ]
+    },
+    {
+      "id": "tcoe:druid:circle-of-wildfire",
+      "name": "野火结社",
+      "class_id": "druid",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/德鲁伊（TCE）/野火结社.html",
+      "resource_file": "resource-research-tcoe-divine.json",
+      "resources": [
+        "tcoe:druid:circle-of-wildfire:spirit",
+        "tcoe:druid:circle-of-wildfire:cauterizing",
+        "tcoe:druid:circle-of-wildfire:revival"
+      ],
+      "shared_resources": [
+        "结社法术正常使用环位"
+      ],
+      "without_independent_resources": [
+        "强化链接复用法术与现存精魂，不另扣点数"
+      ]
+    },
+    {
+      "id": "tcoe:fighter:psi-warrior",
+      "name": "灵能武士",
+      "class_id": "fighter",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/灵能武士.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:fighter:psi-warrior:psionic_dice",
+        "tcoe:fighter:psi-warrior:die_recovery",
+        "tcoe:fighter:psi-warrior:free_powers"
+      ],
+      "shared_resources": [
+        "所有异能复用本子职灵能骰；不可与游荡者魂刃灵能骰合并"
+      ],
+      "without_independent_resources": [
+        "念力突刺附加于灵能打击，不另扣骰；心灵抗性无消耗"
+      ]
+    },
+    {
+      "id": "tcoe:fighter:rune-knight",
+      "name": "符文骑士",
+      "class_id": "fighter",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/战士（TCE）/符文骑士.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:fighter:rune-knight:runes",
+        "tcoe:fighter:rune-knight:giant_might",
+        "tcoe:fighter:rune-knight:runic_shield"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "奇伟身躯只在获得时增高；符文主宰修改巨人之力，无独立次数"
+      ]
+    },
+    {
+      "id": "tcoe:monk:way-of-mercy",
+      "name": "慈悲宗",
+      "class_id": "monk",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/武僧（TCE）/命流宗.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:monk:way-of-mercy:ki_costs",
+        "tcoe:monk:way-of-mercy:ultimate_mercy"
+      ],
+      "shared_resources": [
+        "生死之触复用予命/夺命之手消耗，不另扣气；疾风连击仍正常扣基础1气"
+      ],
+      "without_independent_resources": [
+        "命流之器无消耗"
+      ]
+    },
+    {
+      "id": "tcoe:monk:way-of-the-astral-self",
+      "name": "星我宗",
+      "class_id": "monk",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/武僧（TCE）/星我宗.html",
+      "resource_file": "resource-research-tcoe.json",
+      "resources": [
+        "tcoe:monk:way-of-the-astral-self:ki_costs"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "拨挡能量仅占反应；猛力之臂每自己回合1次，无额外气消耗；觉醒的护甲和连击无额外气消耗"
+      ]
+    },
+    {
+      "id": "tcoe:paladin:oath-of-glory",
+      "name": "荣耀之誓",
+      "class_id": "paladin",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/圣武士（TCE）/荣耀之誓.html",
+      "resource_file": "resource-research-tcoe-divine.json",
+      "resources": [
+        "tcoe:paladin:oath-of-glory:glorious_defense",
+        "tcoe:paladin:oath-of-glory:living_legend"
+      ],
+      "shared_resources": [
+        "绝伦健将与鼓舞一击各扣1次引导神力；鼓舞一击还需此前正常发动至圣斩，总共临时生命2d8+圣武士等级在目标间分配，不按目标数扣引导次数",
+        "誓言法术正常使用环位"
+      ],
+      "without_independent_resources": [
+        "迅捷灵光无独立资源"
+      ]
+    },
+    {
+      "id": "tcoe:paladin:oath-of-the-watchers",
+      "name": "守望之誓",
+      "class_id": "paladin",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/圣武士（TCE）/守望之誓.html",
+      "resource_file": "resource-research-tcoe-divine.json",
+      "resources": [
+        "tcoe:paladin:oath-of-the-watchers:mortal_bulwark"
+      ],
+      "shared_resources": [
+        "守望之志与驱散异域各扣1次引导神力；誓言法术正常环位"
+      ],
+      "without_independent_resources": [
+        "哨卫灵光无消耗，警戒呵斥仅占反应"
+      ]
+    },
+    {
+      "id": "tcoe:ranger:fey-wanderer",
+      "name": "妖精漫游者",
+      "class_id": "ranger",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/游侠（TCE）/妖精漫游者.html",
+      "resource_file": "resource-research-tcoe-stealth.json",
+      "resources": [
+        "tcoe:ranger:fey-wanderer:fey",
+        "tcoe:ranger:fey-wanderer:misty"
+      ],
+      "shared_resources": [
+        "额外法术正常环位；免费施法不等于获得额外环位"
+      ],
+      "without_independent_resources": [
+        "哀惧灵袭每目标每回合限1次，不是休息池；妖冶嫺都无消耗；妖思魅缕仅占反应"
+      ]
+    },
+    {
+      "id": "tcoe:ranger:swarmkeeper",
+      "name": "集群守卫",
+      "class_id": "ranger",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/游侠（TCE）/集群牧者.html",
+      "resource_file": "resource-research-tcoe-stealth.json",
+      "resources": [
+        "tcoe:ranger:swarmkeeper:tide",
+        "tcoe:ranger:swarmkeeper:dispersal"
+      ],
+      "shared_resources": [
+        "额外法术正常环位；法师之手戏法不耗环位"
+      ],
+      "without_independent_resources": [
+        "蜂聚集群每自己回合一次，无独立次数；壮大集群只增强蜂聚集群"
+      ]
+    },
+    {
+      "id": "tcoe:rogue:phantom",
+      "name": "幻影",
+      "class_id": "rogue",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/游荡者（TCE）/鬼魅.html",
+      "resource_file": "resource-research-tcoe-stealth.json",
+      "resources": [
+        "tcoe:rogue:phantom:wails",
+        "tcoe:rogue:phantom:tokens",
+        "tcoe:rogue:phantom:ghost_walk"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "亡者余声在短休或长休选择1项临时熟练，不设次数池；携带魂器的豁免增益不消耗魂器"
+      ]
+    },
+    {
+      "id": "tcoe:rogue:soulknife",
+      "name": "魂刃",
+      "class_id": "rogue",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/游荡者（TCE）/魂刃.html",
+      "resource_file": "resource-research-tcoe-stealth.json",
+      "resources": [
+        "tcoe:rogue:soulknife:dice",
+        "tcoe:rogue:soulknife:die_recovery",
+        "tcoe:rogue:soulknife:free_powers"
+      ],
+      "shared_resources": [
+        "本子职灵能骰与灵能武士独立，不能因同名合并"
+      ],
+      "without_independent_resources": [
+        "心灵之刃普通攻击及附赠攻击不消耗灵能骰"
+      ]
+    },
+    {
+      "id": "tcoe:sorcerer:aberrant-mind",
+      "name": "畸变之心",
+      "class_id": "sorcerer",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/术士（TCE）/畸变心智.html",
+      "resource_file": "resource-research-tcoe-arcane.json",
+      "resources": [
+        "tcoe:sorcerer:aberrant-mind:costs",
+        "tcoe:sorcerer:aberrant-mind:implosion"
+      ],
+      "shared_resources": [
+        "灵能法术仍可用正常环位施展"
+      ],
+      "without_independent_resources": [
+        "传心谈话可重新指定目标，无独立次数；心灵防御无消耗"
+      ]
+    },
+    {
+      "id": "tcoe:sorcerer:clockwork-soul",
+      "name": "时钟之魂",
+      "class_id": "sorcerer",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/术士（TCE）/时械之魂.html",
+      "resource_file": "resource-research-tcoe-arcane.json",
+      "resources": [
+        "tcoe:sorcerer:clockwork-soul:balance",
+        "tcoe:sorcerer:clockwork-soul:bastion",
+        "tcoe:sorcerer:clockwork-soul:trance",
+        "tcoe:sorcerer:clockwork-soul:cavalcade"
+      ],
+      "shared_resources": [
+        "时械魔法扩展法术正常用环位，不授予免费施法次数"
+      ],
+      "without_independent_resources": [
+        "秩序显迹为外观，无资源消耗"
+      ]
+    },
+    {
+      "id": "tcoe:warlock:the-fathomless",
+      "name": "无底深渊",
+      "class_id": "warlock",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/深海意志.html",
+      "resource_file": "resource-research-tcoe-arcane.json",
+      "resources": [
+        "tcoe:warlock:the-fathomless:tentacle",
+        "tcoe:warlock:the-fathomless:grasping",
+        "tcoe:warlock:the-fathomless:plunge"
+      ],
+      "shared_resources": [
+        "扩展列表法术正常契约位"
+      ],
+      "without_independent_resources": [
+        "海洋馈赠、海渊魂灵无消耗；守卫缠绕只占反应，依赖现存深海触手但不再扣召唤次数"
+      ]
+    },
+    {
+      "id": "tcoe:warlock:the-genie",
+      "name": "巨灵",
+      "class_id": "warlock",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/邪术师（TCE）/巨灵宗主.html",
+      "resource_file": "resource-research-tcoe-arcane.json",
+      "resources": [
+        "tcoe:warlock:the-genie:respite",
+        "tcoe:warlock:the-genie:elemental_gift",
+        "tcoe:warlock:the-genie:limited_wish"
+      ],
+      "shared_resources": [
+        "扩展列表不授予免费施法次数；9环祈愿仍需对应高环施法资源",
+        "器皿庇护所使器皿内至少10分钟可视为短休，花生命骰治疗时额外加熟练，不增加生命骰数量"
+      ],
+      "without_independent_resources": [
+        "巨灵之怒每自己回合一次，无独立次数"
+      ]
+    },
+    {
+      "id": "tcoe:wizard:bladesinging",
+      "name": "剑咏",
+      "class_id": "wizard",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/剑咏.html",
+      "resources": [
+        "tcoe:wizard:bladesinging:bladesong",
+        "tcoe:wizard:bladesinging:song_of_defense"
+      ],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [
+        "守御之歌消耗普通法术位，不建独立池"
+      ],
+      "without_independent_resources": [
+        "战歌训练",
+        "额外攻击",
+        "胜利之歌"
+      ]
+    },
+    {
+      "id": "tcoe:wizard:order-of-scribes",
+      "name": "书士学派",
+      "class_id": "wizard",
+      "source": "tcoe",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5E/topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/书士会.html",
+      "resource_file": "resource-research-wizard-supplement.json",
+      "resources": [
+        "tcoe:wizard:order-of-scribes:quick_ritual",
+        "tcoe:wizard:order-of-scribes:manifest_mind",
+        "tcoe:wizard:order-of-scribes:remote_casting",
+        "tcoe:wizard:order-of-scribes:master_scrivener",
+        "tcoe:wizard:order-of-scribes:one_with_word"
+      ],
+      "shared_resources": [
+        "神识再次显现可花任意环位；远程施法不是免费施法",
+        "书士宗师制作一般卷轴的时间和金币减半属于制作支出，不是子职点数池"
+      ],
+      "without_independent_resources": [
+        "法师之笔可重新创造，不设休息次数",
+        "觉醒魔典换伤害类型无独立次数",
+        "短休转移法术书意识不是恢复神识显现次数"
+      ]
+    },
+    {
+      "id": "phb2024:barbarian:path-of-the-berserker",
+      "name": "狂战士",
+      "class_id": "barbarian",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/野蛮人/狂战士道途.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [
+        "phb2024:barbarian:path-of-the-berserker:presence"
+      ],
+      "shared_resources": [
+        "狂怒与无我狂暴共用狂暴，无额外消耗；新版狂怒不再附带旧版狂乱的力竭支出"
+      ],
+      "without_independent_resources": [
+        "报偿仅占反应；新版威慑不沿用旧版每目标24小时免疫模型"
+      ]
+    },
+    {
+      "id": "phb2024:barbarian:path-of-the-wild-heart",
+      "name": "荒野之心",
+      "class_id": "barbarian",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/野蛮人/兽心道途.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [],
+      "shared_resources": [
+        "兽性狂暴和兽力威能共用基础狂暴，每次狂暴可选效果，不额外扣次数"
+      ],
+      "without_independent_resources": [
+        "动物语者与自然语者仅仪式施法，无环位或免费次数池；兽之形貌长休换选项无次数消耗"
+      ]
+    },
+    {
+      "id": "phb2024:barbarian:path-of-the-world-tree",
+      "name": "世界树",
+      "class_id": "barbarian",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/野蛮人/世界树道途.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [
+        "phb2024:barbarian:path-of-the-world-tree:travel"
+      ],
+      "shared_resources": [
+        "圣树活力依赖狂暴；自己进入狂暴获野蛮人等级临时生命；赐命每回合给另一目标狂暴伤害加值数量的d6临时生命，狂暴结束时赐命残余消失，不叠加"
+      ],
+      "without_independent_resources": [
+        "灵树枝杈仅占反应；根击千钧无次数；奇旅普通传送无额外狂暴支出"
+      ]
+    },
+    {
+      "id": "phb2024:barbarian:path-of-the-zealot",
+      "name": "狂热者",
+      "class_id": "barbarian",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/野蛮人/狂热者道途.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [
+        "phb2024:barbarian:path-of-the-zealot:healing",
+        "phb2024:barbarian:path-of-the-zealot:presence",
+        "phb2024:barbarian:path-of-the-zealot:rage_gods"
+      ],
+      "shared_resources": [
+        "专心炽志共用XGE每次狂暴1次的模型，重投额外加值是效果变化不另设资源",
+        "神性之怒共用狂暴，神之狂暴回春使用基础狂暴次数"
+      ],
+      "without_independent_resources": [
+        "神性之怒每自己的回合1次，无独立次数"
+      ]
+    },
+    {
+      "id": "phb2024:bard:college-of-dance",
+      "name": "舞蹈学院",
+      "class_id": "bard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/吟游诗人/舞蹈学院.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [],
+      "shared_resources": [
+        "鼓舞之移与协同舞步每次扣1诗人激励；协同舞步不按盟友人数扣",
+        "灵巧打击附加于已消耗激励的动作，不再扣一次"
+      ],
+      "without_independent_resources": [
+        "诗人痛击仅用激励骰大小作伤害骰，不消耗激励；大舞蹈家、无甲防御、引导闪避无次数池"
+      ]
+    },
+    {
+      "id": "phb2024:bard:college-of-glamour",
+      "name": "魅惑学院",
+      "class_id": "bard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/吟游诗人/魅心学院.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [
+        "phb2024:bard:college-of-glamour:beguiling",
+        "phb2024:bard:college-of-glamour:majesty"
+      ],
+      "shared_resources": [
+        "灵感织衣扣1诗人激励，每目标临时生命为本次骰值2倍，不额外按人数收费",
+        "不破威仪共用XGE绝对统御1次短休或长休恢复的资源模型，不声明效果相同"
+      ],
+      "without_independent_resources": [
+        "始终准备的法术不等于免费施法"
+      ]
+    },
+    {
+      "id": "phb2024:bard:college-of-lore",
+      "name": "逸闻学院",
+      "class_id": "bard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/吟游诗人/逸闻学院.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [
+        "phb2024:bard:college-of-lore:peerless"
+      ],
+      "shared_resources": [
+        "语出惊人扣1诗人激励，模型与旧版共享；魔法探秘法术使用正常环位"
+      ],
+      "without_independent_resources": [
+        "附赠熟练无独立消耗"
+      ]
+    },
+    {
+      "id": "phb2024:bard:college-of-valor",
+      "name": "勇气学院",
+      "class_id": "bard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/吟游诗人/勇气学院.htm",
+      "resource_file": "resource-research-phb2024-martial.json",
+      "resources": [],
+      "shared_resources": [
+        "战斗激励复用已授予受助者的激励骰，使用时不再从诗人扣第二次；模型与2014共享"
+      ],
+      "without_independent_resources": [
+        "战争训练、额外攻击、战斗魔法无独立次数池"
+      ]
+    },
+    {
+      "id": "phb2024:cleric:life-domain",
+      "name": "生命领域",
+      "class_id": "cleric",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/牧师/生命领域.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [],
+      "shared_resources": [
+        "维持生命扣1次基础引导神力，本次治疗预算5×牧师等级，不是跨次治疗池；与2014资源模型共享",
+        "领域法术普通环位；生命门徒和神祝医者复用触发法术环位，不额外扣资源"
+      ],
+      "without_independent_resources": [
+        "极效治疗只改变掷骰结果，无消耗"
+      ]
+    },
+    {
+      "id": "phb2024:cleric:light-domain",
+      "name": "光明领域",
+      "class_id": "cleric",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/牧师/光明领域.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [
+        "phb2024:cleric:light-domain:flare",
+        "phb2024:cleric:light-domain:corona"
+      ],
+      "shared_resources": [
+        "黎明曙光扣1次基础引导神力；领域法术普通环位"
+      ],
+      "without_independent_resources": [
+        "精通守御之光修改同池恢复，不新建次数池"
+      ]
+    },
+    {
+      "id": "phb2024:cleric:trickery-domain",
+      "name": "诡术领域",
+      "class_id": "cleric",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/牧师/诡术领域.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [],
+      "shared_resources": [
+        "召现分身扣1次基础引导神力；移动或换位不再扣；精通分身消失时治疗牧师等级点生命不再收费；领域法术普通环位"
+      ],
+      "without_independent_resources": [
+        "诡术祝福可重新指定目标，无休息次数；新版本没有旧版的阴影斗篷资源"
+      ]
+    },
+    {
+      "id": "phb2024:cleric:war-domain",
+      "name": "战争领域",
+      "class_id": "cleric",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/牧师/战争领域.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [
+        "phb2024:cleric:war-domain:priest"
+      ],
+      "shared_resources": [
+        "导引打击扣1次引导神力；6级战神祝福花1次引导神力免费施展虔诚护盾或灵体武器，不同时扣法术位；领域法术普通环位"
+      ],
+      "without_independent_resources": [
+        "战争化身无消耗"
+      ]
+    },
+    {
+      "id": "phb2024:druid:circle-of-the-land",
+      "name": "大地结社",
+      "class_id": "druid",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/德鲁伊/大地结社.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [
+        "phb2024:druid:circle-of-the-land:shape_costs",
+        "phb2024:druid:circle-of-the-land:free_spell"
+      ],
+      "shared_resources": [
+        "6级自然恢复的短休环位恢复与2014共享1次长休恢复、预算ceil(德鲁伊等级/2)、最多5环模型，但获得等级改为6；与结社免费施法机会分别计数"
+      ],
+      "without_independent_resources": [
+        "长休换地形与自然守御无次数消耗；自然庇护移动现有区域不另收费"
+      ]
+    },
+    {
+      "id": "phb2024:druid:circle-of-the-moon",
+      "name": "月亮结社",
+      "class_id": "druid",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/德鲁伊/月亮结社.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [
+        "phb2024:druid:circle-of-the-moon:step"
+      ],
+      "shared_resources": [
+        "结社形态扣基础荒野变形并获3×德鲁伊等级临时生命；不沿用2014的额外野兽生命池或元素变形费用；结社法术正常环位"
+      ],
+      "without_independent_resources": [
+        "进阶结社形态、月辉形态无独立次数；月辉同行复用月光飞步"
+      ]
+    },
+    {
+      "id": "phb2024:druid:circle-of-the-sea",
+      "name": "海洋结社",
+      "class_id": "druid",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/德鲁伊/海洋结社.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [
+        "phb2024:druid:circle-of-the-sea:wrath"
+      ],
+      "shared_resources": [
+        "结社法术正常环位"
+      ],
+      "without_independent_resources": [
+        "水生亲和无次数，风暴降生增强现有光环"
+      ]
+    },
+    {
+      "id": "phb2024:druid:circle-of-the-stars",
+      "name": "星辰结社",
+      "class_id": "druid",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/德鲁伊/星辰结社.htm",
+      "resource_file": "resource-research-phb2024-divine.json",
+      "resources": [
+        "phb2024:druid:circle-of-the-stars:guiding_bolt",
+        "phb2024:druid:circle-of-the-stars:omen"
+      ],
+      "shared_resources": [
+        "星耀形态共享TCE每次1荒野形态、持续内不再收费的模型，但获得等级3、底层形态资源用2024规则；圣杯复用合格治疗法术位"
+      ],
+      "without_independent_resources": [
+        "神导术、重制星图、闪烁星座换星座、灿若繁星无独立消耗"
+      ]
+    },
+    {
+      "id": "phb2024:fighter:battle-master",
+      "name": "战斗大师",
+      "class_id": "fighter",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/战士/战斗大师.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [
+        "phb2024:fighter:battle-master:superiority",
+        "phb2024:fighter:battle-master:know_enemy"
+      ],
+      "shared_resources": [
+        "所有战技共用卓越骰，每次攻击至多1种；未命中或目标豁免成功不返还已消耗骰"
+      ],
+      "without_independent_resources": [
+        "战争学者、精通战技、究极战技不另建池"
+      ]
+    },
+    {
+      "id": "phb2024:fighter:champion",
+      "name": "勇士",
+      "class_id": "fighter",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/战士/勇士.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [
+        "phb2024:fighter:champion:heroic"
+      ],
+      "shared_resources": [
+        "18级英气风发回合开始满足浴血且生命至少1时恢复5+体质调整值生命，无独立次数"
+      ],
+      "without_independent_resources": [
+        "精通重击、运动健将、额外战斗风格、高效重击、蔑视死亡无独立休息资源"
+      ]
+    },
+    {
+      "id": "phb2024:fighter:eldritch-knight",
+      "name": "奥法骑士",
+      "class_id": "fighter",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/战士/奥法骑士.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [],
+      "shared_resources": [
+        "3级施法共用2014三分之一施法环位表，长休补满，兼职仍走对应基础兼职规则",
+        "奥能冲锋复用动作如潮次数；精通战争魔法替换攻击施放的法术正常消耗环位"
+      ],
+      "without_independent_resources": [
+        "战争联结最多2件武器，是选择容量非休息次数；召回不花资源；战争魔法、奥法打击无独立次数"
+      ]
+    },
+    {
+      "id": "phb2024:fighter:psi-warrior",
+      "name": "灵能武士",
+      "class_id": "fighter",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/战士/灵能武士.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [
+        "phb2024:fighter:psi-warrior:dice"
+      ],
+      "shared_resources": [
+        "四项异能免费池与TCE共享：3级念力控物/7级灵力跃动各1次短休或长休恢复，15级力场壁垒/18级念力宗师各1次长休恢复；额外使用或重置各花本子职1骰"
+      ],
+      "without_independent_resources": [
+        "念力突刺复用灵能打击，无额外骰；心灵抗性无消耗"
+      ]
+    },
+    {
+      "id": "phb2024:monk:warrior-of-mercy",
+      "name": "慈悲武者",
+      "class_id": "monk",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/武僧/命流武者.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [
+        "phb2024:monk:warrior-of-mercy:flurry_benefits"
+      ],
+      "shared_resources": [
+        "予命/夺命之手通常各花1功力；3级疾风连击可替换1次治疗不额外花功力，与TCE模型共享",
+        "17级命极之手与TCE共享1次长休恢复并同时花5功力的双费用模型，底层池改2024功力"
+      ],
+      "without_independent_resources": [
+        "操命本事、生死之触无额外次数或功力消耗"
+      ]
+    },
+    {
+      "id": "phb2024:monk:warrior-of-shadow",
+      "name": "暗影武者",
+      "class_id": "monk",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/武僧/暗影武者.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [
+        "phb2024:monk:warrior-of-shadow:focus_costs"
+      ],
+      "shared_resources": [],
+      "without_independent_resources": [
+        "普通暗影步、黑暗视觉、次级幻象及移动已施展黑暗术不花额外功力；不沿用2014其他暗影法术列表费用"
+      ]
+    },
+    {
+      "id": "phb2024:monk:warrior-of-the-elements",
+      "name": "元素武者",
+      "class_id": "monk",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/武僧/四象武者.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [
+        "phb2024:monk:warrior-of-the-elements:focus_costs"
+      ],
+      "shared_resources": [
+        "破灭奔行依附基础疾步如风，不额外扣功力"
+      ],
+      "without_independent_resources": [
+        "四象法门戏法免费；四象遁术和四象神通复用现存元素同调，不另设次数；不套2014四象门徒费用表"
+      ]
+    },
+    {
+      "id": "phb2024:monk:warrior-of-the-open-hand",
+      "name": "散打武者",
+      "class_id": "monk",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/武僧/散打武者.htm",
+      "resource_file": "resource-research-phb2024-warriors.json",
+      "resources": [
+        "phb2024:monk:warrior-of-the-open-hand:wholeness",
+        "phb2024:monk:warrior-of-the-open-hand:quivering"
+      ],
+      "shared_resources": [
+        "散打技巧复用疾风连击费用，不另扣功力；流星步随后执行基础疾步如风，不另建资源池"
+      ],
+      "without_independent_resources": []
+    },
+    {
+      "id": "phb2024:paladin:oath-of-devotion",
+      "name": "奉献之誓",
+      "class_id": "paladin",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/圣武士/奉献之誓.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [
+        "phb2024:paladin:level20_transform"
+      ],
+      "shared_resources": [
+        "圣洁武器扣1引导神力，重复结束旧效应不返还；卫护斩复用至圣斩施法，不额外收费；誓言法术正常环位"
+      ],
+      "without_independent_resources": [
+        "奉献灵光无次数"
+      ]
+    },
+    {
+      "id": "phb2024:paladin:oath-of-glory",
+      "name": "荣耀之誓",
+      "class_id": "paladin",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/圣武士/荣耀之誓.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [
+        "phb2024:paladin:level20_transform"
+      ],
+      "shared_resources": [
+        "辉煌防御共享TCE15级魅力调整值最低1、长休补满模型",
+        "绝伦健将与鼓舞斩各扣1引导神力，鼓舞斩另需此前正常至圣斩施法；临时生命总预算2d8+圣武士等级，不按人数收费；誓言法术正常环位"
+      ],
+      "without_independent_resources": [
+        "迅捷灵光无消耗"
+      ]
+    },
+    {
+      "id": "phb2024:paladin:oath-of-the-ancients",
+      "name": "古贤之誓",
+      "class_id": "paladin",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/圣武士/古贤之誓.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [
+        "phb2024:paladin:level20_transform"
+      ],
+      "shared_resources": [
+        "不灭哨卫共享2014的15级1次长休恢复模型，新版治疗效果不同但不另设池",
+        "自然之怒扣1引导神力，不按目标数扣；誓言法术正常环位；上古斗士持续内治疗和迅捷施法不再扣变身次数"
+      ],
+      "without_independent_resources": [
+        "守御灵光与不老无消耗"
+      ]
+    },
+    {
+      "id": "phb2024:paladin:oath-of-vengeance",
+      "name": "复仇之誓",
+      "class_id": "paladin",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/圣武士/复仇之誓.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [
+        "phb2024:paladin:level20_transform"
+      ],
+      "shared_resources": [
+        "仇敌誓言初次扣1引导神力，目标生命降0时转移现有誓言不另扣次数；誓言法术正常环位"
+      ],
+      "without_independent_resources": [
+        "坚韧复仇、复仇之魂仅复用或占反应，无独立次数；新版没有旧版驱散仇敌选项"
+      ]
+    },
+    {
+      "id": "phb2024:ranger:beast-master",
+      "name": "驯兽师",
+      "class_id": "ranger",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游侠/驯兽师.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [
+        "phb2024:ranger:beast-master:companion"
+      ],
+      "shared_resources": [
+        "法术共享复用原法术环位；兽性狂怒印记伤害复用已激活猎人印记，不再次扣印记次数"
+      ],
+      "without_independent_resources": [
+        "特效训练与兽性狂怒无独立次数池"
+      ]
+    },
+    {
+      "id": "phb2024:ranger:fey-wanderer",
+      "name": "妖精漫游者",
+      "class_id": "ranger",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游侠/妖精漫游者.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [],
+      "shared_resources": [
+        "11级精宸所与和15级雾行漫游与TCE资源模型相同：妖精召唤术1次免费长休恢复，迷踪步感知调整值最低1次免费长休恢复；带同伴、免专注版本不额外扣资源；普通施法正常环位"
+      ],
+      "without_independent_resources": [
+        "哀惧灵袭、妖冶娴都、妖思魅缕无独立休息次数；外观祝福不消耗资源"
+      ]
+    },
+    {
+      "id": "phb2024:ranger:gloom-stalker",
+      "name": "幽暗追猎者",
+      "class_id": "ranger",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游侠/幽域追猎者.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [
+        "phb2024:ranger:gloom-stalker:dreadful_strike"
+      ],
+      "shared_resources": [
+        "额外法术正常环位"
+      ],
+      "without_independent_resources": [
+        "伏击者之跃与先攻加值无消耗；阴影视野、钢铁意志无消耗；如影随行仅占反应，不另扣传送次数"
+      ]
+    },
+    {
+      "id": "phb2024:ranger:hunter",
+      "name": "猎人",
+      "class_id": "ranger",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游侠/猎人.htm",
+      "resource_file": "resource-research-phb2024-oaths-hunters.json",
+      "resources": [],
+      "shared_resources": [
+        "猎人学识与高阶猎杀技艺复用猎人印记状态，不重复扣印记资源"
+      ],
+      "without_independent_resources": [
+        "猎杀技艺和防守战术休息换选项无次数池；高阶防守战术仅占反应"
+      ]
+    },
+    {
+      "id": "phb2024:rogue:arcane-trickster",
+      "name": "诡术师",
+      "class_id": "rogue",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游荡者/诡术师.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [],
+      "shared_resources": [
+        "三分之一施法位表及长休恢复与2014相同；法术窃贼17级1次长休恢复与2014相同，目标豁免成功亦消耗使用权，偷到法术仍正常付环位"
+      ],
+      "without_independent_resources": [
+        "法师之手诈术、诡术伏击和万能诡术无独立次数；摔绊复用本次诡诈打击偷袭骰费用"
+      ]
+    },
+    {
+      "id": "phb2024:rogue:assassin",
+      "name": "刺客",
+      "class_id": "rogue",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游荡者/刺客.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [],
+      "shared_resources": [
+        "淬毒武器复用诡诈打击的淬毒费用，不另扣毒药或次数"
+      ],
+      "without_independent_resources": [
+        "暗杀、专业渗透和致命袭杀不设短长休次数池；模仿所需时间不是资源余额"
+      ]
+    },
+    {
+      "id": "phb2024:rogue:soulknife",
+      "name": "魂刃",
+      "class_id": "rogue",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游荡者/魂刃.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [
+        "phb2024:rogue:soulknife:energy"
+      ],
+      "shared_resources": [
+        "心灵低语3级免费1次长休恢复；灵能面纱13级1次长休恢复；撕裂心智17级1次长休恢复，均与TCE次数模型相同；新版本用灵能骰重置后再正常使用，不能与同次使用重复收费"
+      ],
+      "without_independent_resources": [
+        "塑造和攻击念刃不消耗灵能骰"
+      ]
+    },
+    {
+      "id": "phb2024:rogue:thief",
+      "name": "盗贼",
+      "class_id": "rogue",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/游荡者/盗贼.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [],
+      "shared_resources": [
+        "无声袭击花本次偷袭1d6，不是休息次数池；使用魔法装置按物品充能付费，d6为6则免此次充能，卷轴检定失败仍销毁卷轴"
+      ],
+      "without_independent_resources": [
+        "快手、梁上君子和首轮额外回合没有休息次数；4件同调上限是装备容量不是可消耗次数"
+      ]
+    },
+    {
+      "id": "phb2024:sorcerer:aberrant-sorcery",
+      "name": "畸变术法",
+      "class_id": "sorcerer",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/术士/畸变术法.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [],
+      "shared_resources": [
+        "灵能术法6级花法术环数的术法点替代环位；血肉启示14级每种选项1术法点；扭曲内爆18级1次长休恢复、可花5术法点重置，费用和容量与TCE相同"
+      ],
+      "without_independent_resources": [
+        "传心谈话不消耗资源，至多保持1连结；心灵防御无次数"
+      ]
+    },
+    {
+      "id": "phb2024:sorcerer:clockwork-sorcery",
+      "name": "时钟术法",
+      "class_id": "sorcerer",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/术士/时械术法.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [
+        "phb2024:sorcerer:clockwork-sorcery:restore_balance"
+      ],
+      "shared_resources": [
+        "律令之壁6级花1至5术法点生成等量d8，长休或重新使用清除旧屏障；序列意识14级1次长休恢复、5术法点重置；时械矩阵18级1次长休恢复、7术法点重置，100治疗预算仅本次分配，均复用TCE资源模型"
+      ],
+      "without_independent_resources": [
+        "时械法术正常施法付环位；外观显迹无次数"
+      ]
+    },
+    {
+      "id": "phb2024:sorcerer:draconic-sorcery",
+      "name": "龙族术法",
+      "class_id": "sorcerer",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/术士/龙族术法.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [
+        "phb2024:sorcerer:draconic-sorcery:wings",
+        "phb2024:sorcerer:draconic-sorcery:companion"
+      ],
+      "shared_resources": [
+        "龙族体魄额外生命上限等于术士等级，与2014容量相同；龙族法术正常付环位"
+      ],
+      "without_independent_resources": [
+        "新版元素亲和抗性常驻，不再扣2014的术法点；新版没有龙威费用"
+      ]
+    },
+    {
+      "id": "phb2024:sorcerer:wild-magic-sorcery",
+      "name": "狂野术法",
+      "class_id": "sorcerer",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/术士/狂野术法.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [
+        "phb2024:sorcerer:wild-magic:tides",
+        "phb2024:sorcerer:wild-magic:bend_luck",
+        "phb2024:sorcerer:wild-magic:tamed_surge"
+      ],
+      "shared_resources": [
+        "浪涌97至100按随机结果恢复最低环阶1个已耗环位或全部术法点；不得因触发浪涌自动恢复所有资源"
+      ],
+      "without_independent_resources": [
+        "普通浪涌每回合最多触发1次d20检查，不是次数池；受控混沌不另收费；浪涌随机治疗不建永久预算"
+      ]
+    },
+    {
+      "id": "phb2024:warlock:archfey-patron",
+      "name": "至高妖精宗主",
+      "class_id": "warlock",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/魔契师/至高妖精宗主.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [
+        "phb2024:warlock:archfey:steps",
+        "phb2024:warlock:archfey:defenses"
+      ],
+      "shared_resources": [
+        "醉心魔法14级在用动作花环位施展幻术或惑控后附带免费迷踪步，不扣妖精步伐次数；其余宗主法术正常费用"
+      ],
+      "without_independent_resources": [
+        "魅惑免疫无次数；复苏步伐临时生命只按本次效应处理；不沿用2014妖精威仪与黑暗狂乱次数池"
+      ]
+    },
+    {
+      "id": "phb2024:warlock:celestial-patron",
+      "name": "天界宗主",
+      "class_id": "warlock",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/魔契师/天界宗主.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [],
+      "shared_resources": [
+        "治愈之光为1+魔契师等级枚d6，每次最多魅力调整值最低1枚，长休补满；灼光复仇14级1次长休恢复，与XGE容量及恢复相同但新版允许救盟友；天界韧性临时生命不单独计次，新增秘法回流触发，复用主职资源而非额外收费"
+      ],
+      "without_independent_resources": [
+        "光耀之魂无次数；宗主法术正常施法付费"
+      ]
+    },
+    {
+      "id": "phb2024:warlock:fiend-patron",
+      "name": "邪魔宗主",
+      "class_id": "warlock",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/魔契师/邪魔宗主.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [
+        "phb2024:warlock:fiend:luck",
+        "phb2024:warlock:fiend:hurl"
+      ],
+      "shared_resources": [
+        "黑暗赐福临时生命为max(1,魔契师等级+魅力调整值)，击倒附近敌人亦可触发，但不建累计治疗池；宗主法术正常付费"
+      ],
+      "without_independent_resources": [
+        "邪魔体魄休息时更换抗性没有次数费用"
+      ]
+    },
+    {
+      "id": "phb2024:warlock:great-old-one-patron",
+      "name": "旧日支配者宗主",
+      "class_id": "warlock",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/魔契师/旧日支配者宗主.htm",
+      "resource_file": "resource-research-phb2024-arcane.json",
+      "resources": [
+        "phb2024:warlock:great-old-one:combatant"
+      ],
+      "shared_resources": [
+        "骇异恶咒仍正常施展脆弱诅咒付费；创造奴仆仍正常付异怪召唤术费用，免专注不新增免费施法次数，召唤物临时生命为魔契师等级+魅力调整值"
+      ],
+      "without_independent_resources": [
+        "唤醒心灵至多1连结但无休息次数；心灵法术与思维之盾无消耗；新版没有旧版永久奴仆记录"
+      ]
+    },
+    {
+      "id": "phb2024:wizard:abjurer",
+      "name": "防护师",
+      "class_id": "wizard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/法师/防护师.htm",
+      "resource_file": "resource-research-wizard-supplement.json",
+      "resources": [
+        "phb2024:wizard:abjurer:arcane_ward",
+        "phb2024:wizard:abjurer:spell_breaker"
+      ],
+      "shared_resources": [
+        "投射守御共用奥术守御生命"
+      ],
+      "without_independent_resources": [
+        "防护学者与法术抗性无独立有限资源"
+      ]
+    },
+    {
+      "id": "phb2024:wizard:diviner",
+      "name": "预言师",
+      "class_id": "wizard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/法师/预言师.htm",
+      "resource_file": "resource-research-wizard-supplement.json",
+      "resources": [],
+      "shared_resources": [
+        "预兆与2014共用保存骰值及长休重掷模型，但获得等级改为3；14级仍由2骰升至3骰",
+        "专业预言与2014共用至少2环触发、恢复更低环且不超过5环的模型",
+        "天眼通与2014共用1次短休或长休恢复的资源模型；效果和动作差异不在资源范围"
+      ],
+      "without_independent_resources": [
+        "预言学者无独立有限资源"
+      ]
+    },
+    {
+      "id": "phb2024:wizard:evoker",
+      "name": "塑能师",
+      "class_id": "wizard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "official_checked",
+      "source_url": "https://www.dndbeyond.com/sources/dnd/br-2024/character-classes#Evoker",
+      "resources": [
+        "wizard:evocation:overchannel"
+      ],
+      "resource_file": "resource-research-wizard.json",
+      "shared_resources": [],
+      "without_independent_resources": [
+        "塑能学者",
+        "强力戏法",
+        "法术塑形",
+        "强效塑能"
+      ]
+    },
+    {
+      "id": "phb2024:wizard:illusionist",
+      "name": "幻术师",
+      "class_id": "wizard",
+      "source": "phb2024",
+      "status": "reviewed",
+      "implementation_complete": false,
+      "evidence": "translation_checked",
+      "source_url": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/法师/幻术师.htm",
+      "resource_file": "resource-research-wizard-supplement.json",
+      "resources": [
+        "phb2024:wizard:illusionist:phantasmal_creatures",
+        "phb2024:wizard:illusionist:illusory_self"
+      ],
+      "shared_resources": [
+        "亦真亦幻要求消耗环位施展幻术；不再单独扣特性点数"
+      ],
+      "without_independent_resources": [
+        "幻术学者、强化幻术无独立有限资源"
+      ]
+    }
+  ]
+}

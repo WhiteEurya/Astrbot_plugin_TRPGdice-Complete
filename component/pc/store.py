@@ -13,6 +13,18 @@ from astrbot.api import logger
 PLUGIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_FOLDER = os.path.join(PLUGIN_DIR, "..", "chara_data")
 
+RULE_SYSTEMS = {"coc", "dnd"}
+
+
+def _validate_rule_system(rule_system):
+    if rule_system not in RULE_SYSTEMS:
+        raise ValueError(f"Unknown character rule system: {rule_system}")
+    return rule_system
+
+
+def _matches_rule(data, rule_system):
+    return bool(data and data.get("rule_system", "coc") == rule_system)
+
 COC_DEFAULT_SKILLS = {
     "会计": 5,
     "人类学": 1,
@@ -115,11 +127,11 @@ COC_SPECIALIZED_DEFAULT_SKILLS = {
 
 # NEW : BINDING
 
-def get_user_folder(group_id: str, user_id: str):
+def get_user_folder(group_id: str, user_id: str, rule_system="coc"):
     """
     获取：chara_data/{group_id}/{user_id}/
     """
-    folder = os.path.join(DATA_FOLDER, str(group_id), str(user_id))
+    folder = os.path.join(DATA_FOLDER, str(group_id), str(user_id), _validate_rule_system(rule_system))
     os.makedirs(folder, exist_ok=True)
     return folder
 
@@ -132,14 +144,14 @@ def get_user_base_folder(user_id: str):
     os.makedirs(folder, exist_ok=True)
     return folder
 
-def get_vault_folder(user_id: str):
+def get_vault_folder(user_id: str, rule_system="coc"):
     """获取用户的全域档案库目录。"""
-    folder = os.path.join(get_user_base_folder(user_id), "vault")
+    folder = os.path.join(get_user_base_folder(user_id), "vault", _validate_rule_system(rule_system))
     os.makedirs(folder, exist_ok=True)
     return folder
 
-def get_vault_character_file(user_id: str, chara_id: str):
-    return os.path.join(get_vault_folder(user_id), f"{chara_id}.json")
+def get_vault_character_file(user_id: str, chara_id: str, rule_system="coc"):
+    return os.path.join(get_vault_folder(user_id, rule_system=rule_system), f"{chara_id}.json")
 
 def _read_character_file(path: str):
     if os.path.exists(path):
@@ -152,17 +164,44 @@ def _write_character_file(path: str, data: dict):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-def get_binding_info(user_id: str):
-    """获取用户的全局绑定配置"""
+def get_binding_info(user_id: str, rule_system="coc"):
+    """Return the group bindings for one rule system."""
+    _validate_rule_system(rule_system)
     path = os.path.join(get_user_base_folder(user_id), "bindings.json")
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            raw = json.load(f)
+        result = {}
+        for group_id, binding in raw.items():
+            if isinstance(binding, dict) and any(key in binding for key in RULE_SYSTEMS):
+                if rule_system in binding:
+                    result[group_id] = binding[rule_system]
+            elif rule_system == "coc":
+                result[group_id] = binding
+        return result
     return {} # 格式示例: {"group_A": "uuid_1", "group_B": "uuid_2"}
 
-def set_binding_info(user_id: str, group_id: str, chara_id: str, global_binding: bool = False, local_binding: bool = False):
+
+def _save_binding_info(user_id, bindings, rule_system):
+    _validate_rule_system(rule_system)
+    path = os.path.join(get_user_base_folder(user_id), "bindings.json")
+    raw = _read_character_file(path) or {}
+    merged = {}
+    for group_id, binding in raw.items():
+        if not isinstance(binding, dict) or not any(key in binding for key in RULE_SYSTEMS):
+            binding = {"coc": binding}
+        else:
+            binding = dict(binding)
+        binding.pop(rule_system, None)
+        if binding:
+            merged[group_id] = binding
+    for group_id, binding in bindings.items():
+        merged.setdefault(group_id, {})[rule_system] = binding
+    _write_character_file(path, merged)
+
+def set_binding_info(user_id: str, group_id: str, chara_id: str, global_binding: bool = False, local_binding: bool = False, rule_system="coc"):
     """更新某个群的绑定关系"""
-    bindings = get_binding_info(user_id)
+    bindings = get_binding_info(user_id, rule_system=rule_system)
     if chara_id:
         if local_binding:
             bindings[str(group_id)] = {"id": chara_id, "local": True}
@@ -173,29 +212,27 @@ def set_binding_info(user_id: str, group_id: str, chara_id: str, global_binding:
     else:
         bindings.pop(str(group_id), None)
     
-    path = os.path.join(get_user_base_folder(user_id), "bindings.json")
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(bindings, f, indent=4)
+    _save_binding_info(user_id, bindings, rule_system)
 
 ### Universal Player ###
 
-def is_global_character(user_id: str, chara_id: str) -> bool:
-    data = _read_character_file(get_vault_character_file(user_id, chara_id))
-    return bool(data and data.get("global", True))
+def is_global_character(user_id: str, chara_id: str, rule_system="coc") -> bool:
+    data = _read_character_file(get_vault_character_file(user_id, chara_id, rule_system=rule_system))
+    return bool(_matches_rule(data, rule_system) and data.get("global", True))
 
-def is_local_binding(group_id: str, user_id: str, chara_id: str) -> bool:
-    bindings = get_binding_info(user_id)
+def is_local_binding(group_id: str, user_id: str, chara_id: str, rule_system="coc") -> bool:
+    bindings = get_binding_info(user_id, rule_system=rule_system)
     binding = bindings.get(str(group_id))
     return bool(isinstance(binding, dict) and binding.get("id") == chara_id and binding.get("local"))
 
-def _get_bound_character_path(group_id: str, user_id: str, chara_id: str):
+def _get_bound_character_path(group_id: str, user_id: str, chara_id: str, rule_system="coc"):
     if str(group_id) == "Vault":
-        return get_vault_character_file(user_id, chara_id)
+        return get_vault_character_file(user_id, chara_id, rule_system=rule_system)
 
-    vault_path = get_vault_character_file(user_id, chara_id)
-    local_path = get_character_file(group_id, user_id, chara_id)
+    vault_path = get_vault_character_file(user_id, chara_id, rule_system=rule_system)
+    local_path = get_character_file(group_id, user_id, chara_id, rule_system=rule_system)
 
-    if is_local_binding(group_id, user_id, chara_id):
+    if is_local_binding(group_id, user_id, chara_id, rule_system=rule_system):
         return local_path
 
     vault_data = _read_character_file(vault_path)
@@ -207,8 +244,8 @@ def _get_bound_character_path(group_id: str, user_id: str, chara_id: str):
 
     return vault_path
 
-def push_character_to_vault(group_id: str, user_id: str, chara_id: str, global_card: bool = False):
-    data = load_character(group_id, user_id, chara_id)
+def push_character_to_vault(group_id: str, user_id: str, chara_id: str, global_card: bool = False, rule_system="coc"):
+    data = load_character(group_id, user_id, chara_id, rule_system=rule_system)
     if not data:
         return False
 
@@ -216,20 +253,20 @@ def push_character_to_vault(group_id: str, user_id: str, chara_id: str, global_c
     data["global"] = True
     data["global_source_group_id"] = str(group_id)
 
-    _write_character_file(get_vault_character_file(user_id, chara_id), data)
+    _write_character_file(get_vault_character_file(user_id, chara_id, rule_system=rule_system), data)
     return True
 
-def mark_character_global(group_id: str, user_id: str, chara_id: str):
-    if not push_character_to_vault(group_id, user_id, chara_id, global_card=True):
+def mark_character_global(group_id: str, user_id: str, chara_id: str, rule_system="coc"):
+    if not push_character_to_vault(group_id, user_id, chara_id, global_card=True, rule_system=rule_system):
         return False
-    set_binding_info(user_id, group_id, chara_id, global_binding=True)
+    set_binding_info(user_id, group_id, chara_id, global_binding=True, rule_system=rule_system)
     return True
 
-def unmark_character_global(group_id: str, user_id: str, chara_id: str):
+def unmark_character_global(group_id: str, user_id: str, chara_id: str, rule_system="coc"):
     """让当前群隔离使用该卡的本地副本，不影响其他群的全局版本。"""
-    data = _read_character_file(get_vault_character_file(user_id, chara_id))
+    data = _read_character_file(get_vault_character_file(user_id, chara_id, rule_system=rule_system))
     if not data:
-        data = load_character(group_id, user_id, chara_id)
+        data = load_character(group_id, user_id, chara_id, rule_system=rule_system)
     if not data:
         return False
 
@@ -238,17 +275,17 @@ def unmark_character_global(group_id: str, user_id: str, chara_id: str):
 
     local_data = dict(data)
     local_data["global"] = False
-    _write_character_file(get_character_file(group_id, user_id, chara_id), local_data)
-    set_binding_info(user_id, group_id, chara_id, local_binding=True)
+    _write_character_file(get_character_file(group_id, user_id, chara_id, rule_system=rule_system), local_data)
+    set_binding_info(user_id, group_id, chara_id, local_binding=True, rule_system=rule_system)
     return True
 
-def touch_character(group_id: str, user_id: str, chara_id: str):
+def touch_character(group_id: str, user_id: str, chara_id: str, rule_system="coc"):
     """
     手动 Push 逻辑：强行刷新档案的修改时间，使其在全域扫描中成为‘最新版本’
     """
-    return push_character_to_vault(group_id, user_id, chara_id)
+    return push_character_to_vault(group_id, user_id, chara_id, rule_system=rule_system)
 
-def get_all_universal_characters(user_id: str):
+def get_all_universal_characters(user_id: str, rule_system="coc"):
     """
     全域扫描：对比所有群聊文件 + 中央金库，寻找每个 UUID 的最新版本
     """
@@ -260,10 +297,10 @@ def get_all_universal_characters(user_id: str):
     if os.path.exists(DATA_FOLDER):
         for g_id in os.listdir(DATA_FOLDER):
             if g_id != "user_metadata":
-                scan_dirs.append((g_id, os.path.join(DATA_FOLDER, g_id, str(user_id))))
+                scan_dirs.append((g_id, os.path.join(DATA_FOLDER, g_id, str(user_id), _validate_rule_system(rule_system))))
     
     # 2. 加入中央金库路径 (标识为 'Vault')
-    vault_path = get_vault_folder(user_id)
+    vault_path = get_vault_folder(user_id, rule_system=rule_system)
     scan_dirs.append(("Vault", vault_path))
 
     for label, u_path in scan_dirs:
@@ -271,7 +308,7 @@ def get_all_universal_characters(user_id: str):
             for filename in os.listdir(u_path):
                 if filename.endswith(".json"):
                     uuid = filename[:-5]
-                    is_global = is_global_character(user_id, uuid)
+                    is_global = is_global_character(user_id, uuid, rule_system=rule_system)
                     if is_global and label != "Vault":
                         continue
                     file_path = os.path.join(u_path, filename)
@@ -282,43 +319,46 @@ def get_all_universal_characters(user_id: str):
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 data = json.load(f)
+                                if not _matches_rule(data, rule_system):
+                                    continue
                                 unique_chars[uuid] = {
                                     "name": data.get("name", "未知"),
                                     "uuid": uuid,
                                     "group_id": label, # 这里的 label 可能是群号，也可能是 'Vault'
                                     "mtime": mtime,
-                                    "global": is_global or bool(data.get("global"))
+                                    "global": is_global or bool(data.get("global")),
+                                    "rule_system": rule_system,
                                 }
                         except: continue
                         
     return sorted(unique_chars.values(), key=lambda x: x["mtime"], reverse=True)
 
-def clone_character_to_group(user_id: str, from_group: str, to_group: str, uuid: str):
+def clone_character_to_group(user_id: str, from_group: str, to_group: str, uuid: str, rule_system="coc"):
     """
     物理复制：从 A 群目录拷贝到 B 群目录
     """
     if str(from_group) == "Vault":
-        src_path = get_vault_character_file(user_id, uuid)
+        src_path = get_vault_character_file(user_id, uuid, rule_system=rule_system)
     else:
-        src_path = os.path.join(DATA_FOLDER, str(from_group), str(user_id), f"{uuid}.json")
-    dest_dir = os.path.join(DATA_FOLDER, str(to_group), str(user_id))
+        src_path = get_character_file(from_group, user_id, uuid, rule_system=rule_system)
+    dest_dir = get_user_folder(to_group, user_id, rule_system=rule_system)
     os.makedirs(dest_dir, exist_ok=True)
     
     dest_path = os.path.join(dest_dir, f"{uuid}.json")
     
-    if os.path.exists(src_path):
+    if _matches_rule(_read_character_file(src_path), rule_system):
         shutil.copy2(src_path, dest_path) # 带元数据的物理拷贝
         return True
     return False
 
-def check_character_file_exists(group_id: str, user_id: str, uuid: str):
+def check_character_file_exists(group_id: str, user_id: str, uuid: str, rule_system="coc"):
     """检查特定群组路径下是否存在该 UUID 的文件"""
-    path = os.path.join(DATA_FOLDER, str(group_id), str(user_id), f"{uuid}.json")
+    path = get_character_file(group_id, user_id, uuid, rule_system=rule_system)
     return os.path.exists(path)
 
-def get_local_file_mtime(group_id: str, user_id: str, uuid: str) -> float:
+def get_local_file_mtime(group_id: str, user_id: str, uuid: str, rule_system="coc") -> float:
     """获取本地文件的 mtime，优先从 JSON 读取，失败则读系统属性"""
-    path = os.path.join(DATA_FOLDER, str(group_id), str(user_id), f"{uuid}.json")
+    path = get_character_file(group_id, user_id, uuid, rule_system=rule_system)
     if not os.path.exists(path):
         return 0.0
     try:
@@ -331,19 +371,19 @@ def get_local_file_mtime(group_id: str, user_id: str, uuid: str) -> float:
 
 ### TAG HELPER
 
-def get_sorted_chara_list(group_id: str, user_id: str):
+def get_sorted_chara_list(group_id: str, user_id: str, rule_system="coc"):
     """ 返回排序后的角色列表 [(name, id), ...] 用于序号对应 """
-    chars = get_all_characters(group_id, user_id)
+    chars = get_all_characters(group_id, user_id, rule_system=rule_system)
     # 按角色名排序，保证序号 [1, 2, 3...] 稳定
     return sorted(chars.items(), key=lambda x: x[0])
 
-def resolve_identifier(group_id: str, user_id: str, identifier: str):
+def resolve_identifier(group_id: str, user_id: str, identifier: str, rule_system="coc"):
     """ 
     解析标识符：
     1. 如果是数字，对应序号
     2. 如果是字符串，对应角色名
     """
-    sorted_list = get_sorted_chara_list(group_id, user_id)
+    sorted_list = get_sorted_chara_list(group_id, user_id, rule_system=rule_system)
     
     identifier = str(identifier).strip()
     
@@ -362,17 +402,17 @@ def resolve_identifier(group_id: str, user_id: str, identifier: str):
 
 ### RENAME
 
-def rename_character(group_id: str, user_id: str, chara_id: str, new_name: str):
+def rename_character(group_id: str, user_id: str, chara_id: str, new_name: str, rule_system="coc"):
     """
     重命名指定 ID 的角色。
     """
     # 1. 检查新名字是否在当前群已存在（防止冲突）
-    characters = get_all_characters(group_id, user_id)
+    characters = get_all_characters(group_id, user_id, rule_system=rule_system)
     if new_name in characters:
         return False, "duplicate"
 
     # 2. 加载并修改数据
-    data = load_character(group_id, user_id, chara_id)
+    data = load_character(group_id, user_id, chara_id, rule_system=rule_system)
     if not data:
         return False, "not_found"
     
@@ -380,14 +420,16 @@ def rename_character(group_id: str, user_id: str, chara_id: str, new_name: str):
     data["name"] = new_name
     
     # 3. 保存回文件
-    save_character(group_id, user_id, chara_id, data)
+    save_character(group_id, user_id, chara_id, data, rule_system=rule_system)
     return True, old_name
 
 ### SYNC LOGIC
-def sync_derived_attributes(chara_data: dict):
+def sync_derived_attributes(chara_data: dict, rule_system="coc"):
     """
     根据基础属性自动同步派生属性（HP上限、理智上限等）。
     """
+    if rule_system != "coc" or chara_data.get("rule_system", "coc") != "coc":
+        return []
     attrs = chara_data.get("attributes", {})
     updates_made = []
 
@@ -425,9 +467,9 @@ def sync_derived_attributes(chara_data: dict):
 
 ### OLD LOGIC
 
-def get_all_characters(group_id: str, user_id: str):
+def get_all_characters(group_id: str, user_id: str, rule_system="coc"):
     """ 获取【当前群】用户的所有人物卡 {名: ID} """
-    folder = get_user_folder(group_id, user_id)
+    folder = get_user_folder(group_id, user_id, rule_system=rule_system)
     characters = {}
 
     if os.path.exists(folder):
@@ -437,11 +479,13 @@ def get_all_characters(group_id: str, user_id: str):
                 try:
                     with open(path, "r", encoding="utf-8") as f:
                         data = json.load(f)
+                        if not _matches_rule(data, rule_system):
+                            continue
                         characters[data["name"]] = data["id"]
                 except Exception:
                     continue
 
-    vault_folder = get_vault_folder(user_id)
+    vault_folder = get_vault_folder(user_id, rule_system=rule_system)
     if os.path.exists(vault_folder):
         for filename in os.listdir(vault_folder):
             if not filename.endswith(".json"):
@@ -449,15 +493,15 @@ def get_all_characters(group_id: str, user_id: str):
             try:
                 with open(os.path.join(vault_folder, filename), "r", encoding="utf-8") as f:
                     data = json.load(f)
-                if data.get("global", True):
+                if _matches_rule(data, rule_system) and data.get("global", True):
                     characters[data["name"]] = data["id"]
             except Exception:
                 continue
     return characters
 
-def get_character_file(group_id: str, user_id: str, chara_id: str):
+def get_character_file(group_id: str, user_id: str, chara_id: str, rule_system="coc"):
     """ 获取指定群组下、指定人物卡的文件路径 """
-    return os.path.join(get_user_folder(group_id, user_id), f"{chara_id}.json")
+    return os.path.join(get_user_folder(group_id, user_id, rule_system=rule_system), f"{chara_id}.json")
 
 def get_current_character_file(user_id: str):
     """
@@ -465,29 +509,29 @@ def get_current_character_file(user_id: str):
     """
     return os.path.join(get_user_folder(user_id), "current.txt")
 
-def get_current_character_id(group_id: str, user_id: str):
+def get_current_character_id(group_id: str, user_id: str, rule_system="coc"):
     """ 【核心】从 bindings 获取当前群绑定的 ID """
-    bindings = get_binding_info(user_id)
+    bindings = get_binding_info(user_id, rule_system=rule_system)
     binding = bindings.get(str(group_id))
     if isinstance(binding, dict):
         return binding.get("id")
     return binding
 
-def is_current_binding_global(group_id: str, user_id: str):
-    bindings = get_binding_info(user_id)
+def is_current_binding_global(group_id: str, user_id: str, rule_system="coc"):
+    bindings = get_binding_info(user_id, rule_system=rule_system)
     binding = bindings.get(str(group_id))
     if isinstance(binding, dict):
         return not binding.get("local")
     return bool(binding)
 
-def get_current_character(group_id : str, user_id: str):
+def get_current_character(group_id : str, user_id: str, rule_system="coc"):
     """
     获取当前选中的人物卡数据（字典），没有则返回None。
     """
-    chara_id = get_current_character_id(group_id, user_id)
+    chara_id = get_current_character_id(group_id, user_id, rule_system=rule_system)
     if not chara_id:
         return None
-    return load_character(group_id, user_id, chara_id)
+    return load_character(group_id, user_id, chara_id, rule_system=rule_system)
 
 def set_current_character(user_id: str, chara_id: str):
     """
@@ -496,28 +540,33 @@ def set_current_character(user_id: str, chara_id: str):
     with open(get_current_character_file(user_id), "w", encoding="utf-8") as f:
         f.write(chara_id if chara_id is not None else "")
 
-def load_character(group_id: str, user_id: str, chara_id: str):
+def load_character(group_id: str, user_id: str, chara_id: str, rule_system="coc"):
     """ 加载当前群下的指定人物卡 """
-    path = _get_bound_character_path(group_id, user_id, chara_id)
+    path = _get_bound_character_path(group_id, user_id, chara_id, rule_system=rule_system)
     data = _read_character_file(path)
-    if data:
+    if _matches_rule(data, rule_system):
         return data
 
-    local_path = get_character_file(group_id, user_id, chara_id)
+    local_path = get_character_file(group_id, user_id, chara_id, rule_system=rule_system)
     if local_path != path:
-        return _read_character_file(local_path)
+        data = _read_character_file(local_path)
+        return data if _matches_rule(data, rule_system) else None
     return None
 
-def save_character(group_id: str, user_id: str, chara_id: str, data: dict):
+def save_character(group_id: str, user_id: str, chara_id: str, data: dict, rule_system="coc"):
     """
     保存人物卡数据到文件，并在写回前把常见同义词组同步更新。
     同义词组中任意一个字段在某个容器（data 或其子 dict）存在时，
     将把该容器内所有同义词字段更新为该出现字段的值。
     """
-    path = _get_bound_character_path(group_id, user_id, chara_id)
+    _validate_rule_system(rule_system)
+    if data.get("rule_system", rule_system) != rule_system:
+        raise ValueError("Cannot save a character under another rule system")
+    data["rule_system"] = rule_system
+    path = _get_bound_character_path(group_id, user_id, chara_id, rule_system=rule_system)
 
     # 同义词组（每组第一个为“代表/优先检查字段”，但最终会把组内所有字段设为同一值）
-    SYNONYMS = ATTRIBUTE_SYNONYMS.SYNONYM
+    SYNONYMS = ATTRIBUTE_SYNONYMS.SYNONYM if rule_system == "coc" else []
 
     # helper: 给单个容器（dict）同步同义词组
     def sync_container(container: dict):
@@ -544,10 +593,10 @@ def save_character(group_id: str, user_id: str, chara_id: str, data: dict):
 
     data["mtime"] = time.time()
 
-    if path == get_vault_character_file(user_id, chara_id):
+    if path == get_vault_character_file(user_id, chara_id, rule_system=rule_system):
         data["global"] = True
-        set_binding_info(user_id, group_id, chara_id, global_binding=True)
-        path = get_vault_character_file(user_id, chara_id)
+        set_binding_info(user_id, group_id, chara_id, global_binding=True, rule_system=rule_system)
+        path = get_vault_character_file(user_id, chara_id, rule_system=rule_system)
 
     # 最后写回文件
     _write_character_file(path, data)
@@ -591,11 +640,19 @@ def get_coc_default_skill_value(skill_name: str, attributes: dict = None):
 
     return 0
 
-def get_skill_value(group_id: str, user_id: str, skill_name: str):
+def get_skill_value(group_id: str, user_id: str, skill_name: str, rule_system="coc"):
     """
     获取当前【群组绑定】人物卡的某项技能值；没有填写时回落到 COC7 常见默认值。
     """
-    chara_data = get_current_character(group_id, user_id) # 这里的 get_current_character 内部应调用 get_binding_info
+    chara_data = get_current_character(group_id, user_id, rule_system=rule_system) # 这里的 get_current_character 内部应调用 get_binding_info
+    if rule_system != "coc":
+        if not chara_data:
+            return 0
+        from .dnd import check_bonus
+        try:
+            return check_bonus(chara_data, skill_name)[0]
+        except ValueError:
+            return 0
     if not chara_data or "attributes" not in chara_data:
         return get_coc_default_skill_value(skill_name)
 
@@ -610,7 +667,7 @@ def get_skill_value(group_id: str, user_id: str, skill_name: str):
 
     return get_coc_default_skill_value(skill_name, attributes)
 
-def create_character(group_id: str, user_id: str, name: str, attributes: dict):
+def create_character(group_id: str, user_id: str, name: str, attributes: dict, rule_system="coc"):
     """
     创建新人物卡，并注入元数据。
     """
@@ -618,6 +675,7 @@ def create_character(group_id: str, user_id: str, name: str, attributes: dict):
     current_time = time.time() # 获取当前精确时间戳
 
     data = {
+        "rule_system": _validate_rule_system(rule_system),
         "id": chara_id, 
         "name": name, 
         "attributes": attributes, # 这里是属性字典
@@ -628,30 +686,30 @@ def create_character(group_id: str, user_id: str, name: str, attributes: dict):
     }
     
     # 默认保存到全域档案库，所有群共用同一份卡。
-    _write_character_file(get_vault_character_file(user_id, chara_id), data)
+    _write_character_file(get_vault_character_file(user_id, chara_id, rule_system=rule_system), data)
     
     # 更新绑定
-    set_binding_info(user_id, group_id, chara_id, global_binding=True)
+    set_binding_info(user_id, group_id, chara_id, global_binding=True, rule_system=rule_system)
     return chara_id
 
-def delete_character(group_id: str, user_id: str, name: str):
+def delete_character(group_id: str, user_id: str, name: str, rule_system="coc"):
     """
     删除当前群组下指定名字的人物卡，并清理绑定关系。
     """
-    characters = get_all_characters(group_id, user_id)
+    characters = get_all_characters(group_id, user_id, rule_system=rule_system)
     
     if name not in characters:
         return False, None
 
-    return delete_character_by_id(group_id, user_id, characters[name])
+    return delete_character_by_id(group_id, user_id, characters[name], rule_system=rule_system)
 
 def _binding_chara_id(binding):
     if isinstance(binding, dict):
         return binding.get("id")
     return binding
 
-def _cleanup_character_bindings(user_id: str, chara_id: str, group_id: str = None, include_local: bool = True):
-    bindings = get_binding_info(user_id)
+def _cleanup_character_bindings(user_id: str, chara_id: str, group_id: str = None, include_local: bool = True, rule_system="coc"):
+    bindings = get_binding_info(user_id, rule_system=rule_system)
     changed = False
 
     for bound_group_id, binding in list(bindings.items()):
@@ -662,19 +720,17 @@ def _cleanup_character_bindings(user_id: str, chara_id: str, group_id: str = Non
             changed = True
 
     if changed:
-        path = os.path.join(get_user_base_folder(user_id), "bindings.json")
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(bindings, f, indent=4)
+        _save_binding_info(user_id, bindings, rule_system)
 
-def delete_character_by_id(group_id: str, user_id: str, chara_id: str):
+def delete_character_by_id(group_id: str, user_id: str, chara_id: str, rule_system="coc"):
     """
     按 ID 删除人物卡。全局卡删除 vault 档案；本地隔离卡删除当前群副本。
     同时清理所有指向该角色的绑定，避免后续读到已删除 ID。
     """
     paths = []
-    local_path = get_character_file(group_id, user_id, chara_id)
-    vault_path = get_vault_character_file(user_id, chara_id)
-    local_only = is_local_binding(group_id, user_id, chara_id)
+    local_path = get_character_file(group_id, user_id, chara_id, rule_system=rule_system)
+    vault_path = get_vault_character_file(user_id, chara_id, rule_system=rule_system)
+    local_only = is_local_binding(group_id, user_id, chara_id, rule_system=rule_system)
 
     if local_only and os.path.exists(local_path):
         paths.append(local_path)
@@ -685,7 +741,7 @@ def delete_character_by_id(group_id: str, user_id: str, chara_id: str):
             for candidate_group_id in os.listdir(DATA_FOLDER):
                 if candidate_group_id == "user_metadata":
                     continue
-                candidate_path = os.path.join(DATA_FOLDER, candidate_group_id, str(user_id), f"{chara_id}.json")
+                candidate_path = os.path.join(DATA_FOLDER, candidate_group_id, str(user_id), rule_system, f"{chara_id}.json")
                 if os.path.exists(candidate_path) and candidate_path not in paths:
                     paths.append(candidate_path)
 
@@ -699,45 +755,47 @@ def delete_character_by_id(group_id: str, user_id: str, chara_id: str):
         return False, None
 
     if local_only:
-        _cleanup_character_bindings(user_id, chara_id, group_id=group_id)
+        _cleanup_character_bindings(user_id, chara_id, group_id=group_id, rule_system=rule_system)
     else:
-        _cleanup_character_bindings(user_id, chara_id)
+        _cleanup_character_bindings(user_id, chara_id, rule_system=rule_system)
     return True, chara_id
 
-def set_nickname(group_id: str, user_id: str, chara_id: str, nickname: str):
+def set_nickname(group_id: str, user_id: str, chara_id: str, nickname: str, rule_system="coc"):
     """
     为指定群组下的某张卡设置昵称。
     """
-    chara = load_character(group_id, user_id, chara_id)
+    chara = load_character(group_id, user_id, chara_id, rule_system=rule_system)
     if chara:
         chara["nickname"] = nickname
-        save_character(group_id, user_id, chara_id, chara)
+        save_character(group_id, user_id, chara_id, chara, rule_system=rule_system)
         return True
     return False
 
-def grow_up(group_id: str, user_id: str, skill_name: str, skill_value: int = None):
+def grow_up(group_id: str, user_id: str, skill_name: str, skill_value: int = None, rule_system="coc"):
     """
     技能成长判定（COC规则）- 适配物理隔离方案
     """
+    if rule_system != "coc":
+        return "成长检定仅适用于 CoC 人物卡。"
     update_skill_value = False
-    chara_id = get_current_character_id(group_id, user_id)
+    chara_id = get_current_character_id(group_id, user_id, rule_system=rule_system)
     
     if not chara_id and skill_value is None:
         return get_output("pc.grow.no_active")
 
     # 如果未提供 skill_value，则从当前绑定的卡读取
     if skill_value is None:
-        skill_value = get_skill_value(group_id, user_id, skill_name)
+        skill_value = get_skill_value(group_id, user_id, skill_name, rule_system=rule_system)
         update_skill_value = True
     
     if chara_id :
-        chara_data = load_character(group_id, user_id, chara_id)
+        chara_data = load_character(group_id, user_id, chara_id, rule_system=rule_system)
 
     # 校验 skill_value 是否为整数
     try:
         skill_value = int(skill_value)
     except (ValueError, TypeError):
-        return get_output("pc.show.attr_missing", skill_name=skill_name)
+        return get_output("pc.show.attr_missing", attribute=skill_name)
 
     # 掷骰 (1D100)
     roll_result = random.randint(1, 100)
@@ -751,7 +809,7 @@ def grow_up(group_id: str, user_id: str, skill_name: str, skill_value: int = Non
         if update_skill_value and chara_data:
             if "attributes" not in chara_data: chara_data["attributes"] = {}
             chara_data["attributes"][skill_name] = new_value
-            save_character(group_id, user_id, chara_id, chara_data)
+            save_character(group_id, user_id, chara_id, chara_data, rule_system=rule_system)
     else:
         result = get_output("pc.grow.failure", skill_name=skill_name)
 

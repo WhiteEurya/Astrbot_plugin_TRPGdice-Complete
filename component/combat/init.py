@@ -105,5 +105,5 @@ class InitiativeManager:
 
         match = re.match(r"(\d+)", expr)
         init_value = int(match.group(1))
-        player_name = expr[match.end():] or default_name
+        player_name = expr[match.end():].strip() or default_name
         return init_value, player_name

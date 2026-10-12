@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "scope": "PHB 2014, SCAG, XGtE, TCoE, PHB 2024; published options only",
+  "translation_note": "Chinese names are convenience labels and aliases, not an official localization claim.",
+  "resource_rules_status": "pending_verification",
+  "sources": {
+    "phb2014": {"name": "玩家手册 2014", "edition": "2014", "url": "https://www.dndbeyond.com/sources/dnd/phb-2014", "aliases": ["2014", "phb14", "phb2014", "玩家手册2014"]},
+    "scag": {"name": "剑湾冒险者指南", "edition": "2014", "url": "https://www.dndbeyond.com/sources/dnd/scag", "aliases": ["scag", "剑湾"]},
+    "xgte": {"name": "珊娜萨的万事指南", "edition": "2014", "url": "https://www.dndbeyond.com/sources/dnd/xgte", "aliases": ["xgte", "xge", "珊娜萨", "珊纳萨"]},
+    "tcoe": {"name": "塔莎的万事坩埚", "edition": "2014", "url": "https://www.dndbeyond.com/sources/dnd/tcoe", "aliases": ["tcoe", "tce", "塔莎"]},
+    "phb2024": {"name": "玩家手册 2024", "edition": "2024", "url": "https://www.dndbeyond.com/sources/dnd/phb-2024", "inventory_url": "https://www.dndbeyond.com/posts/1810-updates-in-the-players-handbook-2024", "aliases": ["2024", "phb24", "phb2024", "玩家手册2024"]}
+  },
+  "books": {
+    "phb2014": {
+      "barbarian": [
+        ["Path of the Berserker", "狂战士", ["狂战士道途"]],
+        ["Path of the Totem Warrior", "图腾武者", ["图腾战士", "图腾武者道途"]]
+      ],
+      "bard": [["College of Lore", "逸闻学院"], ["College of Valor", "勇气学院"]],
+      "cleric": [["Knowledge Domain", "知识领域"], ["Life Domain", "生命领域"], ["Light Domain", "光明领域"], ["Nature Domain", "自然领域"], ["Tempest Domain", "风暴领域"], ["Trickery Domain", "诡术领域"], ["War Domain", "战争领域"]],
+      "druid": [["Circle of the Land", "大地结社"], ["Circle of the Moon", "月亮结社"]],
+      "fighter": [["Champion", "勇士", ["冠军"]], ["Battle Master", "战斗大师"], ["Eldritch Knight", "奥法骑士"]],
+      "monk": [["Way of the Open Hand", "散打宗", ["空手宗", "开掌宗"]], ["Way of Shadow", "暗影宗"], ["Way of the Four Elements", "四象宗", ["四元素宗"]]],
+      "paladin": [["Oath of Devotion", "奉献之誓"], ["Oath of the Ancients", "古贤之誓", ["古代之誓"]], ["Oath of Vengeance", "复仇之誓"]],
+      "ranger": [["Hunter", "猎人"], ["Beast Master", "驯兽师", ["兽王"]]],
+      "rogue": [["Thief", "盗贼"], ["Assassin", "刺客"], ["Arcane Trickster", "诡术师"]],
+      "sorcerer": [["Draconic Bloodline", "龙族血脉"], ["Wild Magic", "狂野魔法"]],
+      "warlock": [["The Archfey", "至高妖精", ["妖精宗主"]], ["The Fiend", "邪魔", ["邪魔宗主"]], ["The Great Old One", "旧日支配者", ["旧日宗主"]]],
+      "wizard": [["School of Abjuration", "防护学派"], ["School of Conjuration", "咒法学派"], ["School of Divination", "预言学派"], ["School of Enchantment", "惑控学派"], ["School of Evocation", "塑能学派"], ["School of Illusion", "幻术学派"], ["School of Necromancy", "死灵学派"], ["School of Transmutation", "变化学派"]]
+    },
+    "scag": {
+      "barbarian": [["Path of the Battlerager", "狂怒战士", ["狂怒战士道途", "战狂"]]],
+      "cleric": [["Arcana Domain", "奥秘领域", ["奥术领域"]]],
+      "fighter": [["Purple Dragon Knight", "紫龙骑士", ["Banneret", "旗卫"]]],
+      "monk": [["Way of the Long Death", "长死宗"], ["Way of the Sun Soul", "日魂宗"]],
+      "paladin": [["Oath of the Crown", "王冠之誓"]],
+      "rogue": [["Mastermind", "策士", ["幕后主使", "诡谋大师"]], ["Swashbuckler", "剑客", ["侠盗", "浪荡剑客"]]],
+      "sorcerer": [["Storm Sorcery", "风暴术法"]],
+      "warlock": [["The Undying", "不朽者", ["不朽宗主"]]],
+      "wizard": [["Bladesinging", "剑咏", ["剑歌", "剑咏者"]]]
+    },
+    "xgte": {
+      "barbarian": [["Path of the Ancestral Guardian", "先祖守卫", ["先祖守卫道途"]], ["Path of the Storm Herald", "风暴先驱", ["风暴先驱道途"]], ["Path of the Zealot", "狂热者", ["狂热者道途"]]],
+      "bard": [["College of Glamour", "魅惑学院"], ["College of Swords", "剑舞学院", ["剑术学院"]], ["College of Whispers", "低语学院"]],
+      "cleric": [["Forge Domain", "锻造领域"], ["Grave Domain", "坟墓领域", ["墓葬领域"]]],
+      "druid": [["Circle of Dreams", "梦境结社"], ["Circle of the Shepherd", "牧者结社", ["牧羊人结社"]]],
+      "fighter": [["Arcane Archer", "奥术射手"], ["Cavalier", "骑士"], ["Samurai", "武士"]],
+      "monk": [["Way of the Drunken Master", "醉拳宗"], ["Way of the Kensei", "剑圣宗", ["剑圣"]], ["Way of the Sun Soul", "日魂宗"]],
+      "paladin": [["Oath of Conquest", "征服之誓"], ["Oath of Redemption", "救赎之誓"]],
+      "ranger": [["Gloom Stalker", "幽暗追猎者", ["幽域追猎者"]], ["Horizon Walker", "地平线行者"], ["Monster Slayer", "怪物猎手"]],
+      "rogue": [["Inquisitive", "洞察者", ["审讯者"]], ["Mastermind", "策士", ["幕后主使", "诡谋大师"]], ["Scout", "斥候"], ["Swashbuckler", "剑客", ["侠盗", "浪荡剑客"]]],
+      "sorcerer": [["Divine Soul", "神圣之魂"], ["Shadow Magic", "暗影魔法"], ["Storm Sorcery", "风暴术法"]],
+      "warlock": [["The Celestial", "天界", ["天界宗主"]], ["The Hexblade", "咒剑", ["咒剑宗主"]]],
+      "wizard": [["War Magic", "战争魔法"]]
+    },
+    "tcoe": {
+      "artificer": [["Alchemist", "炼金师"], ["Armorer", "装甲师"], ["Artillerist", "炮术师"], ["Battle Smith", "战斗铁匠"]],
+      "barbarian": [["Path of the Beast", "兽之道途", ["兽道"]], ["Path of Wild Magic", "狂野魔法道途"]],
+      "bard": [["College of Creation", "创造学院"], ["College of Eloquence", "雄辩学院"]],
+      "cleric": [["Order Domain", "秩序领域"], ["Peace Domain", "和平领域"], ["Twilight Domain", "暮光领域"]],
+      "druid": [["Circle of Spores", "孢子结社"], ["Circle of Stars", "星辰结社"], ["Circle of Wildfire", "野火结社"]],
+      "fighter": [["Psi Warrior", "灵能武士", ["心灵武士"]], ["Rune Knight", "符文骑士"]],
+      "monk": [["Way of Mercy", "慈悲宗"], ["Way of the Astral Self", "星我宗", ["星体宗"]]],
+      "paladin": [["Oath of Glory", "荣耀之誓"], ["Oath of the Watchers", "守望之誓"]],
+      "ranger": [["Fey Wanderer", "妖精漫游者", ["妖精游荡者"]], ["Swarmkeeper", "集群守卫", ["群虫守卫"]]],
+      "rogue": [["Phantom", "幻影"], ["Soulknife", "魂刃"]],
+      "sorcerer": [["Aberrant Mind", "畸变之心", ["异怪之心"]], ["Clockwork Soul", "时钟之魂", ["机械之魂"]]],
+      "warlock": [["The Fathomless", "无底深渊", ["无底宗主"]], ["The Genie", "巨灵", ["巨灵宗主"]]],
+      "wizard": [["Bladesinging", "剑咏", ["剑歌", "剑咏者"]], ["Order of Scribes", "书士学派", ["书士团"]]]
+    },
+    "phb2024": {
+      "barbarian": [["Path of the Berserker", "狂战士", ["狂战士道途"]], ["Path of the Wild Heart", "荒野之心", ["荒心道途"]], ["Path of the World Tree", "世界树", ["世界树道途"]], ["Path of the Zealot", "狂热者", ["狂热者道途"]]],
+      "bard": [["College of Dance", "舞蹈学院"], ["College of Glamour", "魅惑学院"], ["College of Lore", "逸闻学院"], ["College of Valor", "勇气学院"]],
+      "cleric": [["Life Domain", "生命领域"], ["Light Domain", "光明领域"], ["Trickery Domain", "诡术领域"], ["War Domain", "战争领域"]],
+      "druid": [["Circle of the Land", "大地结社"], ["Circle of the Moon", "月亮结社"], ["Circle of the Sea", "海洋结社"], ["Circle of the Stars", "星辰结社", ["Circle of Stars"]]],
+      "fighter": [["Battle Master", "战斗大师"], ["Champion", "勇士", ["冠军"]], ["Eldritch Knight", "奥法骑士"], ["Psi Warrior", "灵能武士", ["心灵武士"]]],
+      "monk": [["Warrior of Mercy", "慈悲武者", ["慈悲宗"]], ["Warrior of Shadow", "暗影武者", ["暗影宗"]], ["Warrior of the Elements", "元素武者", ["元素宗"]], ["Warrior of the Open Hand", "散打武者", ["散打宗", "空手宗", "开掌宗"]]],
+      "paladin": [["Oath of Devotion", "奉献之誓"], ["Oath of Glory", "荣耀之誓"], ["Oath of the Ancients", "古贤之誓", ["古代之誓"]], ["Oath of Vengeance", "复仇之誓"]],
+      "ranger": [["Beast Master", "驯兽师", ["兽王"]], ["Fey Wanderer", "妖精漫游者", ["妖精游荡者"]], ["Gloom Stalker", "幽暗追猎者", ["幽域追猎者"]], ["Hunter", "猎人"]],
+      "rogue": [["Arcane Trickster", "诡术师"], ["Assassin", "刺客"], ["Soulknife", "魂刃"], ["Thief", "盗贼"]],
+      "sorcerer": [["Aberrant Sorcery", "畸变术法", ["畸变之心", "异怪之心"]], ["Clockwork Sorcery", "时钟术法", ["时钟之魂", "机械之魂"]], ["Draconic Sorcery", "龙族术法", ["龙族血脉"]], ["Wild Magic Sorcery", "狂野术法", ["狂野魔法"]]],
+      "warlock": [["Archfey Patron", "至高妖精宗主", ["至高妖精", "妖精宗主"]], ["Celestial Patron", "天界宗主", ["天界"]], ["Fiend Patron", "邪魔宗主", ["邪魔"]], ["Great Old One Patron", "旧日支配者宗主", ["旧日支配者", "旧日宗主"]]],
+      "wizard": [["Abjurer", "防护师", ["防护学派"]], ["Diviner", "预言师", ["预言学派"]], ["Evoker", "塑能师", ["塑能学派"]], ["Illusionist", "幻术师", ["幻术学派"]]]
+    }
+  }
+}

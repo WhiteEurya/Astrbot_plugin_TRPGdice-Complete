@@ -1,0 +1,3254 @@
+{
+  "schema_version": 1,
+  "pools": [
+    {
+      "owner": "phb2014:cleric:knowledge-domain",
+      "edition": "both",
+      "key": "research:visions",
+      "name": "透视过去",
+      "minimum": 17,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "透视过去"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:cleric:light-domain",
+      "edition": "both",
+      "key": "research:flare",
+      "name": "守御闪光",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "守御闪光"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2014:cleric:tempest-domain",
+      "edition": "both",
+      "key": "research:wrath",
+      "name": "风暴狂怒",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "风暴狂怒"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2014:cleric:war-domain",
+      "edition": "both",
+      "key": "research:priest",
+      "name": "战争祭司",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "战争祭司"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2014:druid:circle-of-the-land",
+      "edition": "both",
+      "key": "research:natural_recovery",
+      "name": "自然恢复",
+      "minimum": 2,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "自然恢复"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:fighter:battle-master",
+      "edition": "both",
+      "key": "research:superiority",
+      "name": "卓越骰",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "卓越骰"
+      ],
+      "steps": [
+        [
+          3,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          15,
+          6
+        ]
+      ],
+      "die_steps": [
+        [
+          3,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          18,
+          12
+        ]
+      ]
+    },
+    {
+      "owner": "phb2014:monk:way-of-the-open-hand",
+      "edition": "both",
+      "key": "research:wholeness",
+      "name": "混元体",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "混元体"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:paladin:oath-of-devotion",
+      "edition": "both",
+      "key": "research:nimbus",
+      "name": "至圣光轮",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "至圣光轮"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:paladin:oath-of-the-ancients",
+      "edition": "both",
+      "key": "research:sentinel",
+      "name": "不灭哨卫",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "不灭哨卫"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:paladin:oath-of-the-ancients",
+      "edition": "both",
+      "key": "research:champion",
+      "name": "上古斗士",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "上古斗士"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:paladin:oath-of-vengeance",
+      "edition": "both",
+      "key": "research:angel",
+      "name": "复仇天使",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "复仇天使"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:rogue:arcane-trickster",
+      "edition": "both",
+      "key": "research:spell_thief",
+      "name": "法术窃贼",
+      "minimum": 17,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "法术窃贼"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:sorcerer:wild-magic",
+      "edition": "both",
+      "key": "research:tides",
+      "name": "混乱之潮",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "混乱之潮"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:warlock:the-fiend",
+      "edition": "both",
+      "key": "research:luck",
+      "name": "黑暗强运",
+      "minimum": 6,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "黑暗强运"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:warlock:the-fiend",
+      "edition": "both",
+      "key": "research:hell",
+      "name": "直坠噩梦",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "直坠噩梦"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:warlock:the-archfey",
+      "edition": "both",
+      "key": "research:presence",
+      "name": "妖精仪态",
+      "minimum": 1,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "妖精仪态"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:warlock:the-archfey",
+      "edition": "both",
+      "key": "research:escape",
+      "name": "雾遁",
+      "minimum": 6,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "雾遁"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:warlock:the-archfey",
+      "edition": "both",
+      "key": "research:delirium",
+      "name": "幻影黑幕",
+      "minimum": 14,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "幻影黑幕"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:warlock:the-great-old-one",
+      "edition": "both",
+      "key": "research:ward",
+      "name": "熵光结界",
+      "minimum": 6,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "熵光结界"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:wizard:school-of-conjuration",
+      "edition": "both",
+      "key": "research:transposition",
+      "name": "王车易位",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "王车易位"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:wizard:school-of-illusion",
+      "edition": "both",
+      "key": "research:self",
+      "name": "幻影化形",
+      "minimum": 10,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "幻影化形"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:wizard:school-of-transmutation",
+      "edition": "both",
+      "key": "research:shapechanger",
+      "name": "变形师免费变形术",
+      "minimum": 10,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "变形师免费变形术"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:rogue:soulknife",
+      "edition": "both",
+      "key": "research:energy",
+      "name": "魂刃灵能骰",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "魂刃灵能骰"
+      ],
+      "steps": [
+        [
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          9,
+          8
+        ],
+        [
+          13,
+          10
+        ],
+        [
+          17,
+          12
+        ]
+      ],
+      "die_steps": [
+        [
+          3,
+          6
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          17,
+          12
+        ]
+      ],
+      "short_restore": 1
+    },
+    {
+      "owner": "phb2024:sorcerer:clockwork-sorcery",
+      "edition": "both",
+      "key": "research:restore_balance",
+      "name": "归复平衡",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "归复平衡"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "魅力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:sorcerer:draconic-sorcery",
+      "edition": "both",
+      "key": "research:wings",
+      "name": "龙翼使用权",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "龙翼使用权"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:sorcerer:draconic-sorcery",
+      "edition": "both",
+      "key": "research:companion",
+      "name": "龙类召唤术免费施法",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "龙类召唤术免费施法"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:sorcerer:wild-magic-sorcery",
+      "edition": "both",
+      "key": "research:tides",
+      "name": "混乱之潮",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "混乱之潮"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:sorcerer:wild-magic-sorcery",
+      "edition": "both",
+      "key": "research:tamed_surge",
+      "name": "驯服浪涌",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "驯服浪涌"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:warlock:archfey-patron",
+      "edition": "both",
+      "key": "research:steps",
+      "name": "妖精步伐免费迷踪步",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "妖精步伐免费迷踪步"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "魅力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:warlock:archfey-patron",
+      "edition": "both",
+      "key": "research:defenses",
+      "name": "斗转星移反应",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "斗转星移反应"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:warlock:fiend-patron",
+      "edition": "both",
+      "key": "research:luck",
+      "name": "黑暗强运",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "黑暗强运"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "魅力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:warlock:fiend-patron",
+      "edition": "both",
+      "key": "research:hurl",
+      "name": "直坠噩梦使用权",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "直坠噩梦使用权"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:warlock:great-old-one-patron",
+      "edition": "both",
+      "key": "research:combatant",
+      "name": "锐眼斗士",
+      "minimum": 6,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "锐眼斗士"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:cleric:light-domain",
+      "edition": "both",
+      "key": "research:flare",
+      "name": "守御之光",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "守御之光"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      },
+      "short_rest_from": 6
+    },
+    {
+      "owner": "phb2024:cleric:light-domain",
+      "edition": "both",
+      "key": "research:corona",
+      "name": "光冕",
+      "minimum": 17,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "光冕"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:cleric:war-domain",
+      "edition": "both",
+      "key": "research:priest",
+      "name": "战争祭司",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "战争祭司"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:druid:circle-of-the-land",
+      "edition": "both",
+      "key": "research:free_spell",
+      "name": "自然恢复：结社免费施法",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "自然恢复"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:druid:circle-of-the-moon",
+      "edition": "both",
+      "key": "research:step",
+      "name": "月光飞步",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "月光飞步"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:druid:circle-of-the-stars",
+      "edition": "both",
+      "key": "research:guiding_bolt",
+      "name": "星图：免费光导箭",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "星图"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:druid:circle-of-the-stars",
+      "edition": "both",
+      "key": "research:omen",
+      "name": "宇宙预兆",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "宇宙预兆"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:barbarian:path-of-the-berserker",
+      "edition": "both",
+      "key": "research:presence",
+      "name": "威慑之姿",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "威慑之姿"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:barbarian:path-of-the-world-tree",
+      "edition": "both",
+      "key": "research:travel",
+      "name": "世界树之奇旅：强化传送",
+      "minimum": 14,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "世界树之奇旅"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:barbarian:path-of-the-zealot",
+      "edition": "both",
+      "key": "research:healing",
+      "name": "神之勇者：治疗骰",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "神之勇者"
+      ],
+      "steps": [
+        [
+          3,
+          4
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          12,
+          6
+        ],
+        [
+          17,
+          7
+        ]
+      ],
+      "die_steps": [
+        [
+          3,
+          12
+        ]
+      ]
+    },
+    {
+      "owner": "phb2024:barbarian:path-of-the-zealot",
+      "edition": "both",
+      "key": "research:presence",
+      "name": "狂热威仪",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "狂热威仪"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:barbarian:path-of-the-zealot",
+      "edition": "both",
+      "key": "research:rage_gods",
+      "name": "神之狂暴",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "神之狂暴"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:bard:college-of-glamour",
+      "edition": "both",
+      "key": "research:beguiling",
+      "name": "惑心魔法",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "惑心魔法"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:bard:college-of-glamour",
+      "edition": "both",
+      "key": "research:majesty",
+      "name": "威仪作锦",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "威仪作锦"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:paladin:oath-of-devotion",
+      "edition": "both",
+      "key": "research:level20_transform",
+      "name": "誓言20级变身使用权：共享资源模型",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "誓言20级变身使用权"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:paladin:oath-of-glory",
+      "edition": "both",
+      "key": "research:level20_transform",
+      "name": "誓言20级变身使用权：共享资源模型",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "誓言20级变身使用权"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:paladin:oath-of-the-ancients",
+      "edition": "both",
+      "key": "research:level20_transform",
+      "name": "誓言20级变身使用权：共享资源模型",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "誓言20级变身使用权"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:paladin:oath-of-vengeance",
+      "edition": "both",
+      "key": "research:level20_transform",
+      "name": "誓言20级变身使用权：共享资源模型",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "誓言20级变身使用权"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:ranger:gloom-stalker",
+      "edition": "both",
+      "key": "research:dreadful_strike",
+      "name": "恐惧打击",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "恐惧打击"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:fighter:battle-master",
+      "edition": "both",
+      "key": "research:superiority",
+      "name": "卓越骰",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "卓越骰"
+      ],
+      "steps": [
+        [
+          3,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          15,
+          6
+        ]
+      ],
+      "die_steps": [
+        [
+          3,
+          8
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          18,
+          12
+        ]
+      ]
+    },
+    {
+      "owner": "phb2024:fighter:battle-master",
+      "edition": "both",
+      "key": "research:know_enemy",
+      "name": "料敌机先",
+      "minimum": 7,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "料敌机先"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:dice",
+      "name": "灵能武士灵能骰",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "灵能武士灵能骰"
+      ],
+      "steps": [
+        [
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          9,
+          8
+        ],
+        [
+          13,
+          10
+        ],
+        [
+          17,
+          12
+        ]
+      ],
+      "die_steps": [
+        [
+          3,
+          6
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          17,
+          12
+        ]
+      ],
+      "short_restore": 1
+    },
+    {
+      "owner": "phb2024:monk:warrior-of-mercy",
+      "edition": "both",
+      "key": "research:flurry_benefits",
+      "name": "生杀予夺",
+      "minimum": 11,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "生杀予夺"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:monk:warrior-of-the-open-hand",
+      "edition": "both",
+      "key": "research:wholeness",
+      "name": "混元体",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "混元体"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "scag:paladin:oath-of-the-crown",
+      "edition": "both",
+      "key": "research:exalted_champion",
+      "name": "崇高卫士",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "崇高卫士"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "scag:warlock:the-undying",
+      "edition": "both",
+      "key": "research:defy_death",
+      "name": "反抗死亡",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "反抗死亡"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "scag:warlock:the-undying",
+      "edition": "both",
+      "key": "research:indestructible_life",
+      "name": "永恒生命",
+      "minimum": 14,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "永恒生命"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:sorcerer:aberrant-mind",
+      "edition": "both",
+      "key": "research:implosion",
+      "name": "扭曲爆裂",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "扭曲爆裂"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:sorcerer:clockwork-soul",
+      "edition": "both",
+      "key": "research:balance",
+      "name": "归复平衡",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "归复平衡"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:sorcerer:clockwork-soul",
+      "edition": "both",
+      "key": "research:trance",
+      "name": "序列意识",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "序列意识"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:sorcerer:clockwork-soul",
+      "edition": "both",
+      "key": "research:cavalcade",
+      "name": "时械矩阵",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "时械矩阵"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:warlock:the-fathomless",
+      "edition": "both",
+      "key": "research:tentacle",
+      "name": "深海触手",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "深海触手"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:warlock:the-fathomless",
+      "edition": "both",
+      "key": "research:grasping",
+      "name": "擒握触手",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "擒握触手"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:warlock:the-fathomless",
+      "edition": "both",
+      "key": "research:plunge",
+      "name": "海渊传送",
+      "minimum": 14,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "海渊传送"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:warlock:the-genie",
+      "edition": "both",
+      "key": "research:respite",
+      "name": "瓶中小憩",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "瓶中小憩"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:warlock:the-genie",
+      "edition": "both",
+      "key": "research:elemental_gift",
+      "name": "元素赐福：飞行",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "元素赐福"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:warlock:the-genie",
+      "edition": "both",
+      "key": "research:limited_wish",
+      "name": "有限许愿术",
+      "minimum": 14,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "有限许愿术"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:artificer:alchemist",
+      "edition": "both",
+      "key": "research:restorative",
+      "name": "复原药剂：次级复原术",
+      "minimum": 9,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "复原药剂"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "智力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "tcoe:artificer:alchemist",
+      "edition": "both",
+      "key": "research:mastery:Greater Restoration",
+      "name": "Greater Restoration",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "Greater Restoration"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:artificer:alchemist",
+      "edition": "both",
+      "key": "research:mastery:Heal",
+      "name": "Heal",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "Heal"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:artificer:armorer",
+      "edition": "both",
+      "key": "research:field",
+      "name": "防护场",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "防护场"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:artificer:armorer",
+      "edition": "both",
+      "key": "research:perfected",
+      "name": "完美装甲：守护者反应",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "完美装甲"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:artificer:battle-smith",
+      "edition": "both",
+      "key": "research:repair",
+      "name": "钢铁守卫：修理",
+      "minimum": 3,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "钢铁守卫"
+      ],
+      "formula": 3
+    },
+    {
+      "owner": "tcoe:artificer:battle-smith",
+      "edition": "both",
+      "key": "research:jolt",
+      "name": "奥能震荡",
+      "minimum": 9,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "奥能震荡"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "智力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "tcoe:druid:circle-of-spores",
+      "edition": "both",
+      "key": "research:infestation",
+      "name": "真菌感染",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "真菌感染"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "tcoe:druid:circle-of-stars",
+      "edition": "both",
+      "key": "research:guiding_bolt",
+      "name": "星图：免费光导箭",
+      "minimum": 2,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "星图"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:druid:circle-of-stars",
+      "edition": "both",
+      "key": "research:cosmic_omen",
+      "name": "宇宙预兆",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "宇宙预兆"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:druid:circle-of-wildfire",
+      "edition": "both",
+      "key": "research:cauterizing",
+      "name": "灼烧烈焰",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "灼烧烈焰"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:druid:circle-of-wildfire",
+      "edition": "both",
+      "key": "research:revival",
+      "name": "炽烈回生",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "炽烈回生"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:paladin:oath-of-glory",
+      "edition": "both",
+      "key": "research:glorious_defense",
+      "name": "辉煌防御",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "辉煌防御"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "魅力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "tcoe:paladin:oath-of-glory",
+      "edition": "both",
+      "key": "research:living_legend",
+      "name": "现世传说",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "现世传说"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:paladin:oath-of-the-watchers",
+      "edition": "both",
+      "key": "research:mortal_bulwark",
+      "name": "尘世壁垒",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "尘世壁垒"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:ranger:fey-wanderer",
+      "edition": "both",
+      "key": "research:fey",
+      "name": "精宸所与",
+      "minimum": 11,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "精宸所与"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:ranger:fey-wanderer",
+      "edition": "both",
+      "key": "research:misty",
+      "name": "雾行漫游",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "雾行漫游"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "tcoe:ranger:swarmkeeper",
+      "edition": "both",
+      "key": "research:tide",
+      "name": "翻腾浪涌",
+      "minimum": 7,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "翻腾浪涌"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:ranger:swarmkeeper",
+      "edition": "both",
+      "key": "research:dispersal",
+      "name": "群逸逃散",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "群逸逃散"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:rogue:phantom",
+      "edition": "both",
+      "key": "research:wails",
+      "name": "墓穴惊嚎",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "墓穴惊嚎"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:rogue:phantom",
+      "edition": "both",
+      "key": "research:ghost_walk",
+      "name": "幽灵漫步",
+      "minimum": 13,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "幽灵漫步"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:rogue:soulknife",
+      "edition": "both",
+      "key": "research:dice",
+      "name": "魂刃灵能骰",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "魂刃灵能骰"
+      ],
+      "formula": {
+        "op": "mul",
+        "args": [
+          2,
+          {
+            "var": "pb"
+          }
+        ]
+      },
+      "die_steps": [
+        [
+          3,
+          6
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          17,
+          12
+        ]
+      ]
+    },
+    {
+      "owner": "tcoe:rogue:soulknife",
+      "edition": "both",
+      "key": "research:die_recovery",
+      "name": "魂刃单骰恢复机会",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "魂刃单骰恢复机会"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:rogue:soulknife",
+      "edition": "both",
+      "key": "research:free_powers:psychic_whispers",
+      "name": "心灵低语",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "心灵低语"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:rogue:soulknife",
+      "edition": "both",
+      "key": "research:free_powers:psychic_veil",
+      "name": "灵能面纱",
+      "minimum": 13,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "灵能面纱"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:rogue:soulknife",
+      "edition": "both",
+      "key": "research:free_powers:rend_mind",
+      "name": "撕裂心智",
+      "minimum": 17,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "撕裂心智"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:barbarian:path-of-the-beast",
+      "edition": "both",
+      "key": "research:infectious_fury",
+      "name": "狂怒之染",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "狂怒之染"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:barbarian:path-of-the-beast",
+      "edition": "both",
+      "key": "research:call_hunt",
+      "name": "狩猎之唤",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "狩猎之唤"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:barbarian:path-of-wild-magic",
+      "edition": "both",
+      "key": "research:awareness",
+      "name": "魔法察觉",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "魔法察觉"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:barbarian:path-of-wild-magic",
+      "edition": "both",
+      "key": "research:bolstering",
+      "name": "振奋魔法",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "振奋魔法"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:bard:college-of-creation",
+      "edition": "both",
+      "key": "research:performance_creation",
+      "name": "造物表演",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "造物表演"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:bard:college-of-creation",
+      "edition": "both",
+      "key": "research:animating",
+      "name": "活化表演",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "活化表演"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:bard:college-of-eloquence",
+      "edition": "both",
+      "key": "research:universal_speech",
+      "name": "统一言说",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "统一言说"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:bard:college-of-eloquence",
+      "edition": "both",
+      "key": "research:infectious_inspiration",
+      "name": "传播鼓舞",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "传播鼓舞"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "魅力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "tcoe:cleric:order-domain",
+      "edition": "both",
+      "key": "research:embodiment",
+      "name": "律法化身",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "律法化身"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "tcoe:cleric:peace-domain",
+      "edition": "both",
+      "key": "research:bond",
+      "name": "勇气联结",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "勇气联结"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:cleric:twilight-domain",
+      "edition": "both",
+      "key": "research:eyes_night",
+      "name": "黑夜明目：分享视觉",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "黑夜明目"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:cleric:twilight-domain",
+      "edition": "both",
+      "key": "research:steps_night",
+      "name": "午夜飞步",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "午夜飞步"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:psionic_dice",
+      "name": "灵能骰",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "灵能骰"
+      ],
+      "formula": {
+        "op": "mul",
+        "args": [
+          2,
+          {
+            "var": "pb"
+          }
+        ]
+      },
+      "die_steps": [
+        [
+          3,
+          6
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          17,
+          12
+        ]
+      ]
+    },
+    {
+      "owner": "tcoe:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:die_recovery",
+      "name": "灵能骰：单骰恢复机会",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "灵能骰"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:telekinetic_movement",
+      "name": "念力控物",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "念力控物"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:psi_powered_leap",
+      "name": "灵力跃动",
+      "minimum": 7,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "灵力跃动"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:bulwark_force",
+      "name": "力场壁垒",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "力场壁垒"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:telekinetic_master",
+      "name": "念力大师",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "念力大师"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:fighter:rune-knight",
+      "edition": "both",
+      "key": "research:runes:1",
+      "name": "符文1",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "符文1"
+      ],
+      "steps": [
+        [
+          3,
+          1
+        ],
+        [
+          15,
+          2
+        ]
+      ]
+    },
+    {
+      "owner": "tcoe:fighter:rune-knight",
+      "edition": "both",
+      "key": "research:runes:2",
+      "name": "符文2",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "符文2"
+      ],
+      "steps": [
+        [
+          3,
+          1
+        ],
+        [
+          15,
+          2
+        ]
+      ]
+    },
+    {
+      "owner": "tcoe:fighter:rune-knight",
+      "edition": "both",
+      "key": "research:runes:3",
+      "name": "符文3",
+      "minimum": 7,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "符文3"
+      ],
+      "steps": [
+        [
+          3,
+          1
+        ],
+        [
+          15,
+          2
+        ]
+      ]
+    },
+    {
+      "owner": "tcoe:fighter:rune-knight",
+      "edition": "both",
+      "key": "research:runes:4",
+      "name": "符文4",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "符文4"
+      ],
+      "steps": [
+        [
+          3,
+          1
+        ],
+        [
+          15,
+          2
+        ]
+      ]
+    },
+    {
+      "owner": "tcoe:fighter:rune-knight",
+      "edition": "both",
+      "key": "research:runes:5",
+      "name": "符文5",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "符文5"
+      ],
+      "steps": [
+        [
+          3,
+          1
+        ],
+        [
+          15,
+          2
+        ]
+      ]
+    },
+    {
+      "owner": "tcoe:fighter:rune-knight",
+      "edition": "both",
+      "key": "research:giant_might",
+      "name": "巨人之力",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "巨人之力"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:fighter:rune-knight",
+      "edition": "both",
+      "key": "research:runic_shield",
+      "name": "符文之盾",
+      "minimum": 7,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "符文之盾"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:monk:way-of-mercy",
+      "edition": "both",
+      "key": "research:ultimate_mercy",
+      "name": "命极之手",
+      "minimum": 17,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "命极之手"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:wizard:war-magic",
+      "edition": "both",
+      "key": "research:power_surge",
+      "name": "魔力潮涌",
+      "minimum": 6,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "魔力潮涌"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "智力"
+          }
+        ]
+      },
+      "rest_set": {
+        "long": 1
+      },
+      "short_if_empty": 1,
+      "initial_remaining": 1
+    },
+    {
+      "owner": "tcoe:wizard:order-of-scribes",
+      "edition": "both",
+      "key": "research:quick_ritual",
+      "name": "觉醒魔典：快速仪式",
+      "minimum": 2,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "觉醒魔典"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:wizard:order-of-scribes",
+      "edition": "both",
+      "key": "research:manifest_mind",
+      "name": "神识显现：显现机会",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "神识显现"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:wizard:order-of-scribes",
+      "edition": "both",
+      "key": "research:remote_casting",
+      "name": "神识显现：远程施法",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "神识显现"
+      ],
+      "formula": {
+        "var": "pb"
+      }
+    },
+    {
+      "owner": "tcoe:wizard:order-of-scribes",
+      "edition": "both",
+      "key": "research:one_with_word",
+      "name": "书人合一",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "书人合一"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:wizard:abjurer",
+      "edition": "both",
+      "key": "research:arcane_ward",
+      "name": "奥术守御",
+      "minimum": 3,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "奥术守御"
+      ],
+      "formula": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              2,
+              {
+                "var": "level"
+              }
+            ]
+          },
+          {
+            "mod": "智力"
+          }
+        ]
+      },
+      "initial_used": "all",
+      "rest_set": {
+        "long": 0
+      }
+    },
+    {
+      "owner": "phb2024:wizard:illusionist",
+      "edition": "both",
+      "key": "research:phantasmal_creatures:Summon Beast",
+      "name": "Summon Beast",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "Summon Beast"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:wizard:illusionist",
+      "edition": "both",
+      "key": "research:phantasmal_creatures:Summon Fey",
+      "name": "Summon Fey",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "Summon Fey"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:wizard:illusionist",
+      "edition": "both",
+      "key": "research:illusory_self",
+      "name": "幻影化形",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "幻影化形"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "wizard",
+      "edition": "2014",
+      "key": "arcane_recovery",
+      "name": "奥术回想",
+      "minimum": 1,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "奥术回想"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "wizard",
+      "edition": "2024",
+      "key": "arcane_recovery",
+      "name": "奥术回想",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "奥术回想"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "wizard",
+      "edition": "both",
+      "key": "research:已选法术1",
+      "name": "已选法术1",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "已选法术1"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "wizard",
+      "edition": "both",
+      "key": "research:已选法术2",
+      "name": "已选法术2",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "已选法术2"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2014:wizard:school-of-abjuration",
+      "edition": "both",
+      "key": "research:arcane_ward",
+      "name": "奥术守御",
+      "minimum": 2,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "奥术守御"
+      ],
+      "formula": {
+        "op": "add",
+        "args": [
+          {
+            "op": "mul",
+            "args": [
+              2,
+              {
+                "var": "level"
+              }
+            ]
+          },
+          {
+            "mod": "智力"
+          }
+        ]
+      },
+      "initial_used": "all",
+      "rest_set": {
+        "long": 0
+      }
+    },
+    {
+      "owner": "phb2014:wizard:school-of-divination",
+      "edition": "both",
+      "key": "research:portent",
+      "name": "预兆",
+      "minimum": 2,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "预兆"
+      ],
+      "steps": [
+        [
+          2,
+          2
+        ],
+        [
+          14,
+          3
+        ]
+      ],
+      "die_steps": [
+        [
+          2,
+          20
+        ]
+      ]
+    },
+    {
+      "owner": "phb2014:wizard:school-of-divination",
+      "edition": "both",
+      "key": "research:third_eye",
+      "name": "天眼通",
+      "minimum": 10,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "天眼通"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "tcoe:wizard:bladesinging",
+      "edition": "both",
+      "key": "research:bladesong",
+      "name": "剑歌",
+      "minimum": 2,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "剑歌"
+      ],
+      "formula": {
+        "op": "add",
+        "args": [
+          2,
+          {
+            "op": "floor_div",
+            "args": [
+              {
+                "op": "add",
+                "args": [
+                  {
+                    "var": "total_level"
+                  },
+                  {
+                    "op": "mul",
+                    "args": [
+                      -1,
+                      1
+                    ]
+                  }
+                ]
+              },
+              4
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:ranger:monster-slayer",
+      "edition": "both",
+      "key": "research:hunter_sense",
+      "name": "猎手感知",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "猎手感知"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:ranger:monster-slayer",
+      "edition": "both",
+      "key": "research:nemesis",
+      "name": "魔法使的克星",
+      "minimum": 11,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "魔法使的克星"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:ranger:horizon-walker",
+      "edition": "both",
+      "key": "research:detect_portal",
+      "name": "侦测传送门",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "侦测传送门"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:ranger:horizon-walker",
+      "edition": "both",
+      "key": "research:ethereal_step",
+      "name": "以太漫步",
+      "minimum": 7,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "以太漫步"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:rogue:inquisitive",
+      "edition": "both",
+      "key": "research:unerring_eye",
+      "name": "火眼金睛",
+      "minimum": 13,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "火眼金睛"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:rogue:swashbuckler",
+      "edition": "both",
+      "key": "research:master_duelist",
+      "name": "决斗大师",
+      "minimum": 17,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "决斗大师"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:sorcerer:divine-soul",
+      "edition": "both",
+      "key": "research:favored",
+      "name": "众神眷恩",
+      "minimum": 1,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "众神眷恩"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:sorcerer:divine-soul",
+      "edition": "both",
+      "key": "research:recovery",
+      "name": "神赐痊愈",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "神赐痊愈"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:sorcerer:shadow-magic",
+      "edition": "both",
+      "key": "research:strength_grave",
+      "name": "终焉之力",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "终焉之力"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:sorcerer:storm-sorcery",
+      "edition": "both",
+      "key": "research:wind_soul",
+      "name": "清风之灵：赋予飞行",
+      "minimum": 18,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "清风之灵"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:warlock:the-celestial",
+      "edition": "both",
+      "key": "research:healing_light",
+      "name": "治愈之光",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "治愈之光"
+      ],
+      "formula": {
+        "op": "add",
+        "args": [
+          {
+            "var": "level"
+          },
+          1
+        ]
+      },
+      "die_steps": [
+        [
+          1,
+          6
+        ]
+      ]
+    },
+    {
+      "owner": "xgte:warlock:the-celestial",
+      "edition": "both",
+      "key": "research:searing_vengeance",
+      "name": "灼光复仇",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "灼光复仇"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:warlock:the-hexblade",
+      "edition": "both",
+      "key": "research:curse",
+      "name": "咒剑诅咒",
+      "minimum": 1,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "咒剑诅咒"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:warlock:the-hexblade",
+      "edition": "both",
+      "key": "research:specter",
+      "name": "咒缚幽灵",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "咒缚幽灵"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:cleric:grave-domain",
+      "edition": "both",
+      "key": "research:eyes_grave",
+      "name": "坟墓之眼",
+      "minimum": 1,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "坟墓之眼"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:cleric:grave-domain",
+      "edition": "both",
+      "key": "research:sentinel",
+      "name": "死之门的哨卫",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "死之门的哨卫"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:druid:circle-of-dreams",
+      "edition": "both",
+      "key": "research:balm",
+      "name": "夏之王庭的芬馥",
+      "minimum": 2,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "夏之王庭的芬馥"
+      ],
+      "formula": {
+        "var": "level"
+      },
+      "die_steps": [
+        [
+          2,
+          6
+        ]
+      ]
+    },
+    {
+      "owner": "xgte:druid:circle-of-dreams",
+      "edition": "both",
+      "key": "research:hidden_paths",
+      "name": "隐匿通途",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "隐匿通途"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:druid:circle-of-dreams",
+      "edition": "both",
+      "key": "research:walker",
+      "name": "梦境行者",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "梦境行者"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:druid:circle-of-the-shepherd",
+      "edition": "both",
+      "key": "research:spirit_totem",
+      "name": "精魂图腾",
+      "minimum": 2,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "精魂图腾"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:druid:circle-of-the-shepherd",
+      "edition": "both",
+      "key": "research:faithful_summons",
+      "name": "忠诚牧畜",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "忠诚牧畜"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:paladin:oath-of-conquest",
+      "edition": "both",
+      "key": "research:invincible",
+      "name": "不移胜者",
+      "minimum": 20,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "不移胜者"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:barbarian:path-of-the-ancestral-guardian",
+      "edition": "both",
+      "key": "research:consult_spirits",
+      "name": "问道精魂",
+      "minimum": 10,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "问道精魂"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:barbarian:path-of-the-zealot",
+      "edition": "both",
+      "key": "research:fanatical_focus",
+      "name": "专心炽志",
+      "minimum": 6,
+      "rest": "manual",
+      "source": "audited_resources",
+      "aliases": [
+        "专心炽志"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:barbarian:path-of-the-zealot",
+      "edition": "both",
+      "key": "research:zealous_presence",
+      "name": "狂热威仪",
+      "minimum": 10,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "狂热威仪"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:bard:college-of-glamour",
+      "edition": "both",
+      "key": "research:enthralling_performance",
+      "name": "醉人表演",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "醉人表演"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:bard:college-of-glamour",
+      "edition": "both",
+      "key": "research:mantle_majesty",
+      "name": "统御光环",
+      "minimum": 6,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "统御光环"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:bard:college-of-glamour",
+      "edition": "both",
+      "key": "research:unbreakable_majesty",
+      "name": "绝对统御",
+      "minimum": 14,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "绝对统御"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:bard:college-of-whispers",
+      "edition": "both",
+      "key": "research:words_terror",
+      "name": "惊骇之语",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "惊骇之语"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:bard:college-of-whispers",
+      "edition": "both",
+      "key": "research:shadow_lore",
+      "name": "阴暗学识",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "阴暗学识"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "xgte:fighter:arcane-archer",
+      "edition": "both",
+      "key": "research:arcane_shot",
+      "name": "奥术射击",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "奥术射击"
+      ],
+      "formula": 2
+    },
+    {
+      "owner": "xgte:fighter:cavalier",
+      "edition": "both",
+      "key": "research:unwavering_mark",
+      "name": "坚定之印：特殊攻击",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "坚定之印"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "力量"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:fighter:cavalier",
+      "edition": "both",
+      "key": "research:warding_maneuver",
+      "name": "守护战技",
+      "minimum": 7,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "守护战技"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "体质"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "xgte:fighter:samurai",
+      "edition": "both",
+      "key": "research:fighting_spirit",
+      "name": "战意",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "战意"
+      ],
+      "formula": 3
+    },
+    {
+      "owner": "xgte:fighter:samurai",
+      "edition": "both",
+      "key": "research:strength_before_death",
+      "name": "生死流转",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "生死流转"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "scag:rogue:swashbuckler",
+      "edition": "both",
+      "key": "research:master_duelist",
+      "name": "决斗大师",
+      "minimum": 17,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "决斗大师"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "scag:sorcerer:storm-sorcery",
+      "edition": "both",
+      "key": "research:wind_soul",
+      "name": "清风之灵：赋予飞行",
+      "minimum": 18,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "清风之灵"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:rogue:arcane-trickster",
+      "edition": "both",
+      "key": "research:spell_thief",
+      "name": "法术窃贼",
+      "minimum": 17,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "法术窃贼"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:rogue:soulknife",
+      "edition": "both",
+      "key": "research:free_powers:psychic_whispers",
+      "name": "心灵低语",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "心灵低语"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:rogue:soulknife",
+      "edition": "both",
+      "key": "research:free_powers:psychic_veil",
+      "name": "灵能面纱",
+      "minimum": 13,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "灵能面纱"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:rogue:soulknife",
+      "edition": "both",
+      "key": "research:free_powers:rend_mind",
+      "name": "撕裂心智",
+      "minimum": 17,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "撕裂心智"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:telekinetic_movement",
+      "name": "念力控物",
+      "minimum": 3,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "念力控物"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:psi_powered_leap",
+      "name": "灵力跃动",
+      "minimum": 7,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "灵力跃动"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:bulwark_force",
+      "name": "力场壁垒",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "力场壁垒"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:fighter:psi-warrior",
+      "edition": "both",
+      "key": "research:free_powers:telekinetic_master",
+      "name": "念力大师",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "念力大师"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:sorcerer:aberrant-sorcery",
+      "edition": "both",
+      "key": "research:implosion",
+      "name": "扭曲爆裂",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "扭曲爆裂"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:sorcerer:clockwork-sorcery",
+      "edition": "both",
+      "key": "research:trance",
+      "name": "序列意识",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "序列意识"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:sorcerer:clockwork-sorcery",
+      "edition": "both",
+      "key": "research:cavalcade",
+      "name": "时械矩阵",
+      "minimum": 18,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "时械矩阵"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:warlock:celestial-patron",
+      "edition": "both",
+      "key": "research:healing_light",
+      "name": "治愈之光",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "治愈之光"
+      ],
+      "formula": {
+        "op": "add",
+        "args": [
+          {
+            "var": "level"
+          },
+          1
+        ]
+      },
+      "die_steps": [
+        [
+          1,
+          6
+        ]
+      ]
+    },
+    {
+      "owner": "phb2024:warlock:celestial-patron",
+      "edition": "both",
+      "key": "research:searing_vengeance",
+      "name": "灼光复仇",
+      "minimum": 14,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "灼光复仇"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:ranger:fey-wanderer",
+      "edition": "both",
+      "key": "research:fey",
+      "name": "精宸所与",
+      "minimum": 11,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "精宸所与"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:ranger:fey-wanderer",
+      "edition": "both",
+      "key": "research:misty",
+      "name": "雾行漫游",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "雾行漫游"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "感知"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:bard:college-of-glamour",
+      "edition": "both",
+      "key": "research:unbreakable_majesty",
+      "name": "绝对统御",
+      "minimum": 14,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "绝对统御"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:monk:warrior-of-mercy",
+      "edition": "both",
+      "key": "research:ultimate_mercy",
+      "name": "命极之手",
+      "minimum": 17,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "命极之手"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:paladin:oath-of-glory",
+      "edition": "both",
+      "key": "research:glorious_defense",
+      "name": "辉煌防御",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "辉煌防御"
+      ],
+      "formula": {
+        "op": "max",
+        "args": [
+          1,
+          {
+            "mod": "魅力"
+          }
+        ]
+      }
+    },
+    {
+      "owner": "phb2024:paladin:oath-of-the-ancients",
+      "edition": "both",
+      "key": "research:sentinel",
+      "name": "不灭哨卫",
+      "minimum": 15,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "不灭哨卫"
+      ],
+      "formula": 1
+    },
+    {
+      "owner": "phb2024:wizard:diviner",
+      "edition": "both",
+      "key": "research:portent",
+      "name": "预兆",
+      "minimum": 3,
+      "rest": "long",
+      "source": "audited_resources",
+      "aliases": [
+        "预兆"
+      ],
+      "steps": [
+        [
+          2,
+          2
+        ],
+        [
+          14,
+          3
+        ]
+      ],
+      "die_steps": [
+        [
+          2,
+          20
+        ]
+      ]
+    },
+    {
+      "owner": "phb2024:wizard:diviner",
+      "edition": "both",
+      "key": "research:third_eye",
+      "name": "天眼通",
+      "minimum": 10,
+      "rest": "short",
+      "source": "audited_resources",
+      "aliases": [
+        "天眼通"
+      ],
+      "formula": 1
+    }
+  ]
+}

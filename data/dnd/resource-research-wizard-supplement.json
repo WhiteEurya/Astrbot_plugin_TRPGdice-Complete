@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-12",
+  "verification": "translation_checked",
+  "source_root": "https://dndlogs.com/",
+  "scope": "资料核查，不代表运行时已支持；只登记资源与恢复，不实现特性效果",
+  "entries": [
+    {
+      "id": "xgte:wizard:war-magic:power_surge",
+      "owners": ["xgte:wizard:war-magic"], "name": "魔力潮涌", "minimum_level": 6,
+      "kind": "conditional_pool", "capacity": {"uses": "max(1, intelligence_modifier)"},
+      "consumption": "符合条件的法师法术造成伤害时消耗1股，每回合最多一次",
+      "recovery": {"long_rest": "当前数量设为1，不补满；多余数量也不保留", "short_rest": "仅当前为0时获得1股", "successful_counterspell_or_dispel": "每次成功终止或打断法术获得1股，不超过上限"},
+      "implementation": "not_supported"
+    },
+    {
+      "id": "tcoe:wizard:order-of-scribes:quick_ritual",
+      "owners": ["tcoe:wizard:order-of-scribes"], "name": "觉醒魔典：快速仪式", "minimum_level": 2,
+      "kind": "use_pool", "capacity": {"uses": 1}, "consumption": "省略仪式额外10分钟时扣1次，不限制普通仪式",
+      "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "tcoe:wizard:order-of-scribes:manifest_mind",
+      "owners": ["tcoe:wizard:order-of-scribes"], "name": "神识显现：显现机会", "minimum_level": 6,
+      "kind": "use_pool_with_slot_reset", "capacity": {"uses": 1}, "consumption": "显现灵体消耗1次；驱散不退还次数",
+      "recovery": {"long_rest": "恢复显现机会", "spell_slot": "消耗任意环位可再次显现；不得同时扣免费机会和环位"},
+      "implementation": "not_supported"
+    },
+    {
+      "id": "tcoe:wizard:order-of-scribes:remote_casting",
+      "owners": ["tcoe:wizard:order-of-scribes"], "name": "神识显现：远程施法", "minimum_level": 6,
+      "kind": "use_pool", "capacity": {"uses": "proficiency_bonus"},
+      "consumption": "借灵体感官和位置施法扣1次；另按实际法术消耗环位；与显现次数分开",
+      "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "tcoe:wizard:order-of-scribes:master_scrivener",
+      "owners": ["tcoe:wizard:order-of-scribes"], "name": "书士宗师：临时卷轴", "minimum_level": 10,
+      "kind": "created_consumable", "capacity": {"scrolls": 1}, "consumption": "阅读施法后卷轴法术消失，不扣普通环位",
+      "recovery": {"long_rest": "旧卷轴失效；可选择制作一个新卷轴，不能直接恢复旧卷轴"},
+      "selection": "选魔典中1或2环且施法时间为一个动作的法术；卷轴升一环",
+      "implementation": "not_supported"
+    },
+    {
+      "id": "tcoe:wizard:order-of-scribes:one_with_word",
+      "owners": ["tcoe:wizard:order-of-scribes"], "name": "书人合一", "minimum_level": 14,
+      "kind": "use_pool_with_delayed_spell_loss", "capacity": {"uses": 1},
+      "consumption": "反应消耗1次并驱散已显现神识；掷3d6，暂失所选法术的环阶总和至少等于骰值；不足支付则生命降至0",
+      "recovery": {"long_rest": "仅恢复反应使用次数；失去的法术须单独经过1d6次长休才恢复"},
+      "state_fields": ["反应已用次数", "暂失法术标识", "法术恢复所余长休次数"],
+      "implementation": "not_supported"
+    },
+    {
+      "id": "phb2024:wizard:abjurer:arcane_ward",
+      "owners": ["phb2024:wizard:abjurer"], "name": "奥术守御", "minimum_level": 3,
+      "kind": "conditional_life_pool", "capacity": {"hit_points": "2 * wizard_level + intelligence_modifier", "creations_per_long_rest": 1},
+      "consumption": "结界吸收伤害扣生命；投射守御共用同一结界",
+      "recovery": {"abjuration_with_slot": "消耗环位施展防护法术时，现有结界恢复环阶的2倍生命", "bonus_action_slot": "以附赠动作消耗一个环位，恢复环阶的2倍生命", "long_rest": "旧结界结束并恢复创建机会；须消耗环位施展防护法术创建，不自动生成结界"},
+      "version_difference": "与2014分开：3级获得，触发要求消耗环位，新增直接消耗环位充能",
+      "implementation": "not_supported"
+    },
+    {
+      "id": "phb2024:wizard:abjurer:spell_breaker",
+      "owners": ["phb2024:wizard:abjurer"], "name": "破法者", "minimum_level": 10,
+      "kind": "conditional_slot_refund", "capacity": {"independent_pool": false},
+      "consumption": "施展法术反制或解除魔法正常选用环位；未成功阻止施法或解除效应则该环位不消耗",
+      "recovery": {"failed_counterspell_or_dispel": "返还本次实际使用的环位，不产生额外环位"},
+      "implementation": "not_supported"
+    },
+    {
+      "id": "phb2024:wizard:illusionist:phantasmal_creatures",
+      "owners": ["phb2024:wizard:illusionist"], "name": "魅影生灵", "minimum_level": 6,
+      "kind": "per_selection_pool", "capacity": {"spells": ["Summon Beast", "Summon Fey"], "free_uses_per_spell": 1},
+      "consumption": "两个法术各有1次免费幻术版本；不能合为任意分配的2次；普通环位施法另扣环位",
+      "recovery": {"long_rest": "分别补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "phb2024:wizard:illusionist:illusory_self",
+      "owners": ["phb2024:wizard:illusionist"], "name": "幻影化形", "minimum_level": 10,
+      "kind": "use_pool_with_slot_reset", "capacity": {"uses": 1}, "consumption": "发动反应扣1次",
+      "recovery": {"long_rest": "补满", "short_rest": "不恢复", "spell_slot": "无需动作消耗一个至少2环的环位，重置使用权"},
+      "version_difference": "2014短休或长休恢复；2024长休恢复或花至少2环环位重置",
+      "implementation": "not_supported"
+    }
+  ],
+  "reviews": {
+    "xgte:wizard:war-magic": {
+      "page": "5E/topics/珊娜萨的万事指南/角色选项/法师/战争魔法.html",
+      "resources": ["xgte:wizard:war-magic:power_surge"], "shared_resources": [],
+      "without_independent_resources": ["奥术偏斜受反应及下回合施法限制，不是休息恢复次数池", "战术之智、耐久魔法、偏斜罩幕无独立有限资源"]
+    },
+    "tcoe:wizard:order-of-scribes": {
+      "page": "5E/topics/塔莎的万事坩埚/玩家选项/职业/法师（TCE）/书士会.html",
+      "resources": ["tcoe:wizard:order-of-scribes:quick_ritual", "tcoe:wizard:order-of-scribes:manifest_mind", "tcoe:wizard:order-of-scribes:remote_casting", "tcoe:wizard:order-of-scribes:master_scrivener", "tcoe:wizard:order-of-scribes:one_with_word"],
+      "shared_resources": ["神识再次显现可花任意环位；远程施法不是免费施法", "书士宗师制作一般卷轴的时间和金币减半属于制作支出，不是子职点数池"],
+      "without_independent_resources": ["法师之笔可重新创造，不设休息次数", "觉醒魔典换伤害类型无独立次数", "短休转移法术书意识不是恢复神识显现次数"]
+    },
+    "phb2024:wizard:abjurer": {
+      "page": "5R/topics/玩家手册2024/角色职业/法师/防护师.htm",
+      "resources": ["phb2024:wizard:abjurer:arcane_ward", "phb2024:wizard:abjurer:spell_breaker"],
+      "shared_resources": ["投射守御共用奥术守御生命"],
+      "without_independent_resources": ["防护学者与法术抗性无独立有限资源"]
+    },
+    "phb2024:wizard:diviner": {
+      "page": "5R/topics/玩家手册2024/角色职业/法师/预言师.htm", "resources": [],
+      "shared_resources": ["预兆与2014共用保存骰值及长休重掷模型，但获得等级改为3；14级仍由2骰升至3骰", "专业预言与2014共用至少2环触发、恢复更低环且不超过5环的模型", "天眼通与2014共用1次短休或长休恢复的资源模型；效果和动作差异不在资源范围"],
+      "without_independent_resources": ["预言学者无独立有限资源"]
+    },
+    "phb2024:wizard:illusionist": {
+      "page": "5R/topics/玩家手册2024/角色职业/法师/幻术师.htm",
+      "resources": ["phb2024:wizard:illusionist:phantasmal_creatures", "phb2024:wizard:illusionist:illusory_self"],
+      "shared_resources": ["亦真亦幻要求消耗环位施展幻术；不再单独扣特性点数"],
+      "without_independent_resources": ["幻术学者、强化幻术无独立有限资源"]
+    }
+  }
+}

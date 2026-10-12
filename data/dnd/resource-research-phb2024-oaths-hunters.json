@@ -1,0 +1,35 @@
+{
+  "schema_version": 1, "reviewed_on": "2026-10-12", "verification": "translation_checked",
+  "source_root": "https://dndlogs.com/5R/topics/玩家手册2024/角色职业/", "scope": "资源资料核查，不代表运行时已支持",
+  "entries": [
+    {"id": "phb2024:paladin:level20_transform", "owners": ["phb2024:paladin:oath-of-devotion", "phb2024:paladin:oath-of-glory", "phb2024:paladin:oath-of-the-ancients", "phb2024:paladin:oath-of-vengeance"],
+     "name": "誓言20级变身使用权：共享资源模型", "minimum_level": 20, "kind": "use_pool_with_slot_reset", "capacity": {"uses": 1},
+     "consumption": "对应誓言20级特性启动扣1次；可无动作花1个5环位重置使用权；各人物按自己的誓言独立记录，不因共用模型合并不同能力余额", "recovery": {"long_rest": "补满", "spell_slot": "花5环位重置"},
+     "notes": ["奉献至圣光轮、荣耀现世传说、古贤上古斗士、复仇天使只共用费用和恢复模型，持续时间与效果不同"], "implementation": "not_supported"},
+    {"id": "phb2024:ranger:beast-master:companion", "owners": ["phb2024:ranger:beast-master"], "name": "原初行侣生命与生命骰", "minimum_level": 3,
+     "kind": "companion_life_pool", "capacity": {"land_or_sea_hp": "5 + 5 * ranger_level", "land_or_sea_hit_dice": "ranger_level", "land_or_sea_die_faces": 8, "sky_hp": "4 + 4 * ranger_level", "sky_hit_dice": "ranger_level", "sky_die_faces": 6, "active_companions": 1},
+     "consumption": "野兽受伤扣自己的生命，休息使用自己的生命骰；死亡1小时内可花1法术位复活，1分钟后满生命；下令不额外扣环位或独立次数",
+     "recovery": {"long_rest_replacement": "可选择新野兽，新出现时旧野兽消失；不把自己长休视为无条件替同伴恢复资源", "rest": "野兽生命及生命骰按适用的通用休息规则处理"}, "implementation": "not_supported"},
+    {"id": "phb2024:ranger:gloom-stalker:dreadful_strike", "owners": ["phb2024:ranger:gloom-stalker"], "name": "恐惧打击", "minimum_level": 3,
+     "kind": "use_pool", "capacity": {"uses": "max(1, wisdom_modifier)"}, "consumption": "武器命中后选择追加伤害扣1次，每回合最多1次；11级强化伤害及额外选项不再扣次数", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"}
+  ],
+  "reviews": {
+    "phb2024:paladin:oath-of-devotion": {"page": "圣武士/奉献之誓.htm", "resources": ["phb2024:paladin:level20_transform"],
+      "shared_resources": ["圣洁武器扣1引导神力，重复结束旧效应不返还；卫护斩复用至圣斩施法，不额外收费；誓言法术正常环位"], "without_independent_resources": ["奉献灵光无次数"]},
+    "phb2024:paladin:oath-of-glory": {"page": "圣武士/荣耀之誓.htm", "resources": ["phb2024:paladin:level20_transform"],
+      "shared_resources": ["辉煌防御共享TCE15级魅力调整值最低1、长休补满模型", "绝伦健将与鼓舞斩各扣1引导神力，鼓舞斩另需此前正常至圣斩施法；临时生命总预算2d8+圣武士等级，不按人数收费；誓言法术正常环位"], "without_independent_resources": ["迅捷灵光无消耗"]},
+    "phb2024:paladin:oath-of-the-ancients": {"page": "圣武士/古贤之誓.htm", "resources": ["phb2024:paladin:level20_transform"],
+      "shared_resources": ["不灭哨卫共享2014的15级1次长休恢复模型，新版治疗效果不同但不另设池", "自然之怒扣1引导神力，不按目标数扣；誓言法术正常环位；上古斗士持续内治疗和迅捷施法不再扣变身次数"], "without_independent_resources": ["守御灵光与不老无消耗"]},
+    "phb2024:paladin:oath-of-vengeance": {"page": "圣武士/复仇之誓.htm", "resources": ["phb2024:paladin:level20_transform"],
+      "shared_resources": ["仇敌誓言初次扣1引导神力，目标生命降0时转移现有誓言不另扣次数；誓言法术正常环位"], "without_independent_resources": ["坚韧复仇、复仇之魂仅复用或占反应，无独立次数；新版没有旧版驱散仇敌选项"]},
+    "phb2024:ranger:beast-master": {"page": "游侠/驯兽师.htm", "resources": ["phb2024:ranger:beast-master:companion"],
+      "shared_resources": ["法术共享复用原法术环位；兽性狂怒印记伤害复用已激活猎人印记，不再次扣印记次数"], "without_independent_resources": ["特效训练与兽性狂怒无独立次数池"]},
+    "phb2024:ranger:fey-wanderer": {"page": "游侠/妖精漫游者.htm", "resources": [],
+      "shared_resources": ["11级精宸所与和15级雾行漫游与TCE资源模型相同：妖精召唤术1次免费长休恢复，迷踪步感知调整值最低1次免费长休恢复；带同伴、免专注版本不额外扣资源；普通施法正常环位"],
+      "without_independent_resources": ["哀惧灵袭、妖冶娴都、妖思魅缕无独立休息次数；外观祝福不消耗资源"]},
+    "phb2024:ranger:gloom-stalker": {"page": "游侠/幽域追猎者.htm", "resources": ["phb2024:ranger:gloom-stalker:dreadful_strike"],
+      "shared_resources": ["额外法术正常环位"], "without_independent_resources": ["伏击者之跃与先攻加值无消耗；阴影视野、钢铁意志无消耗；如影随行仅占反应，不另扣传送次数"]},
+    "phb2024:ranger:hunter": {"page": "游侠/猎人.htm", "resources": [],
+      "shared_resources": ["猎人学识与高阶猎杀技艺复用猎人印记状态，不重复扣印记资源"], "without_independent_resources": ["猎杀技艺和防守战术休息换选项无次数池；高阶防守战术仅占反应"]}
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-12",
+  "verification": "translation_checked",
+  "source_root": "https://dndlogs.com/5E/topics/剑湾冒险者指南/职业/",
+  "scope": "资料核查，不代表运行时已支持；重印子职须另核对剑湾原文",
+  "entries": [
+    {
+      "id": "scag:barbarian:path-of-the-battlerager:reckless_abandon", "owners": ["scag:barbarian:path-of-the-battlerager"],
+      "name": "凶蛮无羁", "minimum_level": 6, "kind": "conditional_temporary_hp",
+      "capacity": {"temporary_hp": "max(1, constitution_modifier)"},
+      "consumption": "狂暴中鲁莽攻击时获得临时生命，不设次数池；临时生命不叠加",
+      "recovery": {"trigger": "每次符合条件时获得", "rage_end": "本特性剩余临时生命消失，不把人物的其他来源临时生命一并清零"},
+      "implementation": "not_supported"
+    },
+    {
+      "id": "scag:monk:way-of-the-long-death:touch_of_death", "owners": ["scag:monk:way-of-the-long-death"],
+      "name": "往生咒", "minimum_level": 3, "kind": "conditional_temporary_hp",
+      "capacity": {"temporary_hp": "max(1, monk_level + wisdom_modifier)"},
+      "consumption": "令5尺内生物生命降至0时获得临时生命；无独立使用次数，临时生命不叠加",
+      "recovery": {"trigger": "每次符合条件时获得"}, "implementation": "not_supported"
+    },
+    {
+      "id": "scag:monk:way-of-the-long-death:ki_costs", "owners": ["scag:monk:way-of-the-long-death"],
+      "name": "永亡宗气消耗", "minimum_level": 11, "kind": "shared_resource_cost",
+      "capacity": {"independent_pool": false},
+      "consumption": {"mastery_of_death": {"minimum_level": 11, "ki": 1}, "touch_of_long_death": {"minimum_level": 17, "ki_range": [1, 10]}},
+      "recovery": {"shared_with": "武僧气池"}, "implementation": "not_supported"
+    },
+    {
+      "id": "scag:paladin:oath-of-the-crown:exalted_champion", "owners": ["scag:paladin:oath-of-the-crown"],
+      "name": "崇高卫士", "minimum_level": 20, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "发动扣1次，效果提前结束不退还次数", "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "scag:warlock:the-undying:among_the_dead", "owners": ["scag:warlock:the-undying"],
+      "name": "历经死亡：目标免疫", "minimum_level": 1, "kind": "per_target_lockout",
+      "capacity": {"global_use_limit": null}, "consumption": "不死目标通过豁免，或角色对其攻击/施展有害法术后，该目标免疫24小时",
+      "recovery": {"elapsed_time": "对应目标24小时届满；不是休息时统一清除"}, "implementation": "not_supported"
+    },
+    {
+      "id": "scag:warlock:the-undying:defy_death", "owners": ["scag:warlock:the-undying"],
+      "name": "反抗死亡", "minimum_level": 6, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "死亡豁免成功或以维生术稳定他人时，可选择消耗1次治疗自己；触发不代表必须消耗",
+      "recovery": {"long_rest": "补满"}, "implementation": "not_supported"
+    },
+    {
+      "id": "scag:warlock:the-undying:indestructible_life", "owners": ["scag:warlock:the-undying"],
+      "name": "永恒生命", "minimum_level": 14, "kind": "use_pool", "capacity": {"uses": 1},
+      "consumption": "发动扣1次", "recovery": {"short_rest": "补满", "long_rest": "补满"}, "implementation": "not_supported"
+    }
+  ],
+  "reviews": {
+    "scag:barbarian:path-of-the-battlerager": {
+      "page": "野蛮人-战狂.html", "resources": ["scag:barbarian:path-of-the-battlerager:reckless_abandon"],
+      "shared_resources": ["狂暴期间能力共用基础狂暴，不另外扣子职次数"],
+      "without_independent_resources": ["战狂装甲、战狂冲锋、钉刺反冲无独立次数池"]
+    },
+    "scag:cleric:arcana-domain": {
+      "page": "牧师-奥秘领域.html", "resources": [],
+      "shared_resources": ["奥秘阻绝消耗1次基础引导神力；奥秘放逐是其升级效果，不二次扣费", "破法者复用触发治疗法术的环位，不额外收费", "领域法术与奥术精通不授予免费施法次数"],
+      "without_independent_resources": ["奥术传承、强力施法无独立次数池"]
+    },
+    "scag:fighter:purple-dragon-knight": {
+      "page": "战士-紫龙骑士.html", "resources": [],
+      "shared_resources": ["重整姿态复用回气", "振奋之潮复用动作如潮，18级增加受益盟友数而非次数", "意志壁垒复用不屈，不为盟友重投再扣一次"],
+      "without_independent_resources": ["皇家特使无独立次数池"]
+    },
+    "scag:monk:way-of-the-long-death": {
+      "page": "武僧-永亡宗.html", "resources": ["scag:monk:way-of-the-long-death:touch_of_death", "scag:monk:way-of-the-long-death:ki_costs"],
+      "shared_resources": ["握生死与永亡触扣基础武僧气，不建立子职气池"],
+      "without_independent_resources": ["索命镰无气消耗，也无休息使用次数限制"]
+    },
+    "scag:paladin:oath-of-the-crown": {
+      "page": "圣武士-王冠之誓.html", "resources": ["scag:paladin:oath-of-the-crown:exalted_champion"],
+      "shared_resources": ["捍卫挑战与扭转局势各扣基础引导神力1次", "神圣誓忠转移实际伤害到人物生命，不设独立点数", "誓言法术使用正常环位"],
+      "without_independent_resources": ["顽强精神无独立有限资源"]
+    },
+    "scag:warlock:the-undying": {
+      "page": "邪术师-不朽者.html", "resources": ["scag:warlock:the-undying:among_the_dead", "scag:warlock:the-undying:defy_death", "scag:warlock:the-undying:indestructible_life"],
+      "shared_resources": ["扩展列表不授予免费法术；使用正常契约魔法资源"],
+      "without_independent_resources": ["维生术戏法与不朽之理无独立次数池；不需睡眠不等于不需长休"]
+    }
+  }
+}

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">TRPG Dice D20</title>
+  <desc id="desc">A dark green twenty-sided die with gold edges.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#173f36"/>
+      <stop offset="1" stop-color="#0b211e"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#e2bd63"/>
+      <stop offset="1" stop-color="#a87524"/>
+    </linearGradient>
+    <linearGradient id="inner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7d982"/>
+      <stop offset="1" stop-color="#b9822b"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="18" stdDeviation="14" flood-color="#061310" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+  <rect x="12" y="12" width="488" height="488" rx="92" fill="url(#bg)"/>
+  <path d="M12 104h488" stroke="#d8b65e" stroke-opacity=".28" stroke-width="3"/>
+  <g filter="url(#shadow)">
+    <path d="M256 54 431 154 431 358 256 458 81 358 81 154Z" fill="url(#face)" stroke="#f2d47b" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M256 54 256 256 81 154Z" fill="#f1d37a" fill-opacity=".92"/>
+    <path d="M256 54 431 154 256 256Z" fill="#c48d31" fill-opacity=".86"/>
+    <path d="M81 154 256 256 81 358Z" fill="#a97625" fill-opacity=".9"/>
+    <path d="M431 154 256 256 431 358Z" fill="#d9aa4d" fill-opacity=".9"/>
+    <path d="M81 358 256 256 256 458Z" fill="#bd8428" fill-opacity=".94"/>
+    <path d="M431 358 256 256 256 458Z" fill="#96641d" fill-opacity=".95"/>
+    <path d="M256 82 401 165 401 342 256 425 111 342 111 165Z" fill="none" stroke="url(#inner)" stroke-width="5" stroke-linejoin="round" opacity=".9"/>
+    <path d="M256 82v174M111 165l145 91 145-91M111 342l145-86 145 86M256 256v169" fill="none" stroke="#fff0b5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity=".78"/>
+    <text x="256" y="225" text-anchor="middle" font-family="Georgia, serif" font-size="108" font-weight="700" fill="#173f36" stroke="#f7df98" stroke-width="3" paint-order="stroke">20</text>
+    <text x="256" y="303" text-anchor="middle" font-family="Georgia, serif" font-size="42" font-weight="700" letter-spacing="8" fill="#173f36">D</text>
+  </g>
+  <circle cx="74" cy="74" r="9" fill="#e2bd63"/>
+  <circle cx="102" cy="74" r="5" fill="#e2bd63" fill-opacity=".55"/>
+</svg>

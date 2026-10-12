@@ -7,6 +7,7 @@
 **/group_logs/
 **/exports/
 data/settings/
+data/group_posts.json
 
 # --- 2. 数据库文件 (全局清理) ---
 # 无论在根目录、data 还是 V20 目录下的 .db 都要排除
@@ -28,6 +29,7 @@ log-painter/frontend/.env*
 *.tsbuildinfo
 
 # --- 5. 冗余与备份 ---
+backups/
 old_version/
 **/__pycache__/
 *.log
@@ -35,3 +37,5 @@ plan/
 tests/
 log-painter/frontend/test-fixtures/
 temp_*.png
+data/velinithra.png
+data/bot.png

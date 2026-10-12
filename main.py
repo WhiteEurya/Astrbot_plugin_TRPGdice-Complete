@@ -14,15 +14,19 @@ import os
 import json
 import sys
 import html
+import hashlib
 from pathlib import Path
 from typing import Optional
 from playwright.async_api import Error as PlaywrightError, async_playwright
 
 # ========== MODULE IMPORT ========== #
 from .component.pc import store as charmod
+from .component.pc import dnd as dnd_mod
+from .component.pc import resources as dnd_resources
 from .component.roll import dice as dice_mod
 from .component.coc import san as sanity
-from .component.common.output import get_output
+from .component.common.output import configure_output, get_output
+from .component.common.webui import PluginConfigPage
 from .component.common.utils import roll_character, format_character, roll_dnd_character, format_dnd_character, SYNONYMS
 from .component.coc.rules import modify_coc_great_sf_rule_command
 from .component.coc.checks import parse_difficulty_prefix, parse_versus_check, prepare_skill_check, split_skill_modifier
@@ -35,7 +39,7 @@ from .component.pc.view import (
     format_named_attributes,
     format_threshold_attributes,
 )
-from .component.pc.nick import build_card_by_mode, build_coc_card
+from .component.pc.nick import build_card_by_mode
 from .component.pc.names import USAGE as NAME_USAGE, parse_name_request, generate_faker_names, generate_llm_names
 from .component.pc.template import get_coc_st_template
 from .component.pc.attributes import parse_st_expression, find_attribute_key, set_attribute_value
@@ -45,7 +49,24 @@ logger_core = JSONLoggerCore()
 
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_DIR = os.path.join(PLUGIN_DIR, "data", "settings")
+GROUP_POSTS_PATH = os.path.join(PLUGIN_DIR, "data", "group_posts.json")
+GROUP_POST_MAX_AGE = 30 * 24 * 60 * 60
 _T2I_FONT_PATCHED = False
+
+GROUP_POST_SCHEMAS = {
+    "coc": [
+        "模组名", "规则类型", "kp", "期望人数", "预计长度", "开团时间",
+        "联系方式", "跑团方式", "年代地点", "车卡要求", "推荐技能", "背景故事", "kp的建议",
+    ],
+    "dnd": [
+        "模组名", "游戏规则", "扩充拓展", "等级资源", "联系方式", "跑团方式",
+        "跑团平台", "期望人数", "开团时间", "预期长度", "故事地点", "背景简介", "备注",
+    ],
+}
+GROUP_POST_REQUIRED_FIELDS = {
+    "coc": {"模组名", "规则类型", "期望人数", "联系方式", "跑团方式", "预计长度", "年代地点", "背景故事"},
+    "dnd": {"模组名", "游戏规则", "期望人数", "联系方式", "跑团方式", "预期长度", "等级资源", "背景简介"},
+}
 
 COMMANDS = [
     "show",
@@ -134,18 +155,26 @@ async def get_sender_nickname(client, group_id, sender_id) :
 async def init():
     await logger_core.initialize()
 
-@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.2.11")
+@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.1")
 class DicePlugin(Star):
     def __init__(self, context: Context, config: dict = None):
         self.wakeup_prefix = [".", "。", "/", "!", "！"]
         self.uni_cache = {}
         self.initiative_manager = InitiativeManager()
         self.config = config or {}
+        configure_output(self.config.get("output"), self.config.get("dnd_output"))
+        self.pending_group_posts = {}
         self.plugin_dir = os.path.dirname(os.path.abspath(__file__))
         self.json_path = os.path.join(self.plugin_dir, "spellsearcher/SpellSourceFolder.json")
         self.htm_spells_dir = os.path.join(self.plugin_dir, "spellsearcher/HTMSpells")
 
         super().__init__(context)
+        if callable(getattr(context, "register_web_api", None)):
+            try:
+                self.config_page = PluginConfigPage(self.config, self.plugin_dir)
+                self.config_page.register(context)
+            except ImportError:
+                logger.warning("当前 AstrBot 缺少 Plugin Pages API，请使用原生插件配置页。")
 
     @filter.event_message_type(EventMessageType.ALL)
     async def send_bot_info_on_group_join(self, event: AstrMessageEvent):
@@ -259,14 +288,178 @@ class DicePlugin(Star):
     def _save_group_settings(self, group_id, data: dict):
         self._save_settings("groups", str(group_id), data)
 
-    def _is_bot_enabled(self, group_id) -> bool:
+    def _load_group_posts(self) -> list[dict]:
+        if not os.path.exists(GROUP_POSTS_PATH):
+            return []
+        try:
+            with open(GROUP_POSTS_PATH, "r", encoding="utf-8") as file:
+                data = json.load(file)
+            return data if isinstance(data, list) else []
+        except (OSError, ValueError):
+            return []
+
+    def _save_group_posts(self, posts: list[dict]):
+        os.makedirs(os.path.dirname(GROUP_POSTS_PATH), exist_ok=True)
+        with open(GROUP_POSTS_PATH, "w", encoding="utf-8") as file:
+            json.dump(posts, file, ensure_ascii=False, indent=2)
+
+    def _cleanup_group_posts(self, posts: list[dict]) -> list[dict]:
+        now = time.time()
+        active = [
+            post for post in posts
+            if now - float(post.get("created_at", 0)) < GROUP_POST_MAX_AGE
+        ]
+        if len(active) != len(posts):
+            self._save_group_posts(active)
+        return active
+
+    def _parse_group_post(self, payload: str) -> tuple[str, dict] | tuple[None, str]:
+        normalized_payload = payload.replace("\r\n", "\n")
+        normalized_payload = re.sub(r"(?=[丨|][^丨|\n：]+：)", "\n", normalized_payload)
+        lines = [line.strip() for line in normalized_payload.split("\n") if line.strip()]
+        if not lines:
+            return None, get_output("group_post.empty")
+
+        parsed = []
+        current_label = None
+        for line in lines:
+            if line[0] in {"丨", "|"} and "：" in line:
+                label, value = line[1:].split("：", 1)
+                current_label = label.strip()
+                parsed.append((current_label, value.strip()))
+            elif current_label is not None:
+                old_label, old_value = parsed[-1]
+                parsed[-1] = (old_label, f"{old_value}\n{line}" if old_value else line)
+            else:
+                return None, get_output("group_post.malformed_line", line=line)
+
+        labels = [label for label, _ in parsed]
+        all_labels = {label for schema in GROUP_POST_SCHEMAS.values() for label in schema}
+        unknown = [label for label in labels if label not in all_labels]
+        if unknown:
+            return None, get_output("group_post.unknown_fields", fields="、".join(unknown))
+        duplicates = [label for label in set(labels) if labels.count(label) > 1]
+        if duplicates:
+            return None, get_output("group_post.duplicate_fields", fields="、".join(duplicates))
+
+        if "游戏规则" in labels or any(label in labels for label in {"扩充拓展", "等级资源", "预期长度", "故事地点", "背景简介"}):
+            candidate = "dnd"
+        elif "规则类型" in labels or any(label in labels for label in {"年代地点", "车卡要求", "推荐技能", "背景故事", "kp的建议"}):
+            candidate = "coc"
+        else:
+            return None, get_output("group_post.unknown_rule")
+
+        missing = sorted(GROUP_POST_REQUIRED_FIELDS[candidate] - set(labels))
+        if missing:
+            return None, get_output("group_post.missing_fields", schema=candidate.upper(), fields="、".join(missing))
+
+        schema_matches = [
+            name for name, schema in GROUP_POST_SCHEMAS.items()
+            if set(labels).issubset(set(schema))
+            and GROUP_POST_REQUIRED_FIELDS[name].issubset(set(labels))
+        ]
+        if len(schema_matches) != 1:
+            return None, get_output("group_post.invalid_schema")
+        schema_name = schema_matches[0]
+
+        values = dict(parsed)
+        return schema_name, {label: values.get(label, "") for label in GROUP_POST_SCHEMAS[schema_name]}
+
+    def _group_post_html(self, posts: list[dict]) -> str:
+        cards = []
+        for post in posts:
+            rows = "".join(
+                f'<div class="post-row"><span class="post-label">{html.escape(label)}</span>'
+                f'<span class="post-value">{html.escape(value) or "<span class=empty>（未填写）</span>"}</span></div>'
+                for label, value in post["fields"].items()
+            )
+            cards.append(
+                f'<article class="post-card"><div class="post-meta">#{html.escape(post["id"])} · '
+                f'{html.escape(post["schema"].upper())}</div>{rows}</article>'
+            )
+        body = "".join(cards) or '<div class="empty-list">目前还没有正在招募的团。</div>'
+        return f"""
+        <section id="group-posts">
+          <header><div class="brand"><span class="dot"></span>TRPG Dice</div><span>GROUP POSTS</span></header>
+          <h1>当前挂团公告</h1><p class="subtitle">共 {len(posts)} 个进行中的团</p>
+          {body}
+        </section>
+        """
+
+    async def _render_group_posts_image(self, posts: list[dict], output_filename: str):
+        css = """
+        body { margin: 0; background: transparent; font-family: "Noto Sans CJK SC", Arial, sans-serif; }
+        #group-posts { width: 900px; box-sizing: border-box; padding: 34px; color: #29342f;
+          background: linear-gradient(180deg, #fbf5e9, #f1e5d0); }
+        header { display:flex; justify-content:space-between; align-items:center; border-top:8px solid #254c3a;
+          padding:20px 0 14px; border-bottom:1px solid #d7c7a8; color:#6d624c; font-size:16px; font-weight:700; }
+        .brand { display:flex; align-items:center; gap:10px; } .dot { width:11px; height:11px; border-radius:50%; background:#b99b54; }
+        h1 { margin:22px 0 6px; color:#223f32; font-size:40px; } .subtitle { margin:0 0 20px; color:#75684f; font-size:18px; }
+        .post-card { margin:16px 0; border:1px solid #d6c6a5; border-radius:8px; overflow:hidden; background:#fffaf0; box-shadow:0 8px 20px rgba(60,45,25,.1); }
+        .post-meta { padding:12px 16px; background:#f2e6d2; color:#806a3d; font-weight:700; }
+        .post-row { display:grid; grid-template-columns:150px 1fr; gap:16px; padding:10px 16px; border-top:1px dashed #e1d4bc; line-height:1.5; }
+        .post-label { color:#2e5b46; font-weight:700; } .post-value { white-space:pre-wrap; overflow-wrap:anywhere; }
+        .empty { color:#9a8c72; } .empty-list { padding:28px; text-align:center; color:#75684f; background:#fffaf0; border:1px solid #d6c6a5; }
+        """
+        document = f"<!doctype html><html><head><meta charset='UTF-8'><style>{css}</style></head><body>{self._group_post_html(posts)}</body></html>"
+        try:
+            async with async_playwright() as playwright:
+                browser = await playwright.chromium.launch(args=["--no-sandbox"])
+                page = await browser.new_page(viewport={"width": 900, "height": 1400}, device_scale_factor=1)
+                await page.set_content(document)
+                await page.locator("#group-posts").screenshot(path=output_filename)
+                await browser.close()
+        except PlaywrightError as exc:
+            raise RuntimeError("Playwright Chromium 未安装，无法生成挂团图片。") from exc
+
+    def _bot_identity(self, event) -> tuple[str, str]:
+        message = getattr(event, "message_obj", None)
+        get_self_id = getattr(event, "get_self_id", None)
+        bot_id = get_self_id() if callable(get_self_id) else None
+        bot_id = bot_id or getattr(message, "self_id", None) or getattr(getattr(event, "bot", None), "self_id", "")
+        get_platform = getattr(event, "get_platform_name", None)
+        platform = get_platform() if callable(get_platform) else ""
+        return str(platform or ""), str(bot_id or "")
+
+    def _bot_settings_key(self, group_id, event) -> str:
+        platform, bot_id = self._bot_identity(event)
+        if not bot_id:
+            return ""
+        identity = json.dumps([platform, bot_id, str(group_id)], ensure_ascii=True)
+        return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+
+    def _bot_command_targets_self(self, event) -> bool:
+        targets = {str(comp.qq) for comp in getattr(getattr(event, "message_obj", None), "message", [])
+                   if isinstance(comp, Comp.At)}
+        if not targets:
+            return True
+        return self._bot_identity(event)[1] in targets
+
+    def _set_bot_enabled(self, event, enabled: bool):
+        group_id = self._group_id(event)
+        key = self._bot_settings_key(group_id, event)
+        if key:
+            self._save_settings("bots", key, {"enabled": enabled})
+        else:
+            settings = self._get_group_settings(group_id)
+            settings["enabled"] = enabled
+            self._save_group_settings(group_id, settings)
+
+    def _is_bot_enabled(self, group_id, event=None) -> bool:
+        if event is not None:
+            key = self._bot_settings_key(group_id, event)
+            if key:
+                settings = self._load_settings("bots", key)
+                if "enabled" in settings:
+                    return settings["enabled"]
+        # Keep old group switches as defaults until this bot receives its own setting.
         return self._get_group_settings(group_id).get("enabled", True)
 
     def _command_enabled(self, event: AstrMessageEvent) -> bool:
         group_id = self._group_id(event)
         if not group_id:
             return True
-        return self._is_bot_enabled(group_id)
+        return self._is_bot_enabled(group_id, event)
 
     def _allowed_when_disabled(self, command_text: str) -> bool:
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
@@ -791,8 +984,17 @@ class DicePlugin(Star):
                     pass
 
     def _bot_image_path(self):
+        configured = self.config.get("bot_image_path")
+        if configured is not None:
+            configured = configured.strip()
+            if not configured:
+                return None
+            path = os.path.expanduser(configured)
+            if not os.path.isabs(path):
+                path = os.path.join(PLUGIN_DIR, path)
+            return path if os.path.isfile(path) else None
         candidates = [
-            os.path.join(PLUGIN_DIR, "data", "velinithra.png"),
+            os.path.join(PLUGIN_DIR, "data", "bot.png"),
             os.path.join(SETTINGS_DIR, "bot.png"),
             os.path.join(SETTINGS_DIR, "bot.jpg"),
             os.path.join(PLUGIN_DIR, "bot.png"),
@@ -801,12 +1003,12 @@ class DicePlugin(Star):
             os.path.join(PLUGIN_DIR, "assets", "bot.jpg"),
         ]
         for path in candidates:
-            if os.path.exists(path):
+            if os.path.isfile(path):
                 return path
         return None
 
     def _bot_info_text(self, event: AstrMessageEvent) -> str:
-        status_key = "bot.status_on" if self._is_bot_enabled(self._group_id(event)) else "bot.status_off"
+        status_key = "bot.status_on" if self._is_bot_enabled(self._group_id(event), event) else "bot.status_off"
         return get_output("bot.info", status=get_output(status_key))
 
     def _get_user_aliases(self, user_id: str) -> dict:
@@ -921,6 +1123,7 @@ class DicePlugin(Star):
     @filter.command("st")
     async def status(self, event: AstrMessageEvent, attributes: str = None, exp : str = None):
         """人物卡属性更新 / 掷骰 (V4 - 区分单/多重赋值)"""
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         if not attributes:
@@ -929,10 +1132,20 @@ class DicePlugin(Star):
         if attributes in COMMANDS :
             return
 
+        if rule_system == "dnd":
+            full_expr = " ".join(str(value) for value in (attributes, exp) if value is not None)
+            raw = self._strip_at_text(event.get_message_str())
+            command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+            if re.match(r"^st\s", command, re.I):
+                full_expr = re.sub(r"^st\s+", "", command, count=1, flags=re.I)
+            async for result in self._dnd_st(event, "update", full_expr):
+                yield result
+            return
+
         user_id = self._get_target_user_id(event)
         operator_user_id = str(event.get_sender_id())
         group_id = event.get_group_id()
-        chara_id = charmod.get_current_character_id(group_id, user_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
         
         if not chara_id:
             if user_id == operator_user_id:
@@ -941,7 +1154,7 @@ class DicePlugin(Star):
                 yield event.plain_result(get_output("pc.show.target_no_active"))
             return
 
-        chara_data = charmod.load_character(group_id, user_id, chara_id)
+        chara_data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         full_expr = self._strip_at_text((str(attributes) if attributes else "") + (str(exp) if exp else ""))
         try:
             entries = parse_st_expression(full_expr)
@@ -953,8 +1166,8 @@ class DicePlugin(Star):
             for attribute, _, value in entries:
                 set_attribute_value(chara_data["attributes"], attribute, int(value))
 
-            derived_tips = charmod.sync_derived_attributes(chara_data)
-            charmod.save_character(group_id, user_id, chara_id, chara_data)
+            derived_tips = charmod.sync_derived_attributes(chara_data, rule_system=rule_system)
+            charmod.save_character(group_id, user_id, chara_id, chara_data, rule_system=rule_system)
             if event.get_platform_name() == "aiocqhttp":
                 await self._update_user_nickname_card(event.bot, group_id, user_id)
 
@@ -1004,8 +1217,8 @@ class DicePlugin(Star):
         new_val_final = max(0, new_value)
         set_attribute_value(chara_data["attributes"], attribute, new_val_final)
 
-        derived_tips = charmod.sync_derived_attributes(chara_data)
-        charmod.save_character(group_id, user_id, chara_id, chara_data)
+        derived_tips = charmod.sync_derived_attributes(chara_data, rule_system=rule_system)
+        charmod.save_character(group_id, user_id, chara_id, chara_data, rule_system=rule_system)
         # 触发静默更新名片
         if event.get_platform_name() == "aiocqhttp":
             await self._update_user_nickname_card(event.bot, group_id, user_id)
@@ -1022,6 +1235,54 @@ class DicePlugin(Star):
         await self.save_log(group_id=event.get_group_id(), content=response, event=event)
         yield event.plain_result(response)
 
+    async def _dnd_st(self, event: AstrMessageEvent, action: str, args: str = ""):
+        if not self._command_enabled(event):
+            return
+        group_id = str(event.get_group_id())
+        user_id = self._get_target_user_id(event)
+        card = charmod.get_current_character(group_id, user_id, rule_system="dnd")
+        if not card:
+            yield event.plain_result(get_output("pc.show.no_active"))
+            return
+        args = self._strip_at_text(args)
+        try:
+            if action == "show":
+                response = dnd_mod.format_card(card, args)
+            elif action == "export":
+                response = dnd_mod.export_card(card)
+            else:
+                if action == "update":
+                    updated, detail = dnd_mod.update_card(card, args)
+                elif action in {"del", "clr"}:
+                    updated, detail = dnd_mod.delete_attributes(card, args, clear=action == "clr")
+                else:
+                    raise ValueError("未知 DnD 属性操作。")
+                charmod.save_character(group_id, user_id, card["id"], updated, rule_system="dnd")
+                if event.get_group_id() and event.get_platform_name() == "aiocqhttp":
+                    await self._update_user_nickname_card(event.bot, group_id, user_id)
+                response = get_output("dnd.sheet.updated", name=card["name"], detail=detail)
+                await self.save_log(group_id=event.get_group_id(), content=response, event=event)
+        except ValueError as exc:
+            yield event.plain_result(get_output("dnd.common.error", reason=str(exc)))
+            return
+        yield event.plain_result(response)
+
+    async def _dnd_check(self, event: AstrMessageEvent, expression: str):
+        if not self._command_enabled(event):
+            return
+        user_id = self._get_target_user_id(event)
+        card = charmod.get_current_character(str(event.get_group_id()), user_id, rule_system="dnd")
+        if not card:
+            yield event.plain_result(get_output("pc.show.no_active"))
+            return
+        try:
+            response = dnd_mod.roll_check(card, self._strip_at_text(expression))
+        except ValueError as exc:
+            yield event.plain_result(get_output("dnd.common.error", reason=str(exc)))
+            return
+        await self.save_log(group_id=event.get_group_id(), content=response, event=event)
+        yield event.plain_result(response)
+
     @command_group("st")
     async def st(self, event: AstrMessageEvent, attributes: str = None, exp : str = None):
         """人物卡属性更新 / 掷骰"""
@@ -1030,7 +1291,12 @@ class DicePlugin(Star):
 
     @st.command("show")
     async def pc_show_character(self, event: AstrMessageEvent, *, args_str: str = ""):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
+            return
+        if rule_system == "dnd":
+            async for result in self._dnd_st(event, "show", args_str):
+                yield result
             return
         """
         .st show [属性...] [@某人] / .st show [数字] / .st show
@@ -1045,7 +1311,7 @@ class DicePlugin(Star):
                 target_user_id = str(comp.qq)
                 break
                 
-        chara_id = charmod.get_current_character_id(group_id, target_user_id)
+        chara_id = charmod.get_current_character_id(group_id, target_user_id, rule_system=rule_system)
         
         if not chara_id:
             if target_user_id == str(event.get_sender_id()):
@@ -1054,7 +1320,7 @@ class DicePlugin(Star):
                 yield event.plain_result(get_output("pc.show.target_no_active"))
             return
 
-        chara_data = charmod.load_character(group_id, target_user_id, chara_id)
+        chara_data = charmod.load_character(group_id, target_user_id, chara_id, rule_system=rule_system)
         if not chara_data:
             yield event.plain_result(get_output("pc.show.load_fail", id=chara_id))
             return
@@ -1161,16 +1427,27 @@ class DicePlugin(Star):
     async def st_template_cn(self, event: AstrMessageEvent):
         if not self._command_enabled(event):
             return
+        if self._get_rule_system(self._group_id(event)) == "dnd":
+            yield event.plain_result(dnd_mod.template())
+            return
         yield event.plain_result(get_coc_st_template())
 
     @st.command("template")
     async def st_template(self, event: AstrMessageEvent):
         if not self._command_enabled(event):
             return
+        if self._get_rule_system(self._group_id(event)) == "dnd":
+            yield event.plain_result(dnd_mod.template())
+            return
         yield event.plain_result(get_coc_st_template())
 
     @st.command("del")
     async def st_del(self, event: AstrMessageEvent, *, args_str: str = ""):
+        rule_system = self._get_rule_system(self._group_id(event))
+        if rule_system == "dnd":
+            async for result in self._dnd_st(event, "del", args_str):
+                yield result
+            return
         if not self._command_enabled(event):
             return
         """ 
@@ -1180,14 +1457,14 @@ class DicePlugin(Star):
         
         user_id = event.get_sender_id()
         group_id = event.get_group_id()
-        chara_id = charmod.get_current_character_id(group_id, user_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
         
         
         if not chara_id:
             yield event.plain_result(get_output("pc.show.no_active"))
             return
 
-        chara_data = charmod.load_character(group_id, user_id, chara_id)
+        chara_data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         if not chara_data:
             yield event.plain_result(get_output("pc.show.load_fail", id=chara_id))
             return
@@ -1258,7 +1535,7 @@ class DicePlugin(Star):
 
         # --- 保存并响应 ---
         if deleted_groups_primary:
-            charmod.save_character(group_id, user_id, chara_id, chara_data)
+            charmod.save_character(group_id, user_id, chara_id, chara_data, rule_system=rule_system)
             await self.save_log(group_id=event.get_group_id(), content=response, event=event)
             
         yield event.plain_result(response)
@@ -1266,6 +1543,11 @@ class DicePlugin(Star):
 
     @st.command("clr")
     async def st_clr(self, event: AstrMessageEvent):
+        rule_system = self._get_rule_system(self._group_id(event))
+        if rule_system == "dnd":
+            async for result in self._dnd_st(event, "clr"):
+                yield result
+            return
         if not self._command_enabled(event):
             return
         """ .st clr 清除所有非核心属性 (V2 - 统一 get_output 键) """
@@ -1276,13 +1558,13 @@ class DicePlugin(Star):
         ret = await get_sender_nickname(client, group_id, user_id)
         ret = event.get_sender_name() if ret == "" else ret
         
-        chara_id = charmod.get_current_character_id(group_id, user_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
         
         if not chara_id:
             yield event.plain_result(get_output("st.show.no_active")) # 复用
             return
 
-        chara_data = charmod.load_character(group_id, user_id, chara_id)
+        chara_data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         if not chara_data:
             yield event.plain_result(get_output("st.show.load_fail", id=chara_id)) # 复用
             return
@@ -1310,7 +1592,7 @@ class DicePlugin(Star):
             return
         
         chara_data["attributes"] = new_attrs
-        charmod.save_character(group_id, user_id, chara_id, chara_data)
+        charmod.save_character(group_id, user_id, chara_id, chara_data, rule_system=rule_system)
         
         # 统一: pc. -> st. (参数 'count' 保持不变，因为它不是属性列表)
         response = get_output("st.clr.success", name=ret)
@@ -1320,6 +1602,7 @@ class DicePlugin(Star):
         
     @st.command("export")
     async def st_export(self, event: AstrMessageEvent, *, args_str: str = ""):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         """ 
@@ -1330,11 +1613,11 @@ class DicePlugin(Star):
         user_id = event.get_sender_id()
         group_id = event.get_group_id()
         args_str = args_str.strip()
-        chara_id = charmod.get_current_character_id(group_id, user_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
 
         if args_str:
             parts = args_str.split()
-            target_id = charmod.resolve_identifier(group_id, user_id, parts[0])
+            target_id = charmod.resolve_identifier(group_id, user_id, parts[0], rule_system=rule_system)
             if target_id:
                 chara_id = target_id
                 args_str = " ".join(parts[1:])
@@ -1343,9 +1626,13 @@ class DicePlugin(Star):
             yield event.plain_result(get_output("pc.show.no_active"))
             return
 
-        chara_data = charmod.load_character(group_id, user_id, chara_id)
+        chara_data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         if not chara_data:
             yield event.plain_result(get_output("pc.show.load_fail", id=chara_id))
+            return
+
+        if rule_system == "dnd":
+            yield event.plain_result(dnd_mod.export_card(chara_data))
             return
 
         # 获取属性字典，如果不存在则为空字典
@@ -1371,39 +1658,26 @@ class DicePlugin(Star):
         yield event.plain_result(response)
 
     @filter.command("fire")
-    async def handle_pistol_fire(self, event: AstrMessageEvent, arg1: str = "", arg2: str = ""):
-        """手枪三连发：.fire [p1/p2] [技能值]"""
+    async def handle_pistol_fire(self, event: AstrMessageEvent):
+        """手枪三次检定，支持模式、技能值和额外奖励/惩罚骰。"""
+        rule_system = self._get_rule_system(self._group_id(event))
+        if rule_system != "coc":
+            yield event.plain_result("此操作目前仅支持 CoC 人物卡。")
+            return
         if not self._command_enabled(event):
             return
-        
+        message = self._strip_at_text(event.get_message_str()).strip()
+        command = strip_command_prefix(message, self.wakeup_prefix) or message
+        full_args = re.sub(r"^fire(?:\s+|$)", "", command, count=1).strip()
         user_id = event.get_sender_id()
-        group_id = event.get_group_id()
-        client = event.bot
-        
-        # 1. 环境准备：获取昵称和角色数据
-        nickname = await get_sender_nickname(client, group_id, user_id)
-        nickname = event.get_sender_name() if nickname == "" else nickname
-        
-        chara_data = charmod.get_current_character(group_id, user_id)
-        
-        # 2. 调用后端获取结果文本
-        full_args = (str(arg1) + str(arg2)).lower().strip()
-        result_text = dice_mod.handle_pistol_fire(full_args, name=nickname, chara_data=chara_data)
-        
-        # 3. 构造复合消息 payloads
-        message_id = event.message_obj.message_id
-        payloads = {
-            "group_id": group_id,
-            "message": [
-                {"type": "reply", "data": {"id": message_id}},
-                {"type": "at", "data": {"qq": user_id}},
-                {"type": "text", "data": {"text": "\n" + result_text}}
-            ]
-        }
-        
-        # 4. 日志与发送
+        group_id = self._group_id(event)
+        nickname = await self._event_display_name(event)
+        chara_data = charmod.get_current_character(group_id, user_id, rule_system=rule_system)
+        result_text = dice_mod.handle_pistol_fire(
+            full_args, name=nickname, chara_data=chara_data, group_id=group_id,
+        )
         await self.save_log(group_id=group_id, content=result_text, event=event)
-        await client.api.call_action("send_group_msg", **payloads)
+        yield event.plain_result(result_text)
 
     @command_group("pc") # type: ignore
     async def pc(self, event: AstrMessageEvent):
@@ -1411,26 +1685,27 @@ class DicePlugin(Star):
 
     # ----------------- pc create (新建并自动绑定) -----------------
     async def _pc_new_character_impl(self, event, name: str):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         user_id = event.get_sender_id()
         group_id = str(event.get_group_id())
         
         # 1. 检查当前群路径下是否已经存在同名角色
-        characters = charmod.get_all_characters(group_id, user_id)
+        characters = charmod.get_all_characters(group_id, user_id, rule_system=rule_system)
         if name in characters:
             yield event.plain_result(get_output("pc.create.duplicate", name=name))
             return
 
-        # 2. 创建一个完全空白的属性字典
-        attributes_dict = {}
+        # 2. DnD 新角色从 1 级开始；旧卡不补写等级。
+        attributes_dict = {"等级": 1} if rule_system == "dnd" else {}
 
         # 3. 调用 charmod 创建角色
         # charmod.create_character 内部逻辑：
         # - 生成 UUID
         # - 保存到 chara_data/{group_id}/{user_id}/{uuid}.json
         # - 在 metadata/{user_id}/bindings.json 中记录该群绑定此 UUID
-        chara_id = charmod.create_character(group_id, user_id, name, attributes_dict)
+        chara_id = charmod.create_character(group_id, user_id, name, attributes_dict, rule_system=rule_system)
         
         response = get_output("pc.create.success", name=name, id=chara_id)
         yield event.plain_result(response)
@@ -1453,19 +1728,20 @@ class DicePlugin(Star):
     # ----------------- pc list (列出当前群角色) -----------------
     @pc.command("list")
     async def pc_list_characters(self, event):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         user_id = event.get_sender_id()
         group_id = str(event.get_group_id())
         
         # 获取有序列表，方便以后实现序号操作
-        characters = charmod.get_all_characters(group_id, user_id)
+        characters = charmod.get_all_characters(group_id, user_id, rule_system=rule_system)
         if not characters:
             yield event.plain_result(get_output("pc.list.empty"))
             return
 
         # 关键：从 bindings 获取当前群绑定的角色
-        current = charmod.get_current_character_id(group_id, user_id)
+        current = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
         
         # 排序以保证序号稳定
         sorted_chars = sorted(characters.items(), key=lambda x: x[0])
@@ -1474,9 +1750,9 @@ class DicePlugin(Star):
             tags = []
             if ch_id == current:
                 tags.append(get_output("pc.list.tag_current"))
-            if charmod.is_local_binding(group_id, user_id, ch_id):
+            if charmod.is_local_binding(group_id, user_id, ch_id, rule_system=rule_system):
                 tags.append(get_output("pc.list.tag_local"))
-            if charmod.is_global_character(user_id, ch_id):
+            if charmod.is_global_character(user_id, ch_id, rule_system=rule_system):
                 tags.append(get_output("pc.list.tag_global"))
             tag = f"({'/'.join(tags)})" if tags else ""
             chara_list.append(f"{i}. {name} {tag}")
@@ -1486,6 +1762,7 @@ class DicePlugin(Star):
 
     # ----------------- pc tag (绑定/切换) -----------------
     async def _pc_tag_character_impl(self, event, identifier: str = None):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         user_id = event.get_sender_id()
@@ -1493,17 +1770,17 @@ class DicePlugin(Star):
         
         if not identifier:
             # 如果不填，执行解除绑定
-            charmod.set_binding_info(user_id, group_id, None)
+            charmod.set_binding_info(user_id, group_id, None, rule_system=rule_system)
             yield event.plain_result(get_output("pc.tag.cleared"))
             return
 
         # 解析名字或序号
-        chara_id = charmod.resolve_identifier(group_id, user_id, identifier)
+        chara_id = charmod.resolve_identifier(group_id, user_id, identifier, rule_system=rule_system)
         if not chara_id:
             yield event.plain_result(get_output("pc.tag.not_found", identifier=identifier))
             return
 
-        charmod.set_binding_info(user_id, group_id, chara_id)
+        charmod.set_binding_info(user_id, group_id, chara_id, rule_system=rule_system)
         yield event.plain_result(get_output("pc.tag.success"))
 
     @pc.command("tag")
@@ -1516,8 +1793,150 @@ class DicePlugin(Star):
         async for result in self._pc_tag_character_impl(event, identifier):
             yield result
         
+    @pc.command("class")
+    async def pc_class(self, event, *, args_str: str = ""):
+        if not self._command_enabled(event):
+            return
+        if self._get_rule_system(self._group_id(event)) != "dnd":
+            yield event.plain_result("职业设置只适用于 DnD，请先使用 .ruleset dnd。")
+            return
+        raw = re.sub(r"\[CQ:at[^\]]*\]", "", event.get_message_str())
+        # Source markers inside subclass parentheses are not player mentions.
+        parts = re.split(r"(\([^()\r\n]*\)|（[^（）\r\n]*）|[^\s/():（）：]+@(?:2014|2024|phb2014|phb2024)(?=\s*[:：(（]))", raw, flags=re.I)
+        raw = "".join(part if part.startswith(("(", "（")) or re.search(r"@(?:2014|2024|phb2014|phb2024)$", part, re.I)
+                      else part.split("@", 1)[0] for part in parts)
+        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        match = re.match(r"^pc\s+(?:class|职业)(?:\s+|$)(.*)$", command, re.I | re.S)
+        args = (match.group(1) if match else args_str).strip()
+        query = re.fullmatch(r"(?:list|列表)(?:\s+(.*))?", args, re.I | re.S)
+        if query:
+            try:
+                response = dnd_mod.format_subclass_catalog(query.group(1) or "")
+            except ValueError as exc:
+                response = str(exc)
+            yield event.plain_result(response)
+            return
+        if args.lower() in {"help", "帮助"}:
+            yield event.plain_result(dnd_mod.CLASS_HELP)
+            return
+        group_id = str(event.get_group_id())
+        user_id = self._get_target_user_id(event)
+        card = charmod.get_current_character(group_id, user_id, rule_system="dnd")
+        if not card:
+            yield event.plain_result(get_output("pc.show.no_active"))
+            return
+        if not args:
+            yield event.plain_result(dnd_mod.format_card(card, "职业") + "\n" + dnd_mod.CLASS_HELP)
+            return
+        try:
+            if args.lower() in {"clear", "clr", "清除"}:
+                updated = dict(card)
+                updated.pop("dnd_classes", None)
+                detail = get_output("dnd.class.cleared")
+            else:
+                updated = dnd_mod.update_classes(card, args)
+                detail = get_output("dnd.class.updated", classes=dnd_mod.format_classes(updated), level=updated['attributes']['等级'])
+                if any(item.get("subclass_status") == "needs_source" for item in updated["dnd_classes"]):
+                    detail += "\n子职有多个版本，请用 子职@2024 / 子职@塔莎 等明确来源；目前仅记录名称。"
+            charmod.save_character(group_id, user_id, card["id"], updated, rule_system="dnd")
+        except ValueError as exc:
+            yield event.plain_result(str(exc))
+            return
+        if event.get_group_id() and event.get_platform_name() == "aiocqhttp":
+            await self._update_user_nickname_card(event.bot, group_id, user_id)
+        response = get_output("dnd.common.response", name=card["name"], detail=detail)
+        await self.save_log(group_id=event.get_group_id(), content=response, event=event)
+        yield event.plain_result(response)
+
+    @pc.command("职业")
+    async def pc_class_cn(self, event, *, args_str: str = ""):
+        async for result in self.pc_class(event, args_str=args_str):
+            yield result
+
+    @pc.command("version")
+    async def pc_version(self, event, *, args_str: str = ""):
+        if not self._command_enabled(event):
+            return
+        if self._get_rule_system(self._group_id(event)) != "dnd":
+            yield event.plain_result("版本设置只适用于 DnD，请先使用 .ruleset dnd。")
+            return
+        raw = self._strip_at_text(event.get_message_str())
+        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        match = re.match(r"^pc\s+(?:version|版本)(?:\s+|$)(.*)$", command, re.I | re.S)
+        args = (match.group(1) if match else args_str).strip()
+        group_id = str(event.get_group_id())
+        user_id = self._get_target_user_id(event)
+        card = charmod.get_current_character(group_id, user_id, rule_system="dnd")
+        if not card:
+            yield event.plain_result(get_output("pc.show.no_active"))
+            return
+        try:
+            if not args:
+                detail = "规则版本: " + dnd_resources.card_edition(card)
+            else:
+                updated = dnd_resources.set_version(card, args)
+                charmod.save_character(group_id, user_id, card["id"], updated, rule_system="dnd")
+                detail = dnd_resources.format_resources(updated)
+        except ValueError as exc:
+            yield event.plain_result(str(exc))
+            return
+        response = get_output("dnd.common.response", name=card["name"], detail=detail)
+        if args:
+            await self.save_log(group_id=event.get_group_id(), content=response, event=event)
+        yield event.plain_result(response)
+
+    @pc.command("版本")
+    async def pc_version_cn(self, event, *, args_str: str = ""):
+        async for result in self.pc_version(event, args_str=args_str):
+            yield result
+
+    @filter.command("res", alias={"resource", "资源"})
+    async def pc_resources(self, event, *, args_str: str = ""):
+        if not self._command_enabled(event):
+            return
+        if self._get_rule_system(self._group_id(event)) != "dnd":
+            yield event.plain_result("资源操作只适用于 DnD，请先使用 .ruleset dnd。")
+            return
+        raw = self._strip_at_text(event.get_message_str())
+        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        match = re.match(r"^(?:pc\s+)?(?:res|resource|资源)(?:\s+|$)(.*)$", command, re.I | re.S)
+        args = (match.group(1) if match else args_str).strip()
+        group_id = str(event.get_group_id())
+        user_id = self._get_target_user_id(event)
+        card = charmod.get_current_character(group_id, user_id, rule_system="dnd")
+        if not card:
+            yield event.plain_result(get_output("pc.show.no_active"))
+            return
+        try:
+            updated, detail = dnd_resources.resource_command(card, args)
+            if updated is not None:
+                charmod.save_character(group_id, user_id, card["id"], updated, rule_system="dnd")
+        except ValueError as exc:
+            yield event.plain_result(str(exc))
+            return
+        response = get_output("dnd.common.response", name=card["name"], detail=detail)
+        if updated is not None:
+            await self.save_log(group_id=event.get_group_id(), content=response, event=event)
+        yield event.plain_result(response)
+
+    @pc.command("res")
+    async def pc_resources_legacy(self, event, *, args_str: str = ""):
+        async for result in self.pc_resources(event, args_str=args_str):
+            yield result
+
+    @pc.command("resource")
+    async def pc_resource_alias(self, event, *, args_str: str = ""):
+        async for result in self.pc_resources(event, args_str=args_str):
+            yield result
+
+    @pc.command("资源")
+    async def pc_resources_cn(self, event, *, args_str: str = ""):
+        async for result in self.pc_resources(event, args_str=args_str):
+            yield result
+
     @pc.command("rename")
     async def pc_rename_character(self, event, arg1: str, arg2: str = None):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         """
@@ -1531,7 +1950,7 @@ class DicePlugin(Star):
         if arg2 is None:
             # 场景：.pc rename <新名字>
             new_name = arg1
-            chara_id = charmod.get_current_character_id(group_id, user_id)
+            chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
             if not chara_id:
                 yield event.plain_result(get_output("pc.rename.no_active"))
                 return
@@ -1539,13 +1958,13 @@ class DicePlugin(Star):
             # 场景：.pc rename <旧名|序号> <新名字>
             identifier = arg1
             new_name = arg2
-            chara_id = charmod.resolve_identifier(group_id, user_id, identifier)
+            chara_id = charmod.resolve_identifier(group_id, user_id, identifier, rule_system=rule_system)
             if not chara_id:
                 yield event.plain_result(get_output("pc.tag.not_found", identifier=identifier))
                 return
 
         # 执行重命名
-        success, info = charmod.rename_character(group_id, user_id, chara_id, new_name)
+        success, info = charmod.rename_character(group_id, user_id, chara_id, new_name, rule_system=rule_system)
 
         if success:
             response = get_output("pc.rename.success", old_name=info, new_name=new_name)
@@ -1560,23 +1979,24 @@ class DicePlugin(Star):
 
     # ----------------- pc delete (删除并解绑) -----------------
     async def _pc_delete_character_impl(self, event, identifier: str):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         user_id = event.get_sender_id()
         group_id = str(event.get_group_id())
         
         # 1. 先通过名字或序号解析出 chara_id
-        chara_id = charmod.resolve_identifier(group_id, user_id, identifier)
+        chara_id = charmod.resolve_identifier(group_id, user_id, identifier, rule_system=rule_system)
         if not chara_id:
             yield event.plain_result(get_output("pc.delete.not_found"))
             return
             
         # 2. 获取名字用于显示
-        data = charmod.load_character(group_id, user_id, chara_id)
+        data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         name = data['name'] if data else get_output("common.unknown")
 
         # 3. 执行删除（内部含 bindings 清理）
-        success, _ = charmod.delete_character_by_id(group_id, user_id, chara_id)
+        success, _ = charmod.delete_character_by_id(group_id, user_id, chara_id, rule_system=rule_system)
         
         if not success:
             yield event.plain_result(get_output("pc.delete.fail", name=name))
@@ -1595,6 +2015,7 @@ class DicePlugin(Star):
         
     @pc.command("show")
     async def pc_show(self, event, *, args_str: str = ""):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         """
@@ -1604,11 +2025,11 @@ class DicePlugin(Star):
         user_id = event.get_sender_id()
         group_id = event.get_group_id()
         args_str = args_str.strip()
-        chara_id = charmod.get_current_character_id(group_id, user_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
 
         if args_str:
             parts = args_str.split()
-            target_id = charmod.resolve_identifier(group_id, user_id, parts[0])
+            target_id = charmod.resolve_identifier(group_id, user_id, parts[0], rule_system=rule_system)
             if target_id:
                 chara_id = target_id
                 args_str = " ".join(parts[1:])
@@ -1617,7 +2038,7 @@ class DicePlugin(Star):
             yield event.plain_result(get_output("pc.show.no_active"))
             return
 
-        chara_data = charmod.load_character(group_id, user_id, chara_id)
+        chara_data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         if not chara_data:
             yield event.plain_result(get_output("pc.show.load_fail", id=chara_id))
             return
@@ -1625,6 +2046,10 @@ class DicePlugin(Star):
         chara_attrs = chara_data.get("attributes", {})
         if not chara_attrs:
             yield event.plain_result(get_output("pc.show.attr_missing", attribute=get_output("pc.show.attribute_any")))
+            return
+
+        if rule_system == "dnd":
+            yield event.plain_result(dnd_mod.format_card(chara_data, args_str))
             return
 
         if not args_str:
@@ -1657,6 +2082,7 @@ class DicePlugin(Star):
     # ----------------- .pc push -----------------
     @pc.command("push")
     async def pc_push_character(self, event, mode: str = None):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         """
@@ -1667,7 +2093,7 @@ class DicePlugin(Star):
         group_id = str(event.get_group_id())
         
         # 1. 获取当前群绑定的角色 ID
-        chara_id = charmod.get_current_character_id(group_id, user_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
         if not chara_id:
             # 这里的 get_output 可以在语言包里写：“本群未绑定角色，无法执行 Push。”
             yield event.plain_result(get_output("pc.push.no_pc"))
@@ -1675,7 +2101,7 @@ class DicePlugin(Star):
 
         is_global_mode = (mode or "").lower() in ("global", "g", "全局")
         if is_global_mode:
-            if charmod.mark_character_global(group_id, user_id, chara_id):
+            if charmod.mark_character_global(group_id, user_id, chara_id, rule_system=rule_system):
                 yield event.plain_result(get_output("pc.push.global_success"))
             else:
                 yield event.plain_result(get_output("pc.push.fail"))
@@ -1683,15 +2109,15 @@ class DicePlugin(Star):
 
         is_local_mode = (mode or "").lower() in ("local", "unglobal", "un-global", "取消全局", "本地")
         if is_local_mode:
-            if charmod.unmark_character_global(group_id, user_id, chara_id):
+            if charmod.unmark_character_global(group_id, user_id, chara_id, rule_system=rule_system):
                 yield event.plain_result(get_output("pc.push.local_success"))
             else:
                 yield event.plain_result(get_output("pc.push.fail"))
             return
 
         # 2. 调用后端 touch 逻辑，刷新 mtime 并写入全域档案库
-        if charmod.touch_character(group_id, user_id, chara_id):
-            if charmod.is_global_character(user_id, chara_id):
+        if charmod.touch_character(group_id, user_id, chara_id, rule_system=rule_system):
+            if charmod.is_global_character(user_id, chara_id, rule_system=rule_system):
                 yield event.plain_result(get_output("pc.push.global_sync"))
             else:
                 yield event.plain_result(get_output("pc.push.success"))
@@ -1701,12 +2127,14 @@ class DicePlugin(Star):
     # ----------------- .pc fetch -----------------
     @pc.command("fetch")
     async def pc_fetch_list(self, event):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         user_id = str(event.get_sender_id())
         
-        all_chars = charmod.get_all_universal_characters(user_id)
-        self.uni_cache[user_id] = all_chars # 更新序号缓存
+        all_chars = charmod.get_all_universal_characters(user_id, rule_system=rule_system)
+        cache_key = (user_id, rule_system)
+        self.uni_cache[cache_key] = all_chars
         
         if not all_chars:
             yield event.plain_result(get_output("pc.uni.no_pc"))
@@ -1728,16 +2156,18 @@ class DicePlugin(Star):
     # ----------------- .pc pull -----------------
     @pc.command("pull")
     async def pc_pull_character(self, event, index: int, mode: str = None):
+        rule_system = self._get_rule_system(self._group_id(event))
         if not self._command_enabled(event):
             return
         user_id = str(event.get_sender_id())
         group_id = str(event.get_group_id())
         
         # 1. 获取包含 mtime 信息的最新全域列表
-        all_chars = charmod.get_all_universal_characters(user_id)
-        self.uni_cache[user_id] = all_chars
+        all_chars = charmod.get_all_universal_characters(user_id, rule_system=rule_system)
+        cache_key = (user_id, rule_system)
+        self.uni_cache[cache_key] = all_chars
         
-        cache = self.uni_cache.get(user_id)
+        cache = self.uni_cache.get(cache_key)
         if not cache or index > len(cache) or index <= 0:
             yield event.plain_result(get_output("pc.pull.no_pc"))
             return
@@ -1745,29 +2175,29 @@ class DicePlugin(Star):
         target = cache[index-1] # 这是全域中最热/最新的那个版本信息
         target_uuid = target['uuid']
         global_mode = (mode or "").lower() in ("global", "g", "全局")
-        target_is_global = bool(target.get("global")) or charmod.is_global_character(user_id, target_uuid)
+        target_is_global = bool(target.get("global")) or charmod.is_global_character(user_id, target_uuid, rule_system=rule_system)
 
         if global_mode:
-            success = charmod.mark_character_global(target["group_id"], user_id, target_uuid)
+            success = charmod.mark_character_global(target["group_id"], user_id, target_uuid, rule_system=rule_system)
             if success:
-                charmod.set_binding_info(user_id, group_id, target_uuid, global_binding=True)
+                charmod.set_binding_info(user_id, group_id, target_uuid, global_binding=True, rule_system=rule_system)
                 yield event.plain_result(get_output("pc.pull.global_success", name=target["name"]))
             else:
                 yield event.plain_result(get_output("pc.pull.fail"))
             return
 
         if target_is_global:
-            charmod.set_binding_info(user_id, group_id, target_uuid, global_binding=True)
+            charmod.set_binding_info(user_id, group_id, target_uuid, global_binding=True, rule_system=rule_system)
             yield event.plain_result(get_output("pc.pull.global_success", name=target["name"]))
             return
 
         # 2. 获取本群当前该角色的信息（如果存在）
-        local_exists = charmod.check_character_file_exists(group_id, user_id, target_uuid)
+        local_exists = charmod.check_character_file_exists(group_id, user_id, target_uuid, rule_system=rule_system)
         
         needs_copy = True
         if local_exists:
             # 获取本地文件的修改时间进行对比
-            local_mtime = charmod.get_local_file_mtime(group_id, user_id, target_uuid)
+            local_mtime = charmod.get_local_file_mtime(group_id, user_id, target_uuid, rule_system=rule_system)
             # 如果本地的时间 >= 全域最热的时间，说明本地已经是最新，无需拷贝
             if local_mtime >= target['mtime']:
                 needs_copy = False
@@ -1775,20 +2205,20 @@ class DicePlugin(Star):
         # 3. 执行逻辑分支
         if not needs_copy:
             # 文件已经是最新，仅检查绑定
-            current_bound = charmod.get_current_character_id(group_id, user_id)
+            current_bound = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
             if current_bound == target_uuid:
                 yield event.plain_result(get_output("pc.pull.exist")) # 完全一致，无需操作
             else:
-                charmod.set_binding_info(user_id, group_id, target_uuid, local_binding=True)
+                charmod.set_binding_info(user_id, group_id, target_uuid, local_binding=True, rule_system=rule_system)
                 yield event.plain_result(get_output("pc.pull.success", name=target['name']))
             return
 
         # 4. 需要拷贝（本地不存在，或者远程版本更新）
         # 调用 clone，内部执行物理覆盖
-        success = charmod.clone_character_to_group(user_id, target['group_id'], group_id, target_uuid)
+        success = charmod.clone_character_to_group(user_id, target['group_id'], group_id, target_uuid, rule_system=rule_system)
         
         if success:
-            charmod.set_binding_info(user_id, group_id, target_uuid, local_binding=True)
+            charmod.set_binding_info(user_id, group_id, target_uuid, local_binding=True, rule_system=rule_system)
             if local_exists : 
                 yield event.plain_result(get_output("pc.pull.sync", name=target['name']))
             else :
@@ -1798,17 +2228,20 @@ class DicePlugin(Star):
 
     # ----------------- filter sn -----------------
     async def _set_nickname_impl(self, event, mode: str = "coc"):
+        rule_system = self._get_rule_system(self._group_id(event))
         if event.get_platform_name() != "aiocqhttp":
             yield event.plain_result(get_output("nick.platform_unsupported"))
             return
 
-        from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent # type: ignore
+        if not event.get_group_id():
+            yield event.plain_result("群名片只能在群聊中修改。")
+            return
         client = event.bot
         user_id = event.get_sender_id()
         group_id = event.get_group_id()
 
-        chara_id = charmod.get_current_character_id(group_id, user_id)
-        chara_data = charmod.load_character(group_id, user_id, chara_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
+        chara_data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         if not chara_data:
             yield event.plain_result(get_output("nick.no_character", id=chara_id))
             return
@@ -1816,7 +2249,12 @@ class DicePlugin(Star):
         new_card = build_card_by_mode(chara_data, mode)
 
         payloads = {"group_id": group_id, "user_id": user_id, "card": new_card}
-        await client.api.call_action("set_group_card", **payloads)
+        try:
+            await client.api.call_action("set_group_card", **payloads)
+        except Exception as exc:
+            logger.error(f"修改群名片失败: {exc}")
+            yield event.plain_result("修改群名片失败，请检查机器人权限后重试。")
+            return
 
         yield event.plain_result(get_output("nick.success"))
 
@@ -1837,15 +2275,16 @@ class DicePlugin(Star):
         
     async def _update_user_nickname_card(self, client, group_id: str, user_id: str):
         """静默更新玩家群名片，不返回任何群消息提示"""
-        chara_id = charmod.get_current_character_id(group_id, user_id)
+        rule_system = self._get_rule_system(group_id)
+        chara_id = charmod.get_current_character_id(group_id, user_id, rule_system=rule_system)
         if not chara_id:
             return False
             
-        chara_data = charmod.load_character(group_id, user_id, chara_id)
+        chara_data = charmod.load_character(group_id, user_id, chara_id, rule_system=rule_system)
         if not chara_data:
             return False
 
-        new_card = build_coc_card(chara_data)
+        new_card = build_card_by_mode(chara_data)
         payloads = {"group_id": group_id, "user_id": user_id, "card": new_card}
         
         try:
@@ -1858,6 +2297,7 @@ class DicePlugin(Star):
     
     # ========================================================= #
     def _resolve_skill_check(self, group_id, user_id, skill_name: str, skill_value: str = None):
+        rule_system = self._get_rule_system(group_id)
         skill_name = self._resolve_user_alias(str(user_id), skill_name)
         if (skill_value is None or skill_value == "") and skill_name:
             explicit_match = re.match(r"^(.+?)(\d+)([+-]\d+)?$", skill_name.strip())
@@ -1871,7 +2311,7 @@ class DicePlugin(Star):
 
         raw_value = skill_value
         if raw_value is None or raw_value == "":
-            raw_value = charmod.get_skill_value(group_id, user_id, lookup_name)
+            raw_value = charmod.get_skill_value(group_id, user_id, lookup_name, rule_system=rule_system)
 
         try:
             numeric_value = int(raw_value)
@@ -2081,6 +2521,7 @@ class DicePlugin(Star):
         .en 技能成长判定
         调用 character 模块的 grow_up 生成结果文本，再通过 event 发送给用户。
         """
+        rule_system = self._get_rule_system(self._group_id(event))
         user_id = target_user_id or event.get_sender_id()
         group_id = event.get_group_id()
         skill_name = self._resolve_user_alias(str(user_id), skill_name)
@@ -2090,7 +2531,8 @@ class DicePlugin(Star):
             group_id,
             user_id,
             skill_name=skill_name,
-            skill_value=skill_value
+            skill_value=skill_value,
+            rule_system=rule_system,
         )
 
         # 构造发送消息
@@ -2132,10 +2574,14 @@ class DicePlugin(Star):
     # @filter.command("sc")
     async def pc_san_check(self, event: AstrMessageEvent, loss_formula: str, target_user_id: str = None):
         """理智检定"""
+        rule_system = self._get_rule_system(self._group_id(event))
+        if rule_system != "coc":
+            yield event.plain_result("此操作目前仅支持 CoC 人物卡。")
+            return
         user_id = target_user_id or event.get_sender_id()
         operator_user_id = str(event.get_sender_id())
         group_id = event.get_group_id()
-        chara_data = charmod.get_current_character(group_id, user_id)
+        chara_data = charmod.get_current_character(group_id, user_id, rule_system=rule_system)
         client = event.bot
         
         if not chara_data:
@@ -2149,7 +2595,7 @@ class DicePlugin(Star):
 
         # 更新人物卡
         chara_data["attributes"]["san"] = new_san
-        charmod.save_character(group_id, user_id, chara_data["id"], chara_data)
+        charmod.save_character(group_id, user_id, chara_data["id"], chara_data, rule_system=rule_system)
         
         if event.get_platform_name() == "aiocqhttp":
             await self._update_user_nickname_card(client, group_id, user_id)
@@ -2244,17 +2690,38 @@ class DicePlugin(Star):
         elif instruction == "del":
             if not player_name:
                 player_name = user_name
+                if self._get_rule_system(self._group_id(event)) == "dnd":
+                    card = charmod.get_current_character(group_id, event.get_sender_id(), rule_system="dnd")
+                    if card:
+                        player_name = card["name"]
             self.initiative_manager.remove_by_name(group_id, player_name)
             yield event.plain_result(get_output("initiative.remove_name", name=player_name))
 
     # @filter.command("ri")
     async def roll_initiative(self , event: AstrMessageEvent, expr: str = None):
-
+        if not self._command_enabled(event):
+            return
         group_id = event.get_group_id()
         user_id = event.get_sender_id()
         user_name = event.get_sender_name()
 
-        init_value, player_name = self.initiative_manager.parse_roll(expr, user_name)
+        if not expr and self._get_rule_system(self._group_id(event)) == "dnd":
+            card = charmod.get_current_character(group_id, user_id, rule_system="dnd")
+            if not card:
+                yield event.plain_result(get_output("pc.show.no_active"))
+                return
+            try:
+                bonus, _ = dnd_mod.check_bonus(card, "先攻")
+            except ValueError as exc:
+                yield event.plain_result(str(exc))
+                return
+            user_name = card["name"]
+            expr = f"{bonus:+d}"
+        try:
+            init_value, player_name = self.initiative_manager.parse_roll(expr, user_name)
+        except (ValueError, AttributeError):
+            yield event.plain_result("请使用 .ri、.ri +4 或 .ri 18 角色名。")
+            return
         item = InitiativeItem(player_name, init_value, user_id)
         self.initiative_manager.remove_by_name(group_id, player_name)
         self.initiative_manager.add_item(group_id, item)
@@ -2609,8 +3076,10 @@ class DicePlugin(Star):
 
     @filter.command("bot")
     async def bot_cmd(self, event: AstrMessageEvent, action: str = None):
+        if not self._bot_command_targets_self(event):
+            return
         action = (action or "").lower()
-        if not self._is_bot_enabled(self._group_id(event)) and action not in {"on", "quit"}:
+        if not self._is_bot_enabled(self._group_id(event), event) and action not in {"on", "quit"}:
             return
         if not action:
             image_path = self._bot_image_path()
@@ -2624,17 +3093,13 @@ class DicePlugin(Star):
             return
 
         group_id = self._group_id(event)
-        settings = self._get_group_settings(group_id)
-
         if action == "on":
-            settings["enabled"] = True
-            self._save_group_settings(group_id, settings)
+            self._set_bot_enabled(event, True)
             yield event.plain_result(get_output("bot.enabled"))
             return
 
         if action == "off":
-            settings["enabled"] = False
-            self._save_group_settings(group_id, settings)
+            self._set_bot_enabled(event, False)
             yield event.plain_result(get_output("bot.disabled"))
             return
 
@@ -2651,7 +3116,7 @@ class DicePlugin(Star):
             return
 
         if action == "status":
-            enabled = self._is_bot_enabled(event.get_group_id())
+            enabled = self._is_bot_enabled(self._group_id(event), event)
             status_key = "bot.status_on" if enabled else "bot.status_off"
             yield event.plain_result(get_output("bot.status", status=get_output(status_key)))
             return
@@ -2703,6 +3168,14 @@ class DicePlugin(Star):
 
     # 识别所有信息
     async def _dispatch_inline_command(self, event: AstrMessageEvent, parsed, target_user_id: str):
+        if parsed.cmd == "dnd_check" and self._get_rule_system(self._group_id(event)) == "dnd":
+            async for result in self._dnd_check(event, parsed.expr):
+                yield result
+            return
+        if (self._get_rule_system(self._group_id(event)) != "coc"
+                and parsed.cmd in {"ra", "rc", "rab", "rap", "rau", "rah", "rch", "rav", "rcv", "en", "sc"}):
+            yield event.plain_result("此指令适用于 CoC；DnD 请使用 .rc 技能 / .rc 属性豁免。")
+            return
         cmd = parsed.cmd
         expr = parsed.expr
         remark = parsed.remark
@@ -2762,6 +3235,15 @@ class DicePlugin(Star):
                 yield result
 
     async def _dispatch_private_inline_command(self, event: AstrMessageEvent, parsed):
+        if parsed.cmd == "dnd_check" and self._get_rule_system(self._group_id(event)) == "dnd":
+            async for result in self._dnd_check(event, parsed.expr):
+                yield result
+            return
+        rule_system = self._get_rule_system(self._group_id(event))
+        if (rule_system != "coc"
+                and parsed.cmd in {"ra", "rc", "rab", "rap", "rau", "rah", "rch", "rav", "rcv", "en", "sc"}):
+            yield event.plain_result("此指令适用于 CoC；DnD 请使用 .rc 技能 / .rc 属性豁免。")
+            return
         cmd = parsed.cmd
         expr = parsed.expr
         remark = parsed.remark
@@ -2810,16 +3292,16 @@ class DicePlugin(Star):
             async for result in self.roll_attribute_versus(event, expr, skill_value):
                 yield result
         elif cmd == "en":
-            yield event.plain_result(charmod.grow_up(context_id, user_id, skill_name=expr, skill_value=skill_value))
+            yield event.plain_result(charmod.grow_up(context_id, user_id, skill_name=expr, skill_value=skill_value, rule_system=rule_system))
         elif cmd == "sc":
-            chara_data = charmod.get_current_character(context_id, user_id)
+            chara_data = charmod.get_current_character(context_id, user_id, rule_system=rule_system)
             if not chara_data:
                 yield event.plain_result(get_output("pc.show.no_active"))
                 return
 
             roll_result, san_value, result_msg, loss, new_san, parsed_expr = sanity.san_check(chara_data, expr)
             chara_data["attributes"]["san"] = new_san
-            charmod.save_character(context_id, user_id, chara_data["id"], chara_data)
+            charmod.save_character(context_id, user_id, chara_data["id"], chara_data, rule_system=rule_system)
 
             if new_san == 0:
                 output_key = "san.check_result.zero"
@@ -2871,6 +3353,107 @@ class DicePlugin(Star):
             components=getattr(event.message_obj, "message", [])
         )
 
+    async def _handle_group_post_command(self, event: AstrMessageEvent, command_text: str):
+        payload = command_text[len("挂团"):].lstrip(" \t\n")
+        all_posts = self._cleanup_group_posts(self._load_group_posts())
+        group_id = str(self._group_id(event))
+        posts = [post for post in all_posts if str(post.get("group_id", "")) == group_id]
+
+        if not payload:
+            key = (group_id, str(event.get_sender_id()))
+            wait_seconds = self.config.get("group_post_wait_seconds", 120)
+            try:
+                wait_seconds = max(1, int(wait_seconds))
+            except (TypeError, ValueError):
+                wait_seconds = 120
+            self.pending_group_posts[key] = time.time() + wait_seconds
+            rule = self._get_rule_system(group_id)
+            template = get_output(f"group_post.template_{rule}")
+            yield event.plain_result(get_output("group_post.waiting", seconds=wait_seconds) + "\n" + template)
+            return
+
+        if payload.lower() in {"list", "列表", "查看"}:
+            output_path = os.path.join(self.plugin_dir, f"temp_group_posts_{int(time.time() * 1000)}.png")
+            try:
+                await self._render_group_posts_image(posts, output_path)
+            except RuntimeError as exc:
+                yield event.plain_result(str(exc))
+                return
+            yield event.chain_result([Image.fromFileSystem(output_path)])
+            return
+
+        if payload.lower().startswith(("del ", "delete ", "删除 ")):
+            post_id = payload.split(None, 1)[1].strip()
+            remaining = [post for post in posts if post.get("id") != post_id]
+            if len(remaining) == len(posts):
+                yield event.plain_result(get_output("group_post.not_found", post_id=post_id))
+                return
+            updated_posts = [
+                post for post in all_posts
+                if str(post.get("group_id", "")) != group_id
+            ] + remaining
+            self._save_group_posts(updated_posts)
+            yield event.plain_result(get_output("group_post.deleted", post_id=post_id))
+            return
+
+        schema_name, parsed = self._parse_group_post(payload)
+        if schema_name is None:
+            yield event.plain_result(get_output("group_post.invalid", reason=parsed))
+            return
+
+        try:
+            bot_user_id = str(
+                getattr(getattr(event, "message_obj", None), "self_id", None)
+                or getattr(event.bot, "self_id", "")
+            )
+            if not bot_user_id:
+                bot_user_id = str(getattr(event.message_obj, "self_id", ""))
+            member = await event.bot.api.call_action(
+                "get_group_member_info",
+                group_id=group_id,
+                user_id=bot_user_id,
+                no_cache=True,
+            )
+            role = str((member or {}).get("role", "member")).lower()
+        except Exception as exc:
+            logger.warning(f"无法检查挂团发布权限（群 {group_id}）：{exc}")
+            yield event.plain_result(get_output("group_post.permission_check_failed"))
+            return
+
+        if role not in {"admin", "owner"}:
+            yield event.plain_result(get_output("group_post.bot_not_admin"))
+            return
+
+        post_id = f"{int(time.time() * 1000)}"
+        post = {
+            "id": post_id,
+            "schema": schema_name,
+            "fields": parsed,
+            "created_at": time.time(),
+            "creator_id": str(event.get_sender_id()),
+            "group_id": group_id,
+        }
+        notice_lines = [f"【挂团公告 #{post_id}】"]
+        notice_lines.extend(
+            f"丨{label}：{value}" for label, value in parsed.items() if value
+        )
+        notice = "\n".join(notice_lines)
+        notice_error = None
+        for action in ("send_group_notice", "_send_group_notice"):
+            try:
+                await event.bot.api.call_action(action, group_id=group_id, content=notice)
+                notice_error = None
+                break
+            except Exception as exc:
+                notice_error = exc
+        if notice_error is not None:
+            logger.error(f"发布群公告失败（群 {group_id}）：{notice_error}")
+            yield event.plain_result(get_output("group_post.publish_failed", error=notice_error))
+            return
+
+        self._save_group_posts(all_posts + [post])
+        yield event.plain_result(get_output("group_post.created", post_id=post_id))
+
     @event_message_type(EventMessageType.GROUP_MESSAGE, priority=sys.maxsize)
     async def identify_command(self, event: AstrMessageEvent):
 
@@ -2883,18 +3466,36 @@ class DicePlugin(Star):
         # 确保它们绝对不会掉进下面那个“诡异”的正则解析器里
         message = self._strip_at_text(message)
 
+        pending_key = (str(self._group_id(event)), str(event.get_sender_id()))
+        pending_until = self.pending_group_posts.get(pending_key)
+        if pending_until is not None:
+            if time.time() <= pending_until and not any(message.startswith(prefix) for prefix in self.wakeup_prefix):
+                self.pending_group_posts.pop(pending_key, None)
+                async for result in self._handle_group_post_command(event, "挂团\n" + message):
+                    yield result
+                return
+            if time.time() > pending_until:
+                self.pending_group_posts.pop(pending_key, None)
+
         # logger.info(f"{message}, {target_user_id}")
 
         # yield event.plain_result(message)
 
-        random.seed(int(time.time() * 1000))
-
         command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
             return
+        if command_text == "挂团" or command_text.startswith("挂团 ") or command_text.startswith("挂团\n"):
+            if not self._command_enabled(event):
+                self._stop_event(event)
+                return
+            async for result in self._handle_group_post_command(event, command_text):
+                yield result
+            return
         if self._is_native_reset_command(command_text):
             return
-        if not self._is_bot_enabled(self._group_id(event)) and not self._allowed_when_disabled(command_text):
+        if re.match(r"^bot(?:\s|$)", command_text, re.IGNORECASE) and not self._bot_command_targets_self(event):
+            return
+        if not self._is_bot_enabled(self._group_id(event), event) and not self._allowed_when_disabled(command_text):
             self._stop_event(event)
             return
         help_kind, help_target = self._resolve_help_request(command_text)
@@ -2925,8 +3526,6 @@ class DicePlugin(Star):
     async def identify_private_command(self, event: AstrMessageEvent):
         message = event.message_obj.message_str
 
-        random.seed(int(time.time() * 1000))
-
         command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
             return
@@ -2948,7 +3547,7 @@ class DicePlugin(Star):
                     yield result
             return
 
-        if not self._is_bot_enabled(self._group_id(event)) and not command_text.lower().startswith("bot"):
+        if not self._is_bot_enabled(self._group_id(event), event) and not command_text.lower().startswith("bot"):
             self._stop_event(event)
             return
 
