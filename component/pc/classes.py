@@ -21,6 +21,7 @@ SPECIAL_SUBCLASSES = {
 CLASS_HELP = (
     "用法：.pc class 战士:3/法师:2；第一项为起始职业，总等级自动求和。\n"
     "子职：.pc class 战士(奥法骑士):3/法师:2，也可直接写 奥法骑士:3/法师:2。\n"
+    "自定义子职：.pc class 战士(自定义):5；只计算主职业公共资源，额外资源用 .res add 资源名 上限 登记。\n"
     "无参数查看；list [职业] [来源] 查看子职目录；clear 清除职业记录并保留总等级。\n"
     "默认使用本地目录最新规则；旧版：战士2014(战斗大师2014):5 / 法师(剑咏剑湾):5。\n"
     "主职业：" + "、".join(CLASS_NAMES.values()) + "。\n"
@@ -141,7 +142,20 @@ def update_classes(card, expression):
     if card.get("rule_system") != "dnd":
         raise ValueError("职业设置只适用于 DnD 人物卡。")
     records = parse_classes(expression)
+    notified = {
+        (record["class"], record.get("subclass"))
+        for record in card.get("dnd_classes", [])
+        if record.get("subclass_status") == "custom" and record.get("resource_notice_sent")
+    }
+    for record in records:
+        if (record.get("subclass_status") == "custom"
+                and (record["class"], record.get("subclass")) in notified):
+            record["resource_notice_sent"] = True
     updated = deepcopy(card)
     updated["dnd_classes"] = records
-    updated.setdefault("attributes", {})["等级"] = sum(record["level"] for record in records)
+    attrs = updated.setdefault("attributes", {})
+    total = sum(record["level"] for record in records)
+    if attrs.get("等级") != total:
+        attrs["熟练"] = (7 + total) // 4
+    attrs["等级"] = total
     return updated

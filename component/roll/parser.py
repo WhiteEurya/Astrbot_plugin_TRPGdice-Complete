@@ -3,6 +3,9 @@ from dataclasses import dataclass
 from typing import Optional
 
 
+ROLL_EXPRESSION_PATTERN = r"(?:brust\d*d\d+(?:,\d+)?|(?:min|max)\d+|rh(?![\da-zA-Z])|[\d#+\-*/().xXdkvbpBP>=!])+"
+
+
 @dataclass
 class ParsedInlineCommand:
     cmd: str
@@ -105,6 +108,8 @@ def _parse_check_command(message: str, prefix: str) -> ParsedInlineCommand:
 
 def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Optional[ParsedInlineCommand]:
     """Parse dot-style inline commands handled by identify_command."""
+    if re.match(r"^brust(?=\s*\d*d\d)", message, re.I):
+        return parse_inline_command("r " + message, default_roll_expr)
     shortcut = re.match(r"^rc([bp]?)(\*)?(?![a-z])", message, re.I)
     if default_roll_expr == "1d20" and shortcut:
         body = message[shortcut.end():].strip()
@@ -139,7 +144,7 @@ def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Opti
         return _parse_check_command(message, "rau")
 
     if cmd in {"adv", "advantage", "dis", "disadvantage"}:
-        if not expr or re.fullmatch(r"[+-]\d+", expr):
+        if not expr or re.fullmatch(r"(?:[+-]\d+)?(?:\s*>=\s*[+-]?\d+(?:\.\d+)?)*", expr):
             return ParsedInlineCommand(
                 cmd="radv" if cmd in {"adv", "advantage"} else "rdis",
                 expr=expr,
@@ -165,7 +170,7 @@ def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Opti
 
     elif cmd == "rd":
         raw = message[2:].strip()
-        dice_match = re.match(r"(\d+)([\d#+\-*/().xXdkvbpBP]*)", raw, re.IGNORECASE)
+        dice_match = re.match(r"(\d+)(" + ROLL_EXPRESSION_PATTERN + r")?", raw, re.IGNORECASE)
         if dice_match:
             dice_size = dice_match.group(1)
             modifier = dice_match.group(2) or ""
@@ -185,9 +190,11 @@ def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Opti
             expr = default_roll_expr
             remark = ""
         else:
-            match = re.match(r"([\d#+\-*/().xXdkvbpBP]+)", compact_content, re.IGNORECASE)
+            match = re.match(ROLL_EXPRESSION_PATTERN, compact_content, re.IGNORECASE)
             if match:
-                expr = match.group(1)
+                expr = match.group(0)
+                if expr.startswith(">="):
+                    expr = default_roll_expr + expr
                 remark = compact_content[match.end():].strip()
             else:
                 expr = default_roll_expr

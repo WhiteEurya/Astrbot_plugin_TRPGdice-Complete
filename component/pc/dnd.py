@@ -99,7 +99,7 @@ def parse_entries(text):
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         expression = re.sub(r"\s+", "", text[match.end():end])
-        if not expression or len(expression) > 200 or not re.fullmatch(r"[\d.dDkK+*/()\-]+", expression):
+        if not expression or len(expression) > 200 or not re.fullmatch(r"[\d.dDkKmMiInNaAxXrRhHbBuUsStT,+*/()\->=!]+", expression):
             raise ValueError(f"无效数值或骰式：{expression}")
         factor = None
         if "*" in match.group(0):
@@ -109,6 +109,15 @@ def parse_entries(text):
             raise ValueError("熟练星号只适用于六项属性的豁免或技能。")
         entries.append((name, factor, match.group(3), expression))
     return entries
+
+
+class ProficiencyMismatch(ValueError):
+    """A valid import whose explicit PB differs from the level-derived value."""
+
+    def __init__(self, card, detail, expected):
+        super().__init__(f"导入的熟练加值 {card['attributes']['熟练']} 与总等级计算值 {expected} 不符；已保留导入值。")
+        self.card = card
+        self.detail = detail
 
 
 def update_card(card, text):
@@ -151,6 +160,13 @@ def update_card(card, text):
         attrs["hp"] = min(attrs["hp"], attrs["hpmax"])
     if result.get("dnd_classes") and attrs.get("等级") != sum(item["level"] for item in result["dnd_classes"]):
         raise ValueError("已有职业记录，总等级须等于各职业等级之和；请用 .pc class 更新职业等级。")
+    explicit_pb = any(name == "熟练" for name, _, _, _ in entries)
+    total = sum(item["level"] for item in result["dnd_classes"]) if result.get("dnd_classes") else attrs.get("等级")
+    expected_pb = (7 + total) // 4 if type(total) is int and 1 <= total <= 20 else None
+    if expected_pb is not None and attrs.get("等级") != card.get("attributes", {}).get("等级") and not explicit_pb:
+        old_pb = attrs.get("熟练", 0)
+        attrs["熟练"] = expected_pb
+        changes.append(f"熟练: {old_pb} -> {expected_pb}（随总等级更新）")
     # Display derived values only after all six scores and PB have been imported.
     for name, _, _, _ in entries:
         if name in SKILLS and SKILLS[name] in attrs:
@@ -158,7 +174,10 @@ def update_card(card, text):
             changes.append(f"{name}检定 {bonus:+d}（{detail}）")
     if "hp" in attrs:
         changes.append(f"HP {attrs['hp']}/{attrs.get('hpmax', '?')}，临时 HP {attrs.get('thp', 0)}")
-    return result, "\n".join(changes)
+    detail = "\n".join(changes)
+    if explicit_pb and expected_pb is not None and attrs["熟练"] != expected_pb:
+        raise ProficiencyMismatch(result, detail, expected_pb)
+    return result, detail
 
 
 def format_card(card, query=""):
@@ -237,6 +256,13 @@ def delete_attributes(card, names, clear=False):
 
 def roll_check(card, expression):
     expression = expression.strip()
+    minimum = None
+    if ">=" in expression:
+        expression, bound = expression.rsplit(">=", 1)
+        if not re.fullmatch(r"\s*[+-]?\d+\s*", bound) or ">=" in expression:
+            raise ValueError("检定下限请写在末尾，例如 .rc 察觉>=15，且下限须为整数。")
+        minimum = int(bound)
+        expression = expression.strip()
     saving_throw = expression.startswith("*")
     if saving_throw:
         expression = expression[1:].strip()
@@ -265,8 +291,11 @@ def roll_check(card, expression):
     lines = [get_output("dnd.check.head", name=card["name"], skill_name=name, detail=detail, extra=extra)]
     for _ in range(times):
         total, rolled = parse_dice_expression(f"{dice}{bonus + extra:+d}")
-        lines.append(get_output("dnd.check.roll", dice=dice, bonus=bonus + extra, result=rolled))
         natural = total - (bonus + extra)
+        if minimum is not None:
+            clamped = max(total, minimum)
+            rolled += f"；取最大值 max({total}, {minimum}) = {clamped}"
+        lines.append(get_output("dnd.check.roll", dice=dice, bonus=bonus + extra, result=rolled))
         if natural != 1:
             aside = get_output("dnd.check.aside", name=card["name"], skill_name=name)
             if aside:

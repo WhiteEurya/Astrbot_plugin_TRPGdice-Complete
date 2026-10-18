@@ -10,6 +10,7 @@ import re
 CATALOG_PATH = Path(__file__).resolve().parents[2] / "data" / "dnd" / "subclasses.json"
 SOURCE_ORDER = {"phb2014": 2014, "scag": 2015, "xgte": 2017, "tcoe": 2020, "phb2024": 2024}
 SOURCE_SUFFIX = {"phb2014": "2014", "scag": "剑湾", "xgte": "珊娜萨", "tcoe": "塔莎", "phb2024": "2024"}
+CUSTOM_SUBCLASS = "自定义"
 
 
 @dataclass(frozen=True)
@@ -89,6 +90,8 @@ def latest_class_edition(class_id):
 
 def resolve_subclass(name, class_id, edition=None):
     """Select the latest local publication unless a suffix requests older rules."""
+    if normalize(name) in {CUSTOM_SUBCLASS, "custom"}:
+        return CUSTOM_SUBCLASS, None, "custom"
     source = None
     selected_edition = None
     if "@" in name:
@@ -130,6 +133,9 @@ def format_catalog(class_names, class_id=None, source=None):
                 lines.append(label + ": " + "、".join(entry.name + SOURCE_SUFFIX[entry.source] for entry in selected))
         if len(lines) == 1:
             lines.append("该来源下没有此职业的子职记录。")
+    custom_classes = [label for key, label in class_names.items() if class_id is None or key == class_id]
+    lines.append("自定义选项（不属于上述出版记录）：" + "、".join(f"{label}(自定义)" for label in custom_classes))
+    lines.append("自定义子职只计算主职业公共资源；子职资源用 .res add 资源名 上限 手动添加，不随休息恢复。")
     lines.append("录入：.pc class 战士(战斗大师):5；默认本地目录最新版，旧版用 战士2014(战斗大师2014):5。")
     lines.append("目录收录不代表全部特性均自动处理；中文名为便捷译名。")
     return "\n".join(lines)

@@ -155,7 +155,7 @@ async def get_sender_nickname(client, group_id, sender_id) :
 async def init():
     await logger_core.initialize()
 
-@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.1")
+@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.2")
 class DicePlugin(Star):
     def __init__(self, context: Context, config: dict = None):
         self.wakeup_prefix = [".", "。", "/", "!", "！"]
@@ -1252,7 +1252,11 @@ class DicePlugin(Star):
                 response = dnd_mod.export_card(card)
             else:
                 if action == "update":
-                    updated, detail = dnd_mod.update_card(card, args)
+                    try:
+                        updated, detail = dnd_mod.update_card(card, args)
+                    except dnd_mod.ProficiencyMismatch as exc:
+                        updated = exc.card
+                        detail = exc.detail + "\n提示：" + str(exc)
                 elif action in {"del", "clr"}:
                     updated, detail = dnd_mod.delete_attributes(card, args, clear=action == "clr")
                 else:
@@ -1917,7 +1921,14 @@ class DicePlugin(Star):
         response = get_output("dnd.common.response", name=card["name"], detail=detail)
         if updated is not None:
             await self.save_log(group_id=event.get_group_id(), content=response, event=event)
+        notices = []
+        if not args or args.lower() in {"show", "查看"}:
+            notified_card, notices = dnd_resources.custom_subclass_notices(card)
+            if notified_card is not None:
+                charmod.save_character(group_id, user_id, card["id"], notified_card, rule_system="dnd")
         yield event.plain_result(response)
+        for notice in notices:
+            yield event.plain_result(notice)
 
     @pc.command("res")
     async def pc_resources_legacy(self, event, *, args_str: str = ""):

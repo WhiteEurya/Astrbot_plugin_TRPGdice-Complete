@@ -7,6 +7,8 @@ from ..common.output import get_output
 from ..coc.rules import great_success_range, great_failure_range, get_great_sf_rule, set_great_sf_rule, GREAT_SF_RULE_DEFAULT, GREAT_SF_RULE_STR
 
 DEFAULT_DICE = 100
+BRUST_TERM_RE = re.compile(r"brust(\d*)d(\d+)(?:\s*,\s*(\d+))?", re.IGNORECASE)
+DICE_TERM_RE = re.compile(r"(\d*)d(\d+)((?:(?:min|max)\d+|k-?\d+|v\d*|!\d*)*)", re.IGNORECASE)
 
 def roll_dice(dice_count, dice_faces):
     """掷 `dice_count` 个 `dice_faces` 面骰"""
@@ -39,16 +41,38 @@ def _format_number(value):
     return str(round(value, 2)) if isinstance(value, float) else str(value)
 
 def _roll_dice_term(expr, bonus_dice=0, penalty_dice=0):
-    match = re.fullmatch(r"(\d*)d(\d+)(k-?\d+)?(v(\d+)?)?", expr, re.IGNORECASE)
+    match = DICE_TERM_RE.fullmatch(expr)
     if not match:
         return None, get_output("dice.expression.format_error", expr=expr), False
 
     dice_count = int(match.group(1)) if match.group(1) else 1
     dice_faces = int(match.group(2))
-    keep_count = int(match.group(3)[1:]) if match.group(3) else dice_count
-    vampire_difficulty = (int(match.group(5)) if match.group(5) and match.group(5).strip() != "v" else 6) if match.group(4) else None
+    suffixes = {}
+    for suffix in re.finditer(r"(min|max|k|v|!)(-?\d*)", match.group(3), re.IGNORECASE):
+        kind, number = suffix.groups()
+        kind = kind.lower()
+        if kind in suffixes:
+            return None, get_output("dice.expression.format_error", expr=expr), False
+        suffixes[kind] = int(number) if number else (5 if kind == "!" else 6)
+    keep_count = suffixes.get("k", dice_count)
+    vampire_difficulty = suffixes.get("v")
+    minimum, maximum = suffixes.get("min"), suffixes.get("max")
+    explosion_limit = suffixes.get("!", 0)
+    if (minimum is not None and maximum is not None and minimum > maximum
+            or "v" in suffixes and (minimum is not None or maximum is not None or "!" in suffixes)
+            or "!" in suffixes and (bonus_dice > 0 or penalty_dice > 0)):
+        return None, get_output("dice.expression.format_error", expr=expr), False
 
-    if not (1 <= dice_count <= 100 and 1 <= dice_faces <= 1000):
+    def clamp(value):
+        if minimum is not None:
+            value = max(value, minimum)
+        if maximum is not None:
+            value = min(value, maximum)
+        return value
+
+    limits = " ".join(f"{kind}{suffixes[kind]}" for kind in ("min", "max") if kind in suffixes)
+
+    if not (1 <= dice_count <= 100 and 1 <= dice_faces <= 1000 and 0 <= explosion_limit <= 100):
         return None, get_output("dice.expression.range_error"), False
 
     if dice_count == 1 and dice_faces == 100 and (bonus_dice > 0 or penalty_dice > 0):
@@ -60,7 +84,9 @@ def _roll_dice_term(expr, bonus_dice=0, penalty_dice=0):
         if subtotal == 0:
             subtotal = 100
         roll_type = f"{bonus_dice}B" if bonus_dice > 0 else f"{penalty_dice}P"
-        return subtotal, f"[({roll_type}) 十:{','.join(map(str, rolls))} 个:{unit} -> {subtotal}]", False
+        result = f"{subtotal} → {clamp(subtotal)}" if clamp(subtotal) != subtotal else str(subtotal)
+        detail = f"[({roll_type}) 十:{','.join(map(str, rolls))} 个:{unit} → {result}]"
+        return clamp(subtotal), detail, False
 
     if vampire_difficulty:
         rolls = [random.randint(1, dice_faces) for _ in range(dice_count)]
@@ -90,12 +116,32 @@ def _roll_dice_term(expr, bonus_dice=0, penalty_dice=0):
         return None, detail, True
 
     rolls = [random.randint(1, dice_faces) for _ in range(dice_count)]
+    original_count = dice_count
+    # Inspect natural faces before clamps; new dice join the same bounded queue.
+    index = 0
+    while index < len(rolls) and len(rolls) - original_count < explosion_limit:
+        if rolls[index] == dice_faces:
+            rolls.append(random.randint(1, dice_faces))
+        index += 1
+    dice_count = len(rolls)
+    keep_count = suffixes.get("k", dice_count)
     keep_lowest = keep_count < 0
     keep_amount = abs(keep_count)
     if keep_amount < 1 or keep_amount > dice_count:
         return None, get_output("dice.expression.keep_error", dice_count=dice_count), False
 
-    sorted_rolls = sorted(rolls, reverse=not keep_lowest)
+    adjusted_rolls = []
+    labels = []
+    for index, original in enumerate(rolls):
+        value = original
+        label = f"爆:{original}" if index >= original_count else str(original)
+        adjusted = clamp(value)
+        if adjusted != value:
+            label += f" → {adjusted}"
+        adjusted_rolls.append(adjusted)
+        labels.append(label)
+
+    sorted_rolls = sorted(adjusted_rolls, reverse=not keep_lowest)
     selected_rolls = sorted_rolls[:keep_amount]
     subtotal = sum(selected_rolls)
     detail = f"[{' + '.join(map(str, selected_rolls))}]"
@@ -103,6 +149,15 @@ def _roll_dice_term(expr, bonus_dice=0, penalty_dice=0):
     if keep_amount < dice_count:
         dropped = " ".join(map(str, sorted_rolls[keep_amount:]))
         detail = f"[{' + '.join(map(str, selected_rolls))} | 丢弃: {dropped}]"
+    if limits or "!" in suffixes:
+        # Select by adjusted value, but display in original order to preserve correspondence.
+        selected_indices = set(sorted(range(dice_count), key=lambda i: adjusted_rolls[i],
+                                      reverse=not keep_lowest)[:keep_amount])
+        kept = ", ".join(label for i, label in enumerate(labels) if i in selected_indices)
+        detail = f"[{kept}]"
+        if keep_amount < dice_count:
+            dropped = ", ".join(label for i, label in enumerate(labels) if i not in selected_indices)
+            detail = f"[{kept} | 丢弃: {dropped}]"
 
     return subtotal, detail, False
 
@@ -116,18 +171,38 @@ def _tokenize_dice_expression(expression, bonus_dice=0, penalty_dice=0):
             i += 1
             continue
 
+        floor_match = re.match(r">=\s*([+-]?\s*\d+(?:\.\d+)?)", expression[i:])
+        if floor_match:
+            number = re.sub(r"\s+", "", floor_match.group(1))
+            value = float(number) if "." in number else int(number)
+            tokens.append(("FLOOR", value, number))
+            i += floor_match.end()
+            continue
+
         if char in "+-*/()":
             tokens.append((char, char, char))
             i += 1
             continue
 
-        dice_match = re.match(r"(\d*)d(\d+)(k-?\d+)?(v(\d+)?)?", expression[i:], re.IGNORECASE)
+        reroll_match = re.match(r"rh(?![\da-zA-Z])", expression[i:], re.IGNORECASE)
+        if reroll_match:
+            tokens.append(("RH", None, "rh"))
+            i += 2
+            continue
+
+        brust_match = BRUST_TERM_RE.match(expression, i)
+        if brust_match:
+            count, faces, limit = brust_match.groups()
+            dice_expr = f"{count}d{faces}!{limit if limit is not None else ''}"
+            tokens.append(("DICE", (dice_expr, bonus_dice, penalty_dice), dice_expr))
+            i = brust_match.end()
+            continue
+
+        dice_match = DICE_TERM_RE.match(expression, i)
         if dice_match and dice_match.group(0):
             dice_expr = dice_match.group(0)
-            value, detail, is_vampire_roll = _roll_dice_term(dice_expr, bonus_dice, penalty_dice)
-            if value is None and not is_vampire_roll:
-                return None, detail
-            tokens.append(("VAMPIRE" if is_vampire_roll else "NUMBER", value, detail))
+            # Keep dice unevaluated so a postfix reroll can replay only its operand.
+            tokens.append(("DICE", (dice_expr, bonus_dice, penalty_dice), dice_expr))
             i += len(dice_expr)
             continue
 
@@ -144,9 +219,10 @@ def _tokenize_dice_expression(expression, bonus_dice=0, penalty_dice=0):
     return tokens, None
 
 class _DiceExpressionParser:
-    def __init__(self, tokens):
+    def __init__(self, tokens, roll_budget=None):
         self.tokens = tokens
         self.pos = 0
+        self.roll_budget = roll_budget if roll_budget is not None else [1000]
 
     def current(self):
         if self.pos >= len(self.tokens):
@@ -177,6 +253,12 @@ class _DiceExpressionParser:
             if not is_vampire_roll:
                 value = value + right_value if op == "+" else value - right_value
             detail = f"{detail} {op} {right_detail}"
+        # A floor applies after arithmetic; parentheses can limit its scope.
+        while self.current() and self.current()[0] == "FLOOR":
+            floor = self.consume()
+            if not is_vampire_roll:
+                value = max(value, floor[1])
+            detail = f"max({detail}, {floor[2]})"
         return value, detail, is_vampire_roll
 
     def parse_term(self):
@@ -193,6 +275,25 @@ class _DiceExpressionParser:
         return value, detail, is_vampire_roll
 
     def parse_factor(self):
+        start = self.pos
+        value, detail, is_vampire_roll = self.parse_primary()
+        end = self.pos
+        if self.current() and self.current()[0] == "RH":
+            self.consume()
+            operand = self.tokens[start:end]
+            if is_vampire_roll or not any(token[0] == "DICE" for token in operand):
+                raise ValueError("rh 只能用于数值骰组或包含骰子的括号表达式")
+            other_value, other_detail, other_vampire, error = _DiceExpressionParser(
+                operand, self.roll_budget).parse()
+            if error or other_vampire:
+                raise ValueError(error or "rh 不支持成功数骰池")
+            highest = max(value, other_value)
+            detail = (f"{{{detail} = {_format_number(value)}；"
+                      f"{other_detail} = {_format_number(other_value)}；取高:{_format_number(highest)}}}")
+            value = highest
+        return value, detail, is_vampire_roll
+
+    def parse_primary(self):
         token = self.current()
         if token is None:
             raise ValueError("表达式不完整")
@@ -216,6 +317,16 @@ class _DiceExpressionParser:
             self.consume()
             return token[1], token[2], token[0] == "VAMPIRE"
 
+        if token[0] == "DICE":
+            self.consume()
+            self.roll_budget[0] -= 1
+            if self.roll_budget[0] < 0:
+                raise ValueError("重骰计算次数超过上限")
+            value, detail, is_vampire_roll = _roll_dice_term(*token[1])
+            if value is None and not is_vampire_roll:
+                raise ValueError(detail)
+            return value, detail, is_vampire_roll
+
         raise ValueError(get_output("dice.expression.format_error", expr=token[2]))
 
 def parse_dice_expression(expression):
@@ -225,7 +336,8 @@ def parse_dice_expression(expression):
     返回 (总和, 格式化字符串)
     """
     expression_original = expression # 保留原始表达式用于显示
-    expression = expression.replace("x", "*").replace("X", "*")
+    expression = re.sub(r"max|x", lambda match: "max" if match[0].lower() == "max" else "*",
+                        expression, flags=re.IGNORECASE)
 
     match_repeat = re.match(r"(\d+)?#(.+)", expression)
     roll_times = 1
@@ -237,10 +349,12 @@ def parse_dice_expression(expression):
         expression = match_repeat.group(2)
         expression_original = expression # 重复掷骰时，只显示单次表达式
 
-        if expression in ["p", "b"]:
-            penalty_dice = roll_times if expression == "p" else 0
-            bonus_dice = roll_times if expression == "b" else 0
-            expression = "1d100"
+        bonus_roll = re.fullmatch(r"([pb])((?:(?:min|max)\d+|\s*>=\s*[+-]?\s*\d+(?:\.\d+)?\s*)*)", expression, re.I)
+        if bonus_roll:
+            kind, floors = bonus_roll.groups()
+            penalty_dice = roll_times if kind.lower() == "p" else 0
+            bonus_dice = roll_times if kind.lower() == "b" else 0
+            expression = "1d100" + floors
             expression_original = f"{roll_times}{expression}" # e.g. "3b"
             roll_times = 1
 
@@ -266,8 +380,8 @@ def parse_dice_expression(expression):
             final_results_list.append(f"{expression_original} = {detail}")
             continue
 
-        final_total = total
         final_results_list.append(f"{detail} = {_format_number(total)}")
+        final_total = total
     return final_total, "\n".join(final_results_list)
 
 def roll_attribute(roll_times, skill_name, skill_value, group_id, name):

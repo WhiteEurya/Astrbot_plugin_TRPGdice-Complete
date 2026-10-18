@@ -17,13 +17,78 @@ RESOURCE_HELP = (
     "资源上限自动读取职业、子职、等级与属性，不需要整张卡选择版本。\n"
     ".res 查看；.res 一环 扣一个普通法术位；.res 契约 扣一个契约法术位。\n"
     ".res 术法点-2 扣两点；.res 术法点+2 补回两点（兼容原空格写法）。\n"
+    ".res add 灵能点 5 [短休|长休|皆有|手动] 添加自定义资源，默认手动；重复登记修改设置，保留已消耗数量。\n"
+    "上限可填整数、=总等级 或 =totallvl、=<职业>等级 或 =<class>lvl（如 =牧师等级 或 =clericlvl）、=<属性>、=熟练加值、=熟练 或 =pb。\n"
+    "属性支持：力量/str、敏捷/dex、体质/con、智力/int、感知/wis、魅力/cha；属性调整值至少为 1。\n"
+    "动态上限跟随人物卡变化；总等级取职业等级之和（无职业时取卡上等级），职业等级取对应职业记录，未拥有该职业时为 0，熟练加值取卡上的熟练值。\n"
+    "动态上限支持正整数倍，如 =5*totallvl、=2*clericlvl、=2*int、=2*pb；属性先取至少为 1 的调整值，再乘倍数。\n"
+    "皆有（both）：长休回满，短休回 1。\n"
+    ".res del 灵能点 删除自定义资源；短休资源也会在长休时恢复。\n"
     ".res 短休 / 长休：仅恢复资源，不改 HP。\n"
     "默认本地最新规则；旧版直接加后缀，例如 .pc class 战士2014:5/法师(剑咏塔莎):3。\n"
-    "短休和长休按规则库自动恢复，不需要设置恢复方式。\n"
+    "职业资源的短休和长休恢复方式按规则库自动确定。\n"
     "只记录资源余额；触发恢复、资源转换及特性效果由玩家自行处理。"
 )
 RINGS = "一二三四五六七八九"
-REST_NAMES = {"short": "短休/长休", "long": "长休", "manual": "手动"}
+REST_NAMES = {"short": "短休/长休", "long": "长休", "manual": "手动", "both": "皆有"}
+
+CAPACITY_ALIASES = {
+    "总等级": "总等级", "totallvl": "总等级",
+    **{key: name + "等级" for class_id, name in CLASS_NAMES.items()
+       for key in (name + "等级", class_id + "lvl")},
+    "魔契师等级": "邪术师等级", "熟练加值": "熟练加值", "熟练": "熟练加值", "pb": "熟练加值",
+    **{key: name for name, alias in (("力量", "str"), ("敏捷", "dex"), ("体质", "con"),
+                                     ("智力", "int"), ("感知", "wis"), ("魅力", "cha"))
+       for key in (name, alias)},
+}
+CAPACITY_HELP = "上限为 1 到 10000 的整数、=总等级 或 =totallvl、=<职业>等级 或 =<class>lvl（如 =牧师等级 或 =clericlvl）、=<属性>（力量/str、敏捷/dex、体质/con、智力/int、感知/wis、魅力/cha）、=熟练加值、=熟练 或 =pb；支持正整数倍，如 =5*totallvl 或 =2*int。"
+
+
+def _parse_capacity(text):
+    if text.startswith("="):
+        match = re.fullmatch(r"(?:([0-9]+)\*)?([^*]+)", text[1:].lower())
+        if match:
+            multiplier, target = match.groups()
+            name = CAPACITY_ALIASES.get(target)
+            if name and (multiplier is None or any(char != "0" for char in multiplier)):
+                prefix = multiplier.lstrip("0") + "*" if multiplier is not None else ""
+                return "=" + prefix + name
+        raise ValueError(CAPACITY_HELP)
+    try:
+        return _amount(text)
+    except ValueError:
+        raise ValueError(CAPACITY_HELP) from None
+
+
+def _custom_capacity(card, capacity):
+    if type(capacity) is int:
+        return capacity
+    # Keep previously saved total-level bindings readable.
+    capacity = "=总等级" if capacity in {"=等级", "=lvl"} else capacity
+    name = _parse_capacity(capacity)[1:]
+    if "*" in name:
+        multiplier, target = name.split("*", 1)
+        try:
+            factor = int(multiplier)
+        except ValueError:
+            raise ValueError(CAPACITY_HELP) from None
+        return factor * _custom_capacity(card, "=" + target)
+    attrs = card.get("attributes", {})
+    if name == "总等级":
+        classes = _classes(card)
+        value = sum(level for _, level, _ in classes) if classes else attrs.get("等级")
+        if type(value) is not int or not 1 <= value <= 20:
+            raise MissingAttribute("请先用 .pc class 录入职业等级，或用 .st 等级:数值 录入 1 到 20 的等级。")
+        return value
+    if name.endswith("等级") and name[:-2] in CLASS_NAMES.values():
+        return next((level for class_id, level, _ in _classes(card)
+                     if CLASS_NAMES[class_id] == name[:-2]), 0)
+    if name == "熟练加值":
+        value = attrs.get("熟练")
+        if type(value) is not int or not 1 <= value <= 10000:
+            raise MissingAttribute("请先用 .st 熟练:数值 录入 1 到 10000 的熟练加值。")
+        return value
+    return max(1, _evaluate({"mod": name}, 0, 0, attrs))
 
 
 @lru_cache(maxsize=1)
@@ -250,8 +315,6 @@ def definitions(card):
             owners[subclass_id] = level
         if subclass_id == "scag:wizard:bladesinging":
             warnings.append("剑湾剑歌有原印本与勘误差异，暂不自动计算；勘误后的资源模型可选剑咏@塔莎。")
-        if record.get("subclass_status") == "custom":
-            warnings.append(f"{record['subclass']}：自定义子职的自动资源暂未支持，主职业资源照常计算。")
     pools = {}
     for ring, maximum in enumerate(_slot_definitions(classes, entries, warnings), 1):
         pools[f"slot:{ring}"] = {
@@ -292,7 +355,17 @@ def definitions(card):
             pool["max"] = max(pool["max"], pools[key]["max"])
         pools[key] = pool
     for name, pool in state.get("custom", {}).items():
-        pools[f"custom:{name}"] = {**pool, "name": name, "aliases": []}
+        try:
+            maximum = _custom_capacity(card, pool["max"])
+        except MissingAttribute as exc:
+            warnings.append(f"{name}：{exc}")
+            continue
+        custom_pool = {"max": maximum, "name": name, "aliases": [], "rest": pool.get("rest", "manual")}
+        if custom_pool["rest"] == "both":
+            custom_pool.update(rest="long", short_restore=1)
+        if isinstance(pool["max"], str):
+            custom_pool["capacity_binding"] = "=总等级" if pool["max"] in {"=等级", "=lvl"} else pool["max"]
+        pools[f"custom:{name}"] = custom_pool
     warnings.append(get_output("dnd.resource.note"))
     return pools, warnings
 
@@ -311,7 +384,8 @@ def _balance(key, pool, state):
         rest += f"；短休回 {pool['short_restore']}"
     if pool.get("short_recovery"):
         rest += f"；短休可回 {pool['short_recovery']['amount']}，受恢复次数限制"
-    return f"{pool['name']}: {balance}（{rest}{extra}）"
+    binding = f" [上限{pool['capacity_binding']}]" if "capacity_binding" in pool else ""
+    return f"{pool['name']}: {balance}（{rest}{extra}）{binding}"
 
 
 def _initial_spent(pool):
@@ -331,6 +405,21 @@ def format_resources(card):
         lines.append("当前职业暂无已支持资源。" if card.get("dnd_classes") else "请用 .pc class 录入职业，资源将自动计算。")
     lines.extend(warnings)
     return "\n".join(lines)
+
+
+def custom_subclass_notices(card):
+    """Return a card with pending notices marked, plus separate message texts."""
+    updated = deepcopy(card)
+    messages = []
+    for record in updated.get("dnd_classes", []):
+        if record.get("subclass_status") != "custom" or record.get("resource_notice_sent"):
+            continue
+        if record.get("subclass") == "自定义":
+            messages.append(f"{record['class']}(自定义)：仅计算主职业公共资源；其他资源用 .res add 资源名 上限 手动登记。")
+        else:
+            messages.append(f"{record['subclass']}：自定义子职的自动资源暂未支持，主职业资源照常计算；可用 .res add 资源名 上限 手动登记。")
+        record["resource_notice_sent"] = True
+    return (updated if messages else None), messages
 
 
 def _find(pools, name):
@@ -385,28 +474,33 @@ def resource_command(card, args):
     custom = state.setdefault("custom", {})
     action = words[0].lower()
     if action in {"add", "登记"}:
-        if len(words) != 4:
-            raise ValueError("用法：.pc res add 资源名 上限 short|long|manual。")
-        _, name, maximum, rest = words
+        if len(words) not in {3, 4}:
+            raise ValueError("用法：.res add 资源名 上限 [短休|长休|皆有|手动]，例如 .res add 灵能点 5 长休；默认手动恢复。" + CAPACITY_HELP)
+        _, name, maximum = words[:3]
         if len(name) > 30 or not re.fullmatch(r"[\w\u4e00-\u9fff-]+", name):
             raise ValueError("资源名限 30 字内的文字、数字、下划线或连字符。")
-        maximum = _amount(maximum)
-        rest = {"短休": "short", "长休": "long", "手动": "manual"}.get(rest, rest.lower())
+        maximum = _parse_capacity(maximum)
+        _custom_capacity(updated, maximum)
+        rest = words[3].lower() if len(words) == 4 else "manual"
+        rest = {"短休": "short", "长休": "long", "手动": "manual", "皆有": "both"}.get(rest, rest)
         if rest not in REST_NAMES:
-            raise ValueError("恢复方式为 short、long 或 manual。")
+            raise ValueError("恢复方式为短休、长休、皆有、手动（或 short、long、both、manual）。")
+        if name.casefold() in {"help", "帮助", "init", "初始化", "show", "查看", "add", "登记",
+                              "del", "删除", "rest", "休息", "短休", "长休", "recover", "恢复", "补回", "use", "消耗"}:
+            raise ValueError("资源名不能与资源指令相同，请换一个名称。")
         if name not in custom and len(custom) >= 50:
-            raise ValueError("手动资源最多登记 50 项。")
+            raise ValueError("自定义资源最多登记 50 项。")
         if any(key != f"custom:{name}" and name.casefold() in
-               {pool["name"].casefold(), *(alias.casefold() for alias in pool["aliases"])}
+               {key.casefold(), pool["name"].casefold(), *(alias.casefold() for alias in pool["aliases"])}
                for key, pool in pools.items()):
             raise ValueError("名称与现有资源重复，请换一个资源名。")
         custom[name] = {"max": maximum, "rest": rest}
         return updated, format_resources(updated)
     if action in {"del", "删除"}:
         if len(words) != 2 or words[1] not in custom:
-            raise ValueError("只能删除已登记的手动资源：.pc res del 资源名。")
+            raise ValueError("只能删除已登记的自定义资源：.res del 资源名。")
         del custom[words[1]]
-        return updated, "已移除手动资源，历史消耗保留。"
+        return updated, "已移除自定义资源，历史消耗保留。"
     rest = None
     if action in {"短休", "长休"} and len(words) == 1:
         rest = "short" if action == "短休" else "long"
@@ -427,6 +521,8 @@ def resource_command(card, args):
                 used[key] = max(0, spent - pool["short_restore"])
         if rest == "short":
             for key, pool in pools.items():
+                if key.startswith("custom:"):
+                    continue
                 recovery = pool.get("short_recovery")
                 if not recovery or not used.get(key, 0):
                     continue

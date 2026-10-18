@@ -59,6 +59,8 @@ def make_editor(key, value, path):
         hint += "请保留占位符：" + "、".join(fields) + "。"
     if path == ("dnd", "check", "aside"):
         hint += "天然 1 时跳过此项；不要把这句吐槽写进骰点结果。"
+    if path == ("initiative", "add"):
+        hint += "{value} 是先攻数值，不是第几个行动；列表按先攻从高到低排序。"
     if path == ("group_post", "template_coc") or path == ("group_post", "template_dnd"):
         hint += "使用 丨字段名：内容；可修改提示内容与顺序，请勿删除必需字段或修改字段名。"
     if value:
