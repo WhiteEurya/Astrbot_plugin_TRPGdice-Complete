@@ -15,6 +15,7 @@ import json
 import sys
 import html
 import hashlib
+import math
 from pathlib import Path
 from typing import Optional
 from playwright.async_api import Error as PlaywrightError, async_playwright
@@ -1047,6 +1048,51 @@ class DicePlugin(Star):
         }
         await event.bot.api.call_action("send_group_msg", **payloads)
         self._stop_event(event)
+
+    @filter.llm_tool(name="trpg_roll_dice")
+    async def trpg_roll_dice(
+        self,
+        event: AstrMessageEvent,
+        expression: str = "",
+        label: str = "",
+        dc: Optional[float] = None,
+    ) -> str:
+        """在用户要求掷骰或跑团叙事需要随机判定时调用。使用返回的实际骰点继续叙事。
+
+        Args:
+            expression(string): 插件的数值骰式，如 1d20+5、4d6k3、2d20k-1 或 3#1d6。留空使用当前会话的默认骰。只传骰式，检定难度请传 dc。
+            label(string): 可选的投掷用途，例如「察觉检定」或「火球术伤害」。
+            dc(number): 可选的难度等级。每次投掷的总点数大于或等于 DC 时成功。
+        """
+        if not self._command_enabled(event):
+            return "当前会话已关闭骰子插件，未进行掷骰。"
+        if not isinstance(expression, str) or not isinstance(label, str):
+            return "骰式和用途标签必须是文本。"
+        if dc is not None and (
+            type(dc) not in (int, float) or isinstance(dc, float) and not math.isfinite(dc)
+        ):
+            return "DC 必须是有限数值。"
+
+        expression = expression.strip()
+        label = label.strip()
+        if len(expression) > 200 or len(label) > 100 or "\n" in expression or "\r" in expression:
+            return "骰式须为不超过 200 字符的单行文本，用途标签最多 100 字符。"
+        expression = expression or self._default_roll_expr(self._group_id(event))
+        total, detail = dice_mod.parse_dice_expression(expression, max_roll_times=10, dc=dc)
+        if total is None:
+            return f"掷骰失败：{detail}"
+        if len(detail) > 8000:
+            totals = "\n".join(line.rsplit(" = ", 1)[-1] for line in detail.splitlines())
+            detail = f"明细较长，以下为每次投掷的合计：\n{totals}"
+        title = f"掷骰 {expression}（{label}）" if label else f"掷骰 {expression}"
+        result = f"{title}\n{detail}"
+        group_id = event.get_group_id()
+        if group_id:
+            try:
+                await self.save_log(group_id=group_id, content=result, event=event)
+            except OSError as exc:
+                logger.warning(f"记录 LLM 掷骰结果失败：{exc}")
+        return result
 
     @filter.command("rv")
     async def roll_dice_vampire(self, event: AstrMessageEvent, dice_count: str = "1", difficulty: str = "6"):

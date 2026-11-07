@@ -329,7 +329,7 @@ class _DiceExpressionParser:
 
         raise ValueError(get_output("dice.expression.format_error", expr=token[2]))
 
-def parse_dice_expression(expression):
+def parse_dice_expression(expression, *, max_roll_times=None, dc=None):
     """
     解析骰子表达式，并格式化输出。
     支持普通骰、奖励/惩罚骰、吸血鬼骰等。
@@ -346,6 +346,8 @@ def parse_dice_expression(expression):
 
     if match_repeat:
         roll_times = int(match_repeat.group(1)) if match_repeat.group(1) else 1
+        if max_roll_times is not None and not 1 <= roll_times <= max_roll_times:
+            return None, f"重复次数或奖励／惩罚骰数量必须为 1～{max_roll_times}。"
         expression = match_repeat.group(2)
         expression_original = expression # 重复掷骰时，只显示单次表达式
 
@@ -380,7 +382,12 @@ def parse_dice_expression(expression):
             final_results_list.append(f"{expression_original} = {detail}")
             continue
 
-        final_results_list.append(f"{detail} = {_format_number(total)}")
+        if dc is None:
+            result = f"{detail} = {_format_number(total)}"
+        else:
+            status = "成功" if total >= dc else "失败"
+            result = f"{detail} = {total}（DC {dc}：{status}）"
+        final_results_list.append(result)
         final_total = total
     return final_total, "\n".join(final_results_list)
 
