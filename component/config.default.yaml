@@ -136,13 +136,17 @@ output:
       当前状态：{status}
     enabled: "骰子功能已开启。"
     disabled: "骰子功能已关闭，使用 .bot on 可以重新开启。"
-    quit: "即将退出当前群聊。"
+    quit: "正在尝试退出当前群聊。"
     quit_error: "退出群聊失败：{error}"
     quit_private: "退群指令只能在群聊中使用。"
+    quit_unsupported: "当前适配器不支持主动退群。若要停用骰子，可使用 .bot off。"
+    quit_forbidden: "你没有本群的骰子退群权限。"
+    switch_private: "骰子开关只能在群聊中使用。"
+    switch_forbidden: "你没有本群的骰子开关权限。"
     status: "骰子功能状态：{status}"
     status_on: "开启"
     status_off: "关闭"
-    usage: "用法：.bot / .bot on / .bot off / .bot status"
+    usage: "用法：.bot / .bot on / .bot off / .bot status / .bot quit"
   private:
     unsupported: "这条指令暂不支持私聊。"
   group_post:
@@ -614,9 +618,9 @@ output:
       .choose <选项…> / .choice <选项…> : 随机选择一个选项，例如 .choose 苹果 / 梨 / 葡萄。
       .find <法术名> [版本] : 查询 DnD 或 CoC 法术。DnD 旧版可指定 2014、5e 或 旧版，例如 .find 火球术 2014；CoC 可用 .find coc <法术名>。
       .sn [模式] / .nn [模式] : 更新 OneBot 群名片。coc 为默认，cocL 增加 MP，none 只用角色名，off 清空名片。DnD 卡默认显示 HP、AC 与 DC。
-      .bot / .bot status : 查看骰子信息或状态。关闭后仅 .bot on 和 .bot quit 可用。
-      .bot off / .bot on : 在当前群关闭或开启骰子；多机器人同群时可 @ 指定机器人。
-      .bot quit : 通过 OneBot 接口退出当前群。
+      .bot / .bot status : 查看骰子信息或状态，骰子关闭后仍可查询。
+      .bot off / .bot on : 在群聊关闭或开启骰子，需开关权限；多机器人同群时可 @ 指定机器人。
+      .bot quit : 仅用于 OneBot 群聊，需 AstrBot 管理员或本群退群授权。
       .挂团 : 在群里获取当前规则的挂团模板并等待填写；发布群公告需要机器人具备 OneBot 群管理员权限。
       .挂团 list / .挂团 列表 / .挂团 查看 : 查看当前群的挂团公告列表。
       .挂团 del <编号> / .挂团 delete <编号> / .挂团 删除 <编号> : 从插件的挂团列表移除指定记录。

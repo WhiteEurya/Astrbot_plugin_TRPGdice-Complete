@@ -31,6 +31,7 @@ from .component.pc import resources as dnd_resources
 from .component.roll import dice as dice_mod
 from .component.coc import san as sanity
 from .component.common.output import configure_output, get_output
+from .component.common.bot_permissions import parse_bot_operators
 from .component.common.webui import PluginConfigPage
 from .component.common.utils import roll_character, format_character, roll_dnd_character, format_dnd_character, SYNONYMS
 from .component.coc.rules import modify_coc_great_sf_rule_command
@@ -89,6 +90,7 @@ RULE_SYSTEMS = {
     "dnd": {"label": "DnD", "default_roll": "1d20", "aliases": {"dnd", "dnd5e", "d&d", "d20", "龙与地下城"}},
 }
 DEFAULT_RULE_SYSTEM = "coc"
+QQ_OFFICIAL_PLATFORMS = {"qq_official", "qq_official_webhook"}
 
 log_help_str = '''.log 指令一览：
     .log on -- 开启log记录。亚托莉会记录之后所有的对话，并保存在“群名+时间”文件夹内。（施工中）
@@ -436,25 +438,69 @@ class DicePlugin(Star):
         platform = get_platform() if callable(get_platform) else ""
         return str(platform or ""), str(bot_id or "")
 
-    def _bot_settings_key(self, group_id, event) -> str:
+    def _bot_settings_keys(self, group_id, event: AstrMessageEvent) -> list[str]:
         platform, bot_id = self._bot_identity(event)
-        if not bot_id:
-            return ""
-        identity = json.dumps([platform, bot_id, str(group_id)], ensure_ascii=True)
-        return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+        ids = [bot_id]
+        if platform in QQ_OFFICIAL_PLATFORMS:
+            # The official adapter's self ID can change depending on the mention.
+            adapter_id = event.get_platform_id()
+            if adapter_id:
+                ids.insert(0, f"adapter:{adapter_id}")
+            ids.append("qq_official")
+        return [
+            hashlib.sha256(json.dumps([platform, item, str(group_id)], ensure_ascii=True).encode("utf-8")).hexdigest()
+            for item in dict.fromkeys(ids) if item
+        ]
 
-    def _bot_command_targets_self(self, event) -> bool:
+    def _bot_mention_ids(self, event: AstrMessageEvent) -> set[str]:
+        platform, bot_id = self._bot_identity(event)
+        ids = {bot_id} if bot_id else set()
+        # The official adapter also emits this synthetic mention in DMs and channels.
+        if platform in QQ_OFFICIAL_PLATFORMS:
+            ids.add("qq_official")
+        return ids
+
+    def _bot_command_targets_self(self, event: AstrMessageEvent) -> bool:
         targets = {str(comp.qq) for comp in getattr(getattr(event, "message_obj", None), "message", [])
                    if isinstance(comp, Comp.At)}
         if not targets:
             return True
-        return self._bot_identity(event)[1] in targets
+        return bool(self._bot_mention_ids(event) & targets)
+
+    async def _can_control_bot(self, event: AstrMessageEvent, group_id: str, *, quit_group: bool) -> bool:
+        if event.is_admin():
+            return True
+
+        settings = self.config.get("bot_permissions")
+        if not isinstance(settings, dict):
+            settings = {}
+        field = "quit_operators" if quit_group else "switch_operators"
+        platform = event.get_platform_name()
+        user_id = str(event.get_sender_id() or "")
+        if not user_id:
+            return False
+        try:
+            if (platform, group_id, user_id) in parse_bot_operators(settings.get(field, "")):
+                return True
+        except ValueError as exc:
+            logger.warning(f"骰子权限配置无效（{field}）：{exc}")
+
+        if quit_group or platform != "aiocqhttp" or settings.get("allow_onebot_group_admin_switch", True) is not True:
+            return False
+        try:
+            member = await event.bot.api.call_action(
+                "get_group_member_info", group_id=group_id, user_id=user_id, no_cache=True,
+            )
+        except Exception as exc:
+            logger.warning(f"无法验证骰子开关权限（群 {group_id}，用户 {user_id}）：{exc}")
+            return False
+        return isinstance(member, dict) and member.get("role") in ("owner", "admin")
 
     def _set_bot_enabled(self, event, enabled: bool):
         group_id = self._group_id(event)
-        key = self._bot_settings_key(group_id, event)
-        if key:
-            self._save_settings("bots", key, {"enabled": enabled})
+        keys = self._bot_settings_keys(group_id, event)
+        if keys:
+            self._save_settings("bots", keys[0], {"enabled": enabled})
         else:
             settings = self._get_group_settings(group_id)
             settings["enabled"] = enabled
@@ -462,8 +508,7 @@ class DicePlugin(Star):
 
     def _is_bot_enabled(self, group_id, event=None) -> bool:
         if event is not None:
-            key = self._bot_settings_key(group_id, event)
-            if key:
+            for key in self._bot_settings_keys(group_id, event):
                 settings = self._load_settings("bots", key)
                 if "enabled" in settings:
                     return settings["enabled"]
@@ -576,7 +621,7 @@ class DicePlugin(Star):
         if not event.is_at_or_wake_command and not event.is_private_chat():
             messages = event.get_messages()
             if messages and isinstance(messages[0], Comp.At):
-                if str(messages[0].qq) not in {str(event.get_self_id()), "all"}:
+                if str(messages[0].qq) not in self._bot_mention_ids(event) | {"all"}:
                     return False
         # Present the stripped text only to this plugin's filter. The framework
         # keeps the original message and wake state for all other plugins.
@@ -3185,8 +3230,6 @@ class DicePlugin(Star):
         if not self._bot_command_targets_self(event):
             return
         action = (action or "").lower()
-        if not self._is_bot_enabled(self._group_id(event), event) and action not in {"on", "quit"}:
-            return
         if not action:
             image_path = self._bot_image_path()
             if image_path:
@@ -3198,36 +3241,47 @@ class DicePlugin(Star):
                 yield event.plain_result(self._bot_info_text(event))
             return
 
-        group_id = self._group_id(event)
-        if action == "on":
-            self._set_bot_enabled(event, True)
-            yield event.plain_result(get_output("bot.enabled"))
-            return
-
-        if action == "off":
-            self._set_bot_enabled(event, False)
-            yield event.plain_result(get_output("bot.disabled"))
-            return
-
-        if action == "quit":
-            if not group_id:
-                yield event.plain_result(get_output("bot.quit_private"))
-                return
-            yield event.plain_result(get_output("bot.quit"))
-            try:
-                await event.bot.api.call_action("set_group_leave", group_id=group_id)
-            except Exception as exc:
-                logger.error(f"退群失败（群 {group_id}）：{exc}")
-                yield event.plain_result(get_output("bot.quit_error", error=exc))
-            return
-
         if action == "status":
             enabled = self._is_bot_enabled(self._group_id(event), event)
             status_key = "bot.status_on" if enabled else "bot.status_off"
             yield event.plain_result(get_output("bot.status", status=get_output(status_key)))
             return
 
-        yield event.plain_result(get_output("bot.usage"))
+        if action not in {"on", "off", "quit"}:
+            yield event.plain_result(get_output("bot.usage"))
+            return
+
+        quit_group = action == "quit"
+        group_id = str(event.get_group_id() or "")
+        if event.is_private_chat() or not group_id:
+            key = "bot.quit_private" if quit_group else "bot.switch_private"
+            yield event.plain_result(get_output(key))
+            return
+        if quit_group and event.get_platform_name() != "aiocqhttp":
+            yield event.plain_result(get_output("bot.quit_unsupported"))
+            return
+        if not await self._can_control_bot(event, group_id, quit_group=quit_group):
+            key = "bot.quit_forbidden" if quit_group else "bot.switch_forbidden"
+            yield event.plain_result(get_output(key))
+            return
+
+        if quit_group:
+            api = getattr(getattr(event, "bot", None), "api", None)
+            call_action = getattr(api, "call_action", None)
+            if not callable(call_action):
+                yield event.plain_result(get_output("bot.quit_unsupported"))
+                return
+            yield event.plain_result(get_output("bot.quit"))
+            try:
+                await call_action("set_group_leave", group_id=group_id, is_dismiss=False)
+            except Exception as exc:
+                logger.error(f"退群失败（群 {group_id}）：{exc}")
+                yield event.plain_result(get_output("bot.quit_error", error="OneBot 请求未成功，详情见 AstrBot 日志。"))
+            return
+
+        enabled = action == "on"
+        self._set_bot_enabled(event, enabled)
+        yield event.plain_result(get_output("bot.enabled" if enabled else "bot.disabled"))
 
     @filter.command("setcoc")
     async def setcoc_cmd(self, event: AstrMessageEvent, command: str = " "):

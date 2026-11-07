@@ -6,6 +6,30 @@
     "hint": "每行一个，可用符号或文字。例如填写 . 和 骰子 两行，即可用 .pc list 或 骰子 pc list。留空时沿用 AstrBot 全局唤醒词。裸发“掷骰帮助”仍可打开总目录。",
     "obvious_hint": true
   },
+  "bot_permissions": {
+    "type": "object",
+    "description": "群组控制权限",
+    "items": {
+      "allow_onebot_group_admin_switch": {
+        "type": "bool",
+        "description": "允许 OneBot 群主和群管理员开关骰子",
+        "default": true,
+        "hint": "只影响 .bot on 和 .bot off。AstrBot 管理员和开关授权名单中的成员始终可操作。"
+      },
+      "switch_operators": {
+        "type": "text",
+        "description": "骰子开关授权名单",
+        "default": "",
+        "hint": "每行填写适配器、群ID、用户ID，用空格分隔。例如 aiocqhttp 123456789 987654321。QQ 官方填写实际的适配器类型及群、用户 OpenID。"
+      },
+      "quit_operators": {
+        "type": "text",
+        "description": "退群授权名单",
+        "default": "",
+        "hint": "退群仅适用于 OneBot 群聊，默认只有 AstrBot 管理员可用。可按群授权，每行格式为 aiocqhttp 群ID 用户ID。"
+      }
+    }
+  },
   "dnd_output": {
     "type": "object",
     "description": "旧版 DnD 文案（兼容保留）",
@@ -742,7 +766,7 @@
             "type": "text",
             "description": "quit",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：即将退出当前群聊。"
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：正在尝试退出当前群聊。"
           },
           "quit_error": {
             "type": "text",
@@ -755,6 +779,30 @@
             "description": "quit_private",
             "default": "",
             "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：退群指令只能在群聊中使用。"
+          },
+          "quit_unsupported": {
+            "type": "text",
+            "description": "quit_unsupported",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：当前适配器不支持主动退群。若要停用骰子，可使用 .bot off。"
+          },
+          "quit_forbidden": {
+            "type": "text",
+            "description": "quit_forbidden",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：你没有本群的骰子退群权限。"
+          },
+          "switch_private": {
+            "type": "text",
+            "description": "switch_private",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：骰子开关只能在群聊中使用。"
+          },
+          "switch_forbidden": {
+            "type": "text",
+            "description": "switch_forbidden",
+            "default": "",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：你没有本群的骰子开关权限。"
           },
           "status": {
             "type": "text",
@@ -778,7 +826,7 @@
             "type": "text",
             "description": "用法提示",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：用法：.bot / .bot on / .bot off / .bot status"
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：用法：.bot / .bot on / .bot off / .bot status / .bot quit"
           }
         }
       },
