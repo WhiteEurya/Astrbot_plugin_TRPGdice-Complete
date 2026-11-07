@@ -516,7 +516,7 @@ output:
   help:
     index: |
       TRPG 骰子插件帮助
-      基础掷骰教程：.dicehelp roll
+      基础掷骰教程：.dicehelp roll（也可发送 掷骰帮助）
       进阶掷骰表达式：.dicehelp expr
       人物卡管理：.dicehelp pc
       属性值管理：.dicehelp st

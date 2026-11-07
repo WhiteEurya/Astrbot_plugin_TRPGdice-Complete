@@ -105,6 +105,10 @@ RUN pip install playwright \
 
 #### 基本掷骰
 
+发送 `掷骰帮助`、`.掷骰帮助` 或 `/掷骰帮助` 可查看掷骰分类，群聊和私聊均支持。
+原有 `.dicehelp roll` 也可打开该分类，使用 `.dicehelp expr` 可查看进阶骰式。
+帮助默认以图片显示，Chromium 无法渲染时会发送同一份文字说明。
+
 ```text
 .r
 ```

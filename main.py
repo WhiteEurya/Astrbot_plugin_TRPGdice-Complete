@@ -98,7 +98,9 @@ HELP_PAGE_META = {
     "dnd": ("风铃协助手册 · DnD 篇", "角色生成、法术查询与先攻管理"),
 }
 
+DICE_HELP_COMMAND = "掷骰帮助"
 HELP_COMMAND_ALIASES = {
+    DICE_HELP_COMMAND: "dice",
     "help": "index",
     "helproll": "dice",
     "helpexpr": "expr",
@@ -108,6 +110,8 @@ HELP_COMMAND_ALIASES = {
     "helpcoc": "coc",
     "helpdnd": "dnd",
     "help roll": "dice",
+    "help dice": "dice",
+    "help 掷骰": "dice",
     "help expr": "expr",
     "help pc": "pc",
     "help st": "st",
@@ -124,6 +128,8 @@ HELP_COMMAND_ALIASES = {
     "dicehelpcoc": "coc",
     "dicehelpdnd": "dnd",
     "dicehelp roll": "dice",
+    "dicehelp dice": "dice",
+    "dicehelp 掷骰": "dice",
     "dicehelp expr": "expr",
     "dicehelp pc": "pc",
     "dicehelp st": "st",
@@ -522,6 +528,11 @@ class DicePlugin(Star):
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
         return HELP_COMMAND_ALIASES.get(command, "")
 
+    def _extract_command_text(self, message: str) -> Optional[str]:
+        if message.strip() == DICE_HELP_COMMAND:
+            return DICE_HELP_COMMAND
+        return strip_command_prefix(message, self.wakeup_prefix)
+
     def _help_topic_from_command(self, command_text: str) -> str:
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
         for prefix in HELP_COMMAND_PREFIXES:
@@ -577,8 +588,15 @@ class DicePlugin(Star):
         if not stripped:
             return "", ""
 
+        quoted_command = re.match(r"^`([^`]+)`\s*(?:--?|[:：])\s*(.+)$", stripped)
+        if quoted_command:
+            return quoted_command.group(1), quoted_command.group(2)
+
         normalized = stripped.replace("`", "")
-        for separator in (" : ", " ：", "：", " - ", " -- "):
+        command, separator, example = normalized.partition("。如：")
+        if separator and command.startswith((".", "/", "!", "！")):
+            return command, f"如：{example}"
+        for separator in (" : ", " -- ", " - ", " ：", "："):
             if separator in normalized:
                 left, right = normalized.split(separator, 1)
                 left = left.strip()
@@ -760,7 +778,7 @@ class DicePlugin(Star):
         </section>
         """
 
-    async def render_help_html_to_image(self, html_content: str, output_filename: str):
+    async def render_help_html_to_image(self, html_content: str) -> bytes:
         custom_css = """
         :root {
             color-scheme: light;
@@ -940,48 +958,29 @@ class DicePlugin(Star):
                 page = await browser.new_page(viewport={"width": 900, "height": 1400}, device_scale_factor=1)
                 await page.set_content(full_html)
                 locator = page.locator("#help-container")
-                await locator.screenshot(path=output_filename)
+                image = await locator.screenshot()
                 await browser.close()
+                return image
         except PlaywrightError as exc:
             raise RuntimeError(
                 "Playwright Chromium 未安装或缺少系统依赖；Docker 用户请执行 "
                 "`python -m playwright install --with-deps chromium` 后重启 AstrBot。"
             ) from exc
 
-    async def _yield_help_result(self, event: AstrMessageEvent, page_key: str):
-        text_key = "help.index" if page_key == "index" else f"help.{page_key}"
-        fallback_text = get_output(text_key)
-        safe_key = re.sub(r"[^a-z0-9_-]+", "_", page_key.lower()) or "index"
-        temp_image_path = os.path.join(self.plugin_dir, f"temp_help_{safe_key}_{int(time.time() * 1000)}.png")
+    async def _yield_help_result(self, event: AstrMessageEvent, kind: str, target: str):
+        if kind == "page":
+            fallback_text = get_output(f"help.{target}")
+            html_content = self._build_help_html(target)
+        else:
+            fallback_text, html_content = self._build_help_command_html(target)
 
         try:
-            await self.render_help_html_to_image(self._build_help_html(page_key), temp_image_path)
-            yield event.chain_result([Image.fromFileSystem(temp_image_path)]).stop_event()
+            image = await self.render_help_html_to_image(html_content)
+            result = event.chain_result([Image.fromBytes(image)])
         except Exception as e:
-            yield event.plain_result(f"帮助图片生成失败：{e}\n\n{fallback_text}").stop_event()
-        finally:
-            if os.path.exists(temp_image_path):
-                try:
-                    os.remove(temp_image_path)
-                except OSError:
-                    pass
-
-    async def _yield_help_command_result(self, event: AstrMessageEvent, query: str):
-        fallback_text, html_content = self._build_help_command_html(query)
-        safe_key = re.sub(r"[^a-z0-9_-]+", "_", query.lower()) or "command"
-        temp_image_path = os.path.join(self.plugin_dir, f"temp_help_cmd_{safe_key}_{int(time.time() * 1000)}.png")
-
-        try:
-            await self.render_help_html_to_image(html_content, temp_image_path)
-            yield event.chain_result([Image.fromFileSystem(temp_image_path)]).stop_event()
-        except Exception as e:
-            yield event.plain_result(f"帮助图片生成失败：{e}\n\n{fallback_text}").stop_event()
-        finally:
-            if os.path.exists(temp_image_path):
-                try:
-                    os.remove(temp_image_path)
-                except OSError:
-                    pass
+            logger.warning(f"帮助图片生成失败：{e}")
+            result = event.plain_result(fallback_text)
+        yield result.stop_event()
 
     def _bot_image_path(self):
         configured = self.config.get("bot_image_path")
@@ -1024,21 +1023,19 @@ class DicePlugin(Star):
         return aliases.get(name, name)
 
     
-    # @filter.command("r")
-    async def handle_roll_dice(self, event: AstrMessageEvent, message: str = None, remark : str = None):
-        """普通掷骰：改为直接调用 dice.handle_roll_dice，输出由 get_output 管理（无 fallback）"""
-        
-        message = message.strip() if message else None
-
+    async def handle_roll_dice(self, event: AstrMessageEvent, message: str = None, remark: str = None):
         user_id = event.get_sender_id()
         group_id = event.get_group_id()
-        client = event.bot
-        
-        ret = await get_sender_nickname(client, group_id, user_id)
-        ret = event.get_sender_name() if ret == "" else ret
+        name = await self._event_display_name(event, user_id)
+        result_text = dice_mod.handle_roll_dice(
+            (message or "").strip() or self._default_roll_expr(group_id), name=name, remark=remark
+        )
+        await self.save_log(group_id=group_id, content=result_text, event=event)
 
-        # 让 dice 模块处理表达式并返回由 get_output 格式化好的文本（或错误文本）
-        result_text = dice_mod.handle_roll_dice(message if message else f"1d{dice_mod.DEFAULT_DICE}", name = ret, remark = remark)
+        if event.get_platform_name() != "aiocqhttp":
+            yield event.plain_result(result_text).stop_event()
+            return
+
         message_id = event.message_obj.message_id
         payloads = {
             "group_id": group_id,
@@ -1048,10 +1045,8 @@ class DicePlugin(Star):
                 {"type": "text", "data": {"text": "\n" + result_text}}
             ]
         }
-        
-        await self.save_log(group_id = event.get_group_id(), content = result_text, event=event)
-        
-        await client.api.call_action("send_group_msg", **payloads)
+        await event.bot.api.call_action("send_group_msg", **payloads)
+        self._stop_event(event)
 
     @filter.command("rv")
     async def roll_dice_vampire(self, event: AstrMessageEvent, dice_count: str = "1", difficulty: str = "6"):
@@ -3194,15 +3189,13 @@ class DicePlugin(Star):
         dice_count = parsed.dice_count
         roll_times = parsed.roll_times
 
-        if cmd == "r":
-            await self.handle_roll_dice(event, expr, remark)
-        elif cmd == "rd":
-            await self.handle_roll_dice(event, expr, remark)
-        elif cmd in {"radv", "rdis"}:
-            expression = self._advantage_roll_expression(
+        if cmd in {"radv", "rdis"}:
+            expr = self._advantage_roll_expression(
                 self._group_id(event), expr, disadvantage=cmd == "rdis"
             )
-            await self.handle_roll_dice(event, expression, remark)
+        if cmd in {"r", "rd", "radv", "rdis"}:
+            async for result in self.handle_roll_dice(event, expr, remark):
+                yield result
         elif cmd == "rh":
             async for result in self.roll_hidden(event, expr):
                 yield result
@@ -3271,12 +3264,12 @@ class DicePlugin(Star):
                 name=name,
                 remark=remark,
             )
-            yield event.plain_result(result)
+            yield event.plain_result(result).stop_event()
         elif cmd in {"radv", "rdis"}:
             expression = self._advantage_roll_expression(
                 context_id, expr, disadvantage=cmd == "rdis"
             )
-            yield event.plain_result(dice_mod.handle_roll_dice(expression, name=name, remark=remark))
+            yield event.plain_result(dice_mod.handle_roll_dice(expression, name=name, remark=remark)).stop_event()
         elif cmd == "rh":
             yield event.plain_result(dice_mod.roll_hidden(expr))
         elif cmd in {"ra", "rc"}:
@@ -3476,11 +3469,12 @@ class DicePlugin(Star):
         # 在保留完整日志后，把文本里的 CQ 码和 @ 残留抹掉，
         # 确保它们绝对不会掉进下面那个“诡异”的正则解析器里
         message = self._strip_at_text(message)
+        command_text = self._extract_command_text(message)
 
         pending_key = (str(self._group_id(event)), str(event.get_sender_id()))
         pending_until = self.pending_group_posts.get(pending_key)
         if pending_until is not None:
-            if time.time() <= pending_until and not any(message.startswith(prefix) for prefix in self.wakeup_prefix):
+            if time.time() <= pending_until and command_text is None:
                 self.pending_group_posts.pop(pending_key, None)
                 async for result in self._handle_group_post_command(event, "挂团\n" + message):
                     yield result
@@ -3492,7 +3486,6 @@ class DicePlugin(Star):
 
         # yield event.plain_result(message)
 
-        command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
             return
         if command_text == "挂团" or command_text.startswith("挂团 ") or command_text.startswith("挂团\n"):
@@ -3517,12 +3510,8 @@ class DicePlugin(Star):
             self._stop_event(event)
             if not self._command_enabled(event):
                 return
-            if help_kind == "page":
-                async for result in self._yield_help_result(event, help_target):
-                    yield result
-            else:
-                async for result in self._yield_help_command_result(event, help_target):
-                    yield result
+            async for result in self._yield_help_result(event, help_kind, help_target):
+                yield result
             return
 
         parsed = parse_inline_command(command_text, self._default_roll_expr(self._group_id(event)))
@@ -3537,7 +3526,7 @@ class DicePlugin(Star):
     async def identify_private_command(self, event: AstrMessageEvent):
         message = event.message_obj.message_str
 
-        command_text = strip_command_prefix(message, self.wakeup_prefix)
+        command_text = self._extract_command_text(message)
         if command_text is None:
             return
         if self._is_native_reset_command(command_text):
@@ -3550,12 +3539,8 @@ class DicePlugin(Star):
             self._stop_event(event)
             if not self._command_enabled(event):
                 return
-            if help_kind == "page":
-                async for result in self._yield_help_result(event, help_target):
-                    yield result
-            else:
-                async for result in self._yield_help_command_result(event, help_target):
-                    yield result
+            async for result in self._yield_help_result(event, help_kind, help_target):
+                yield result
             return
 
         if not self._is_bot_enabled(self._group_id(event), event) and not command_text.lower().startswith("bot"):

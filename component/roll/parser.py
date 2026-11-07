@@ -201,6 +201,9 @@ def parse_inline_command(message: str, default_roll_expr: str = "1d100") -> Opti
                 remark = content.strip()
         cmd = "rh" if is_hidden_roll else "r"
 
+    elif cmd not in {"en", "li", "ti", "sc", "coc", "dnd"}:
+        return None
+
     return ParsedInlineCommand(
         cmd=cmd,
         expr=expr,

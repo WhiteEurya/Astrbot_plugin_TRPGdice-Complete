@@ -3120,7 +3120,7 @@
             "type": "text",
             "description": "总目录",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：TRPG 骰子插件帮助\n基础掷骰教程：.dicehelp roll\n进阶掷骰表达式：.dicehelp expr\n人物卡管理：.dicehelp pc\n属性值管理：.dicehelp st\n记录管理：.dicehelp log\n其余杂项指令：.dicehelp coc\nDnD 相关：.dicehelp dnd\n其他规则：\n`/rv 骰子数量 难度` - 进行吸血鬼规则掷骰判定\n",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：TRPG 骰子插件帮助\n基础掷骰教程：.dicehelp roll（也可发送 掷骰帮助）\n进阶掷骰表达式：.dicehelp expr\n人物卡管理：.dicehelp pc\n属性值管理：.dicehelp st\n记录管理：.dicehelp log\n其余杂项指令：.dicehelp coc\nDnD 相关：.dicehelp dnd\n其他规则：\n`/rv 骰子数量 难度` - 进行吸血鬼规则掷骰判定\n",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
