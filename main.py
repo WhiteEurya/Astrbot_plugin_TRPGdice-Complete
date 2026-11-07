@@ -1,7 +1,7 @@
 import random
 
 from astrbot.api.event import filter, AstrMessageEvent
-from astrbot.api.star import Context, Star, register
+from astrbot.api.star import Context, Star, StarTools, register
 from astrbot.api import message_components as Comp
 from astrbot.api.all import *
 from astrbot.api import logger
@@ -28,6 +28,7 @@ from playwright.async_api import Error as PlaywrightError, async_playwright
 from .component.pc import store as charmod
 from .component.pc import dnd as dnd_mod
 from .component.pc import resources as dnd_resources
+from .component.pc.persistence import PLAYER_DATA_DIR, migrate_player_data
 from .component.roll import dice as dice_mod
 from .component.coc import san as sanity
 from .component.common.output import configure_output, get_output
@@ -56,7 +57,6 @@ from .component.spells import query_coc_spell
 logger_core = JSONLoggerCore()
 
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-SETTINGS_DIR = os.path.join(PLUGIN_DIR, "data", "settings")
 GROUP_POSTS_PATH = os.path.join(PLUGIN_DIR, "data", "group_posts.json")
 GROUP_POST_MAX_AGE = 30 * 24 * 60 * 60
 _T2I_FONT_PATCHED = False
@@ -172,7 +172,7 @@ async def get_sender_nickname(client, group_id, sender_id) :
 async def init():
     await logger_core.initialize()
 
-@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.2")
+@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.3")
 class DicePlugin(Star):
     def __init__(self, context: Context, config: dict = None):
         self.uni_cache = {}
@@ -185,6 +185,12 @@ class DicePlugin(Star):
         self.htm_spells_dir = os.path.join(self.plugin_dir, "spellsearcher/HTMSpells")
 
         super().__init__(context)
+        plugin_path = Path(self.plugin_dir)
+        player_data = StarTools.get_data_dir(plugin_path.name) / PLAYER_DATA_DIR
+        if migrate_player_data(plugin_path, player_data):
+            logger.info(f"已将旧人物卡及群设置复制到持久目录：{player_data}")
+        charmod.DATA_FOLDER = str(player_data / "chara_data")
+        self.settings_dir = player_data / "settings"
         self._install_command_prefix_filters()
         if callable(getattr(context, "register_web_api", None)):
             try:
@@ -269,7 +275,7 @@ class DicePlugin(Star):
         return text.strip()
 
     def _settings_path(self, kind: str, key: str) -> str:
-        folder = os.path.join(SETTINGS_DIR, kind)
+        folder = os.path.join(self.settings_dir, kind)
         os.makedirs(folder, exist_ok=True)
         return os.path.join(folder, f"{key}.json")
 
@@ -1100,8 +1106,8 @@ class DicePlugin(Star):
             return path if os.path.isfile(path) else None
         candidates = [
             os.path.join(PLUGIN_DIR, "data", "bot.png"),
-            os.path.join(SETTINGS_DIR, "bot.png"),
-            os.path.join(SETTINGS_DIR, "bot.jpg"),
+            os.path.join(self.settings_dir, "bot.png"),
+            os.path.join(self.settings_dir, "bot.jpg"),
             os.path.join(PLUGIN_DIR, "bot.png"),
             os.path.join(PLUGIN_DIR, "bot.jpg"),
             os.path.join(PLUGIN_DIR, "assets", "bot.png"),

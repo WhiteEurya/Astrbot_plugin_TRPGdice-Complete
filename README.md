@@ -1,6 +1,6 @@
 # TRPGdice-Complete
 
-**当前版本：v2.3.2**
+**当前版本：v2.3.3**
 
 > **取名指令冲突说明：** 由于astrbot框架更新，.name功能会和astrbot原生自带的.name冲突，用户可以选择手动关闭原生的.name功能，或是使用别名.取名
 
@@ -16,6 +16,7 @@
 
 - [快速开始](#快速开始)
   - [安装](#安装)
+  - [保留人物卡和群设置](#保留人物卡和群设置)
   - [Playwright / Docker 图片卡片依赖](#playwright--docker-图片卡片依赖)
   - [快速使用示例](#快速使用示例)
 - [功能说明](#功能说明)
@@ -41,7 +42,7 @@
 1. 克隆仓库到本地：
 
    ```bash
-   git clone https://github.com/WhiteEurya/Astrbot_plugin_TRPGdice-Complete.git
+   git clone https://github.com/shangzhimingge/Astrbot_plugin_TRPGdice-Complete.git
    ```
 
 2. 将插件文件/目录放入 AstrBot 的插件目录。
@@ -63,6 +64,21 @@
 6. 启动或重启 AstrBot，确认控制台输出已加载本插件。
 
 > 如果 AstrBot 有插件管理命令或配置文件，请根据 AstrBot 的文档把本插件添加到插件列表中。
+
+### 保留人物卡和群设置
+
+从 v2.3.3 起，CoC／DnD 人物卡、当前卡绑定、跨群档案和群设置保存在 `data/plugin_data/<插件目录名>/player_data/`。同名目录的插件更新或重装会直接读取这份数据。卸载时请取消勾选「删除插件数据」。
+
+**首次从旧版升级：先停用旧插件，再迁移，最后更新。** AstrBot 的更新或卸载会删除旧插件目录，新版启动时只能自动迁移仍在原处的数据。若使用面板更新或卸载重装，请先从本仓库下载 [迁移脚本](component/pc/persistence.py)，在 AstrBot 根目录用运行 AstrBot 的账号执行以下命令，并将目录名换成实际安装的目录名：
+
+```bash
+curl -fL https://raw.githubusercontent.com/shangzhimingge/Astrbot_plugin_TRPGdice-Complete/main/component/pc/persistence.py -o /tmp/trpgdice-persistence.py &&
+python /tmp/trpgdice-persistence.py 'data/plugins/astrbot_plugin_TRPGdice_Complete'
+```
+
+看到「已复制并校验」或「持久目录已包含旧数据」后，再安装此 fork 的新版本。脚本保留原文件。持久目录和旧目录的数据有差异时会停止，请先另外备份旧目录。若首次升级采用保留旧数据的文件覆盖方式，新版首次加载也会自动迁移。
+
+跨目录名重装时，把备份的整个 `player_data/` 放到新目录名对应的 `data/plugin_data/` 下，再启用插件。
 
 ### Playwright / Docker 图片卡片依赖
 
