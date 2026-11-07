@@ -58,7 +58,7 @@
    cp component/config.default.yaml component/config.yaml
    ```
 
-5. 如需使用 `.查询法术` / `.find` 的图片卡片输出，请继续阅读 [Playwright / Docker 图片卡片依赖](#playwright--docker-图片卡片依赖)。
+5. 如需使用 `.find` 的图片卡片输出，请继续阅读 [Playwright / Docker 图片卡片依赖](#playwright--docker-图片卡片依赖)。
 
 6. 启动或重启 AstrBot，确认控制台输出已加载本插件。
 
@@ -66,7 +66,7 @@
 
 ### Playwright / Docker 图片卡片依赖
 
-`.查询法术` / `.find` 的图片卡片由 Playwright 截取本地 HTML 卡片生成。
+`.find` 的图片卡片由 Playwright 截取本地 HTML 卡片生成。
 
 安装插件 Python 依赖后，请按部署方式执行下面的命令。
 
@@ -169,7 +169,7 @@ DnD 也支持录卡和职业资源统计。先切换到 DnD 规则，按上方�
 .find 火球术
 ```
 
-如需完整指令说明，请运行插件内置的帮助命令 `.dicehelp` 或查看源码中的命令实现部分。
+发送 `.dicehelp` 查看分类总目录，或发送 `.dicehelp log export` 等指令查看单条说明。人物卡和日志等由 AstrBot 注册的指令请使用当前配置的唤醒前缀。
 
 [返回目录](#目录)
 
@@ -197,7 +197,7 @@ DnD 也支持录卡和职业资源统计。先切换到 DnD 规则，按上方�
   - 支持导出记录，便于存档和复盘
 
 - **法术查询**
-  - 支持 `.查询法术` / `.find` 查询本地 DND 法术资料
+  - 支持 `.find` 查询本地 DnD 法术资料
   - 支持查询 SeaDice 内置资料中的 DND/COC 法术
   - 本地 DND 法术可输出 HTML 截图卡片
   - 输出中会标注 SeaDice、DicePP 或 CoC 魔法大典整理者等资料来源

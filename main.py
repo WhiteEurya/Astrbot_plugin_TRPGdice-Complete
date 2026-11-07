@@ -73,7 +73,9 @@ COMMANDS = [
     "show",
     "del",
     "clr",
-    "export"
+    "export",
+    "template",
+    "模板",
 ]
 
 RULE_SYSTEMS = {

@@ -3120,7 +3120,7 @@
             "type": "text",
             "description": "总目录",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：TRPG 骰子插件帮助\n基础掷骰教程：.dicehelp roll（也可发送 掷骰帮助）\n进阶掷骰表达式：.dicehelp expr\n人物卡管理：.dicehelp pc\n属性值管理：.dicehelp st\n记录管理：.dicehelp log\n其余杂项指令：.dicehelp coc\nDnD 相关：.dicehelp dnd\n其他规则：\n`/rv 骰子数量 难度` - 进行吸血鬼规则掷骰判定\n",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：TRPG 骰子插件帮助\n示例统一用点号。人物卡、日志等框架注册的指令请使用 AstrBot 已设置的唤醒前缀，例如 /pc list。\n分类帮助也接受 .help roll 或 .dicehelproll 这类写法。\n.dicehelp / .help / .bothelp : 打开帮助总目录。\n掷骰帮助 / .掷骰帮助 / /掷骰帮助 : 打开基础掷骰与 CoC 检定帮助。\n.dicehelp roll / .help 掷骰 : 掷骰、CoC 检定、暗骰、SAN 和吸血鬼骰",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
@@ -3128,7 +3128,7 @@
             "type": "text",
             "description": "pc",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：角色管理\n.pc new <角色名> : 创建空白人物卡，并绑定为当前人物卡。\n.pc create <角色名> : 与 .pc new 相同，兼容 Dice! 习惯写法。\n.pc tag [<角色名> | <角色序号>] : 将对应人物卡绑定为当前人物卡。\n.pc change [<角色名> | <角色序号>] : 与 .pc tag 相同，兼容 Dice! 习惯写法。\n.pc tag [不加参数] : 解除当前群组的人物卡绑定。\n.pc list : 列出已保存的人物卡及",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：CoC 与 DnD 的人物卡分开保存。DnD 职业、版本和资源见 .dicehelp dnd。\n.pc new <角色名> / .pc create <角色名> : 新建空白人物卡并绑定到当前会话。\n.pc list : 列出人物卡与序号，标出当前卡。\n.pc tag [角色名或序号] / .pc change [角色名或序号] : 切换当前人物卡；省略参数时解除绑定。\n.pc show [角色名或序号] : 查看当前或指定的人物卡。\n.pc update <属性表达式> :",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
@@ -3136,7 +3136,7 @@
             "type": "text",
             "description": "st",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：属性记录\n.st <属性><数值> : 设置属性数值。\n.st <属性><+|-><数值> : 增加或减少属性数值。\n.st <属性><骰子表达式> : 掷骰并将结果写入属性。\n.st <录入表达式> : 批量录入属性，可使用 CoC 人物卡的简化卡表达式。\n.st show : 查看全部属性。\n.st show <属性名> : 查看指定属性。\n.st show <数字> : 查看大于指定数值的属性。\n.st del <属性名> : 删除指定属性。\n.st clr : 清空可",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：先用 .pc new 建卡或 .pc tag 绑定人物卡。DnD 的专用录入示例见 .dicehelp dnd。\n.st template / .st 模板 : 获取当前规则的录入模板。\n.st <属性表达式> : 设置或修改属性。CoC 示例：.st 侦查60、.st 幸运+1、.st 幸运3d6、.st 力量60敏捷55。\n.st show [属性名] : 省略参数时查看人物卡属性；可指定一项或多项。群里可 @ 目标查询其当前卡。\n.st show <数字> : CoC ",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
@@ -3144,7 +3144,7 @@
             "type": "text",
             "description": "dice",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：.fire [normal/accuracy/recoil] [技能值] [+pN/+bN]：三次手枪检定；默认 accuracy（1/1/1 惩罚骰），normal 为 0/0/0，recoil 为 0/1/2。首个 p1/p2 兼容旧模式 accuracy/recoil；自定义修正推荐写 +pN（增加惩罚）或 +bN（增加奖励），每项 0～10 个，可叠加并相抵。例如 .fire recoil 60 +b1 → 1奖励/无/1惩罚；.fire normal 5 +p2 →",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：裸 .r 使用当前默认骰。CoC 为 1d100，DnD 为 1d20。普通掷骰支持群聊和私聊。\n群里的 .ra、.rab、.rap、.rau、.en、暗骰和 .rv 依赖 OneBot 接口。\n.r [骰式] [备注] : 投掷数值骰，例如 .r1d20+5 攻击；!r 同样可用。\n.rd<面数> : 单颗指定面数骰的短写，例如 .rd20 等同于 .r1d20。\n.rh [骰式] : 暗骰。OneBot 群里只发提示，骰点私聊给发起者；私聊中直接回复结果。\n.adv[修正",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
@@ -3152,7 +3152,7 @@
             "type": "text",
             "description": "骰式说明",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：.r <算式>。如：1d6+5/2d6*3/(1d6+2)*3\n.r <次数>#<表达式>。如：.r 3#1d10，连续掷3次1d10。\n.ra <次数>#b<技能名>。如：.ra3#b2射击50，连续进行3次射击检定，每次带2个奖励骰。\n.ra <次数>#p<技能名>。如：.ra3#p2射击50，连续进行3次射击检定，每次带2个惩罚骰。\n.r <总数>d<面数>k<保留数>。如：.r4d6k3 保留最高的3个；.r4d6k-2 保留最低的2个。\n.r <骰式>rh。如：.r",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：这些骰式用在 .r 后面。示例同时展示有空格和无空格的实际写法。\n.r <算式> : 支持四则运算与括号，例如 .r (2d6+3)*2。\n.r <次数>#<骰式> : 重复投掷，例如 .r 3#1d10。\n.r <数量>#b / .r <数量>#p : CoC 的 d100 奖励／惩罚骰，例如 .r 2#b。\n.ra<次数>#b<数量><技能名><数值> : 重复 CoC 奖励骰检定，例如 .ra3#b2射击50。\n.ra<次数>#p<数量><技能名><数值> : 重复 C",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
@@ -3160,7 +3160,7 @@
             "type": "text",
             "description": "log",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：日志管理\n.log new <故事名> : 新建日志并开始记录。\n.log end : 结束当前日志。\n.log on [故事名] : 开始或继续记录指定日志，留空使用最近的日志。\n.log off : 暂停记录当前日志。\n.log list : 查看日志列表。\n.log get <故事名> : 获取指定日志。\n.log stat <故事名> : 查看消息及参与者等统计。\n.log del <故事名> : 删除指定日志。\n",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：日志和旁观者按群管理。日志名请用不带空格的单个名称。\n.log new [日志名] : 新建并开始记录；省略名称时使用自动编号。\n.log off : 暂停当前日志。\n.log on [日志名] : 继续指定日志；省略名称时恢复最近暂停的日志。\n.log end : 结束当前日志。\n.log list : 查看本群日志列表。\n.log stat [日志名] : 查看消息、参与者、骰点、旁观者和图片数；留空优先显示当前日志。\n.log get <日志名> / .log expo",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
@@ -3168,7 +3168,7 @@
             "type": "text",
             "description": "CoC 与杂项",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：CoC 与杂项设置\n.setcoc : 查看或设置 CoC 检定规则，并把本群规则系统切回 CoC。\n.ruleset [coc/dnd] : 查看或切换本群规则系统。\n.coc <数目> : 生成指定数量的 CoC 人物属性。\n.name <cn/en/us/jp> : 按地区随机生成姓名。\n.d66 [次数] : 掷一次或多次 D66。\n.find <名称> : 查询海豹内置资料中的 DND/COC 法术；未命中时会回退到 SRD 或开放神话仪式摘要。\n.choose <",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：.ruleset [coc 或 dnd] / .setrule [coc 或 dnd] / .system [coc 或 dnd] : 查看或切换当前会话规则。CoC 默认 1d100，DnD 默认 1d20。\n.setcoc [编号] : 切回 CoC 并查看或设置大成功／大失败规则；1～4 为规则编号，0 恢复默认。\n.coc [数量] : 生成 1～10 组 CoC 人物属性，默认 1 组，也可写 .coc3。\n.alias add <别名> <技能名> : 为自己的 ",
             "editor_mode": true,
             "editor_language": "plaintext"
           },
@@ -3176,7 +3176,7 @@
             "type": "text",
             "description": "dnd",
             "default": "",
-            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：`.ruleset dnd` - 使用独立的 DnD 人物卡；.pc new <名字> 创建人物卡\n`.st 力量:8 敏捷:18 智力*:14 感知*:19 熟练:3 察觉*:0 奥秘*:4` - 录入简化卡；属性星号是豁免熟练，技能数值是额外修正\n`.st show [属性/技能/属性豁免]` - 查看属性和计算后的加值；奥秘*:4 在本例中最终为 +9\n`.st template / .st 模板` - 获取 DnD 模板\n`.st export` - 导出简化卡，保留",
+            "hint": "留空沿用 component/config.yaml；支持直接换行。默认模板示例：人物卡检定和资源操作需要先切换到 DnD 并绑定人物卡。\n.ruleset dnd : 切换当前会话到 DnD；用 .pc new <角色名> 建卡。\n.dnd [数量] : 生成 1～10 组 DnD 角色属性，默认 1 组，也可写 .dnd3。\n.st 力量:8 敏捷:18 智力*:14 感知*:19 熟练:3 察觉*:0 奥秘*:4 : 录入简化卡。属性星号表示豁免熟练；技能数值是额外修正。\n.st show [属性、技能或豁免] : 查看属性和计算后的加值，也可用 .",
             "editor_mode": true,
             "editor_language": "plaintext"
           }
