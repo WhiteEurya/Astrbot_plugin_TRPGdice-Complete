@@ -42,7 +42,7 @@
 1. 克隆仓库到本地：
 
    ```bash
-   git clone https://github.com/shangzhimingge/Astrbot_plugin_TRPGdice-Complete.git
+   git clone https://github.com/WhiteEurya/Astrbot_plugin_TRPGdice-Complete.git
    ```
 
 2. 将插件文件/目录放入 AstrBot 的插件目录。
@@ -72,11 +72,11 @@
 **首次从旧版升级：先停用旧插件，再迁移，最后更新。** AstrBot 的更新或卸载会删除旧插件目录，新版启动时只能自动迁移仍在原处的数据。若使用面板更新或卸载重装，请先从本仓库下载 [迁移脚本](component/pc/persistence.py)，在 AstrBot 根目录用运行 AstrBot 的账号执行以下命令，并将目录名换成实际安装的目录名：
 
 ```bash
-curl -fL https://raw.githubusercontent.com/shangzhimingge/Astrbot_plugin_TRPGdice-Complete/main/component/pc/persistence.py -o /tmp/trpgdice-persistence.py &&
+curl -fL https://raw.githubusercontent.com/WhiteEurya/Astrbot_plugin_TRPGdice-Complete/main/component/pc/persistence.py -o /tmp/trpgdice-persistence.py &&
 python3 /tmp/trpgdice-persistence.py 'data/plugins/astrbot_plugin_TRPGdice_Complete'
 ```
 
-确认脚本报告的人物卡 JSON 文件数大于 0 后，再安装此 fork 的新版本。卡文件通常在 `chara_data/user_metadata/<用户ID>/vault/` 或 `chara_data/<群ID>/<用户ID>/` 下。如果只有目录或绑定记录，脚本会报错，请先核对 AstrBot 的实际数据目录和容器挂载。脚本保留原文件。持久目录和旧目录的数据有差异时会停止，请先另外备份旧目录。若首次升级采用保留旧数据的文件覆盖方式，新版首次加载也会自动迁移。
+确认脚本报告的人物卡 JSON 文件数大于 0 后，再安装本项目的新版本。卡文件通常在 `chara_data/user_metadata/<用户ID>/vault/` 或 `chara_data/<群ID>/<用户ID>/` 下。如果只有目录或绑定记录，脚本会报错，请先核对 AstrBot 的实际数据目录和容器挂载。脚本保留原文件。持久目录和旧目录的数据有差异时会停止，请先另外备份旧目录。若首次升级采用保留旧数据的文件覆盖方式，新版首次加载也会自动迁移。
 
 跨目录名重装时，把备份的整个 `player_data/` 放到新目录名对应的 `data/plugin_data/` 下，再启用插件。
 
@@ -418,6 +418,14 @@ rm -rf backend/.venv
 
 
 ### 更新日志
+
+#### v2.3.3（2026-11-08）
+
+- 新增「掷骰帮助」、多触发词和 AstrBot LLM 掷骰工具，更新各分类的实际指令用法。
+- 修复原生配置页加载、普通群聊掷骰和 `.bot` 控制，并增加按群授权。
+- 人物卡、绑定和群设置移入持久目录。旧版首次升级前请先完成迁移。
+
+[查看 v2.3.3 完整变更记录](CHANGELOG.md)
 
 #### v2.3.2（2026-10-18）
 
