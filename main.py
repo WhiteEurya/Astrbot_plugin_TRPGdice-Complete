@@ -1,11 +1,14 @@
 import random
 
 from astrbot.api.event import filter, AstrMessageEvent
-from astrbot.api.star import Context, Star, register
+from astrbot.api.star import Context, Star, StarTools, register
 from astrbot.api import message_components as Comp
 from astrbot.api.all import *
 from astrbot.api import logger
 from astrbot.api.message_components import Image, Plain
+from astrbot.core.star.filter.command import CommandFilter, GreedyStr
+from astrbot.core.star.filter.command_group import CommandGroupFilter
+from astrbot.core.star.star_handler import star_handlers_registry
 
 # ========== SYSTEM IMPORT ========== #
 import re
@@ -15,7 +18,9 @@ import json
 import sys
 import html
 import hashlib
+import math
 from pathlib import Path
+from functools import partial
 from typing import Optional
 from playwright.async_api import Error as PlaywrightError, async_playwright
 
@@ -23,16 +28,20 @@ from playwright.async_api import Error as PlaywrightError, async_playwright
 from .component.pc import store as charmod
 from .component.pc import dnd as dnd_mod
 from .component.pc import resources as dnd_resources
+from .component.pc.persistence import PLAYER_DATA_DIR, migrate_player_data
 from .component.roll import dice as dice_mod
 from .component.coc import san as sanity
 from .component.common.output import configure_output, get_output
+from .component.common.bot_permissions import parse_bot_operators
 from .component.common.webui import PluginConfigPage
 from .component.common.utils import roll_character, format_character, roll_dnd_character, format_dnd_character, SYNONYMS
 from .component.coc.rules import modify_coc_great_sf_rule_command
 from .component.coc.checks import parse_difficulty_prefix, parse_versus_check, prepare_skill_check, split_skill_modifier
 from .component.logs.store import JSONLoggerCore
 from .component.combat.init import InitiativeItem, InitiativeManager
-from .component.roll.parser import parse_inline_command, strip_command_prefix
+from .component.roll.parser import (
+    DEFAULT_COMMAND_PREFIXES, parse_command_prefixes, parse_inline_command, strip_command_prefix,
+)
 from .component.pc.view import (
     clean_st_show_words,
     format_all_attributes,
@@ -48,7 +57,6 @@ from .component.spells import query_coc_spell
 logger_core = JSONLoggerCore()
 
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-SETTINGS_DIR = os.path.join(PLUGIN_DIR, "data", "settings")
 GROUP_POSTS_PATH = os.path.join(PLUGIN_DIR, "data", "group_posts.json")
 GROUP_POST_MAX_AGE = 30 * 24 * 60 * 60
 _T2I_FONT_PATCHED = False
@@ -72,7 +80,9 @@ COMMANDS = [
     "show",
     "del",
     "clr",
-    "export"
+    "export",
+    "template",
+    "模板",
 ]
 
 RULE_SYSTEMS = {
@@ -80,6 +90,7 @@ RULE_SYSTEMS = {
     "dnd": {"label": "DnD", "default_roll": "1d20", "aliases": {"dnd", "dnd5e", "d&d", "d20", "龙与地下城"}},
 }
 DEFAULT_RULE_SYSTEM = "coc"
+QQ_OFFICIAL_PLATFORMS = {"qq_official", "qq_official_webhook"}
 
 log_help_str = '''.log 指令一览：
     .log on -- 开启log记录。亚托莉会记录之后所有的对话，并保存在“群名+时间”文件夹内。（施工中）
@@ -98,7 +109,9 @@ HELP_PAGE_META = {
     "dnd": ("风铃协助手册 · DnD 篇", "角色生成、法术查询与先攻管理"),
 }
 
+DICE_HELP_COMMAND = "掷骰帮助"
 HELP_COMMAND_ALIASES = {
+    DICE_HELP_COMMAND: "index",
     "help": "index",
     "helproll": "dice",
     "helpexpr": "expr",
@@ -108,6 +121,8 @@ HELP_COMMAND_ALIASES = {
     "helpcoc": "coc",
     "helpdnd": "dnd",
     "help roll": "dice",
+    "help dice": "dice",
+    "help 掷骰": "dice",
     "help expr": "expr",
     "help pc": "pc",
     "help st": "st",
@@ -124,6 +139,8 @@ HELP_COMMAND_ALIASES = {
     "dicehelpcoc": "coc",
     "dicehelpdnd": "dnd",
     "dicehelp roll": "dice",
+    "dicehelp dice": "dice",
+    "dicehelp 掷骰": "dice",
     "dicehelp expr": "expr",
     "dicehelp pc": "pc",
     "dicehelp st": "st",
@@ -155,13 +172,12 @@ async def get_sender_nickname(client, group_id, sender_id) :
 async def init():
     await logger_core.initialize()
 
-@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.2")
+@register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.3")
 class DicePlugin(Star):
     def __init__(self, context: Context, config: dict = None):
-        self.wakeup_prefix = [".", "。", "/", "!", "！"]
         self.uni_cache = {}
         self.initiative_manager = InitiativeManager()
-        self.config = config or {}
+        self.config = config if config is not None else {}
         configure_output(self.config.get("output"), self.config.get("dnd_output"))
         self.pending_group_posts = {}
         self.plugin_dir = os.path.dirname(os.path.abspath(__file__))
@@ -169,6 +185,13 @@ class DicePlugin(Star):
         self.htm_spells_dir = os.path.join(self.plugin_dir, "spellsearcher/HTMSpells")
 
         super().__init__(context)
+        plugin_path = Path(self.plugin_dir)
+        player_data = StarTools.get_data_dir(plugin_path.name) / PLAYER_DATA_DIR
+        if migrate_player_data(plugin_path, player_data):
+            logger.info(f"已将旧人物卡及群设置复制到持久目录：{player_data}")
+        charmod.DATA_FOLDER = str(player_data / "chara_data")
+        self.settings_dir = player_data / "settings"
+        self._install_command_prefix_filters()
         if callable(getattr(context, "register_web_api", None)):
             try:
                 self.config_page = PluginConfigPage(self.config, self.plugin_dir)
@@ -252,7 +275,7 @@ class DicePlugin(Star):
         return text.strip()
 
     def _settings_path(self, kind: str, key: str) -> str:
-        folder = os.path.join(SETTINGS_DIR, kind)
+        folder = os.path.join(self.settings_dir, kind)
         os.makedirs(folder, exist_ok=True)
         return os.path.join(folder, f"{key}.json")
 
@@ -421,25 +444,69 @@ class DicePlugin(Star):
         platform = get_platform() if callable(get_platform) else ""
         return str(platform or ""), str(bot_id or "")
 
-    def _bot_settings_key(self, group_id, event) -> str:
+    def _bot_settings_keys(self, group_id, event: AstrMessageEvent) -> list[str]:
         platform, bot_id = self._bot_identity(event)
-        if not bot_id:
-            return ""
-        identity = json.dumps([platform, bot_id, str(group_id)], ensure_ascii=True)
-        return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+        ids = [bot_id]
+        if platform in QQ_OFFICIAL_PLATFORMS:
+            # The official adapter's self ID can change depending on the mention.
+            adapter_id = event.get_platform_id()
+            if adapter_id:
+                ids.insert(0, f"adapter:{adapter_id}")
+            ids.append("qq_official")
+        return [
+            hashlib.sha256(json.dumps([platform, item, str(group_id)], ensure_ascii=True).encode("utf-8")).hexdigest()
+            for item in dict.fromkeys(ids) if item
+        ]
 
-    def _bot_command_targets_self(self, event) -> bool:
+    def _bot_mention_ids(self, event: AstrMessageEvent) -> set[str]:
+        platform, bot_id = self._bot_identity(event)
+        ids = {bot_id} if bot_id else set()
+        # The official adapter also emits this synthetic mention in DMs and channels.
+        if platform in QQ_OFFICIAL_PLATFORMS:
+            ids.add("qq_official")
+        return ids
+
+    def _bot_command_targets_self(self, event: AstrMessageEvent) -> bool:
         targets = {str(comp.qq) for comp in getattr(getattr(event, "message_obj", None), "message", [])
                    if isinstance(comp, Comp.At)}
         if not targets:
             return True
-        return self._bot_identity(event)[1] in targets
+        return bool(self._bot_mention_ids(event) & targets)
+
+    async def _can_control_bot(self, event: AstrMessageEvent, group_id: str, *, quit_group: bool) -> bool:
+        if event.is_admin():
+            return True
+
+        settings = self.config.get("bot_permissions")
+        if not isinstance(settings, dict):
+            settings = {}
+        field = "quit_operators" if quit_group else "switch_operators"
+        platform = event.get_platform_name()
+        user_id = str(event.get_sender_id() or "")
+        if not user_id:
+            return False
+        try:
+            if (platform, group_id, user_id) in parse_bot_operators(settings.get(field, "")):
+                return True
+        except ValueError as exc:
+            logger.warning(f"骰子权限配置无效（{field}）：{exc}")
+
+        if quit_group or platform != "aiocqhttp" or settings.get("allow_onebot_group_admin_switch", True) is not True:
+            return False
+        try:
+            member = await event.bot.api.call_action(
+                "get_group_member_info", group_id=group_id, user_id=user_id, no_cache=True,
+            )
+        except Exception as exc:
+            logger.warning(f"无法验证骰子开关权限（群 {group_id}，用户 {user_id}）：{exc}")
+            return False
+        return isinstance(member, dict) and member.get("role") in ("owner", "admin")
 
     def _set_bot_enabled(self, event, enabled: bool):
         group_id = self._group_id(event)
-        key = self._bot_settings_key(group_id, event)
-        if key:
-            self._save_settings("bots", key, {"enabled": enabled})
+        keys = self._bot_settings_keys(group_id, event)
+        if keys:
+            self._save_settings("bots", keys[0], {"enabled": enabled})
         else:
             settings = self._get_group_settings(group_id)
             settings["enabled"] = enabled
@@ -447,8 +514,7 @@ class DicePlugin(Star):
 
     def _is_bot_enabled(self, group_id, event=None) -> bool:
         if event is not None:
-            key = self._bot_settings_key(group_id, event)
-            if key:
+            for key in self._bot_settings_keys(group_id, event):
                 settings = self._load_settings("bots", key)
                 if "enabled" in settings:
                     return settings["enabled"]
@@ -460,10 +526,6 @@ class DicePlugin(Star):
         if not group_id:
             return True
         return self._is_bot_enabled(group_id, event)
-
-    def _allowed_when_disabled(self, command_text: str) -> bool:
-        command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
-        return command in {"bot on", "bot quit"}
 
     def _is_native_reset_command(self, command_text: str) -> bool:
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
@@ -522,6 +584,67 @@ class DicePlugin(Star):
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
         return HELP_COMMAND_ALIASES.get(command, "")
 
+    def _prefixed_command_text(self, message: str) -> Optional[str]:
+        value = self.config.get("command_prefixes", DEFAULT_COMMAND_PREFIXES)
+        try:
+            prefixes = parse_command_prefixes(value)
+        except ValueError:
+            prefixes = parse_command_prefixes(DEFAULT_COMMAND_PREFIXES)
+        return strip_command_prefix(message, prefixes)
+
+    def _extract_command_text(self, message: str) -> Optional[str]:
+        message = message.strip()
+        if message == DICE_HELP_COMMAND:
+            return DICE_HELP_COMMAND
+        return self._prefixed_command_text(message)
+
+    def _event_command_text(self, event: AstrMessageEvent) -> Optional[str]:
+        original = re.sub(r"\[CQ:at[^\]]*\]", "", event.message_obj.message_str or "").strip()
+        current = event.get_message_str().strip()
+        command = self._extract_command_text(original)
+        if (event.is_at_or_wake_command and current != original and original.endswith(current)
+                and (command is None or len(current) < len(command))):
+            return current
+        return command
+
+    def _install_command_prefix_filters(self):
+        for handler in star_handlers_registry.get_handlers_by_module_name(__name__):
+            for rule in handler.event_filters:
+                if not isinstance(rule, (CommandFilter, CommandGroupFilter)):
+                    continue
+                original = getattr(rule, "_trpg_original_filter", rule.filter)
+                rule._trpg_original_filter = original
+                rule.filter = partial(self._filter_plugin_command, original)
+                if isinstance(rule, CommandFilter) and "args_str" in rule.handler_params:
+                    rule.handler_params["args_str"] = GreedyStr
+
+    def _filter_plugin_command(self, original, event: AstrMessageEvent, cfg) -> bool:
+        if original(event, cfg):
+            return True
+        command = self._event_command_text(event)
+        if not command or command == event.get_message_str():
+            return False
+        if not event.is_at_or_wake_command and not event.is_private_chat():
+            messages = event.get_messages()
+            if messages and isinstance(messages[0], Comp.At):
+                if str(messages[0].qq) not in self._bot_mention_ids(event) | {"all"}:
+                    return False
+        # Present the stripped text only to this plugin's filter. The framework
+        # keeps the original message and wake state for all other plugins.
+        message, awake = event.message_str, event.is_at_or_wake_command
+        try:
+            event.message_str, event.is_at_or_wake_command = command, True
+            matched = original(event, cfg)
+        finally:
+            event.message_str, event.is_at_or_wake_command = message, awake
+        if matched:
+            event.set_extra("trpg_command_text", command)
+        return matched
+
+    @staticmethod
+    def _command_message(event: AstrMessageEvent) -> str:
+        return event.get_extra("trpg_command_text", event.get_message_str())
+
     def _help_topic_from_command(self, command_text: str) -> str:
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
         for prefix in HELP_COMMAND_PREFIXES:
@@ -577,8 +700,15 @@ class DicePlugin(Star):
         if not stripped:
             return "", ""
 
+        quoted_command = re.match(r"^`([^`]+)`\s*(?:--?|[:：])\s*(.+)$", stripped)
+        if quoted_command:
+            return quoted_command.group(1), quoted_command.group(2)
+
         normalized = stripped.replace("`", "")
-        for separator in (" : ", " ：", "：", " - ", " -- "):
+        command, separator, example = normalized.partition("。如：")
+        if separator and command.startswith((".", "/", "!", "！")):
+            return command, f"如：{example}"
+        for separator in (" : ", " -- ", " - ", " ：", "："):
             if separator in normalized:
                 left, right = normalized.split(separator, 1)
                 left = left.strip()
@@ -760,7 +890,7 @@ class DicePlugin(Star):
         </section>
         """
 
-    async def render_help_html_to_image(self, html_content: str, output_filename: str):
+    async def render_help_html_to_image(self, html_content: str) -> bytes:
         custom_css = """
         :root {
             color-scheme: light;
@@ -940,48 +1070,29 @@ class DicePlugin(Star):
                 page = await browser.new_page(viewport={"width": 900, "height": 1400}, device_scale_factor=1)
                 await page.set_content(full_html)
                 locator = page.locator("#help-container")
-                await locator.screenshot(path=output_filename)
+                image = await locator.screenshot()
                 await browser.close()
+                return image
         except PlaywrightError as exc:
             raise RuntimeError(
                 "Playwright Chromium 未安装或缺少系统依赖；Docker 用户请执行 "
                 "`python -m playwright install --with-deps chromium` 后重启 AstrBot。"
             ) from exc
 
-    async def _yield_help_result(self, event: AstrMessageEvent, page_key: str):
-        text_key = "help.index" if page_key == "index" else f"help.{page_key}"
-        fallback_text = get_output(text_key)
-        safe_key = re.sub(r"[^a-z0-9_-]+", "_", page_key.lower()) or "index"
-        temp_image_path = os.path.join(self.plugin_dir, f"temp_help_{safe_key}_{int(time.time() * 1000)}.png")
+    async def _yield_help_result(self, event: AstrMessageEvent, kind: str, target: str):
+        if kind == "page":
+            fallback_text = get_output(f"help.{target}")
+            html_content = self._build_help_html(target)
+        else:
+            fallback_text, html_content = self._build_help_command_html(target)
 
         try:
-            await self.render_help_html_to_image(self._build_help_html(page_key), temp_image_path)
-            yield event.chain_result([Image.fromFileSystem(temp_image_path)]).stop_event()
+            image = await self.render_help_html_to_image(html_content)
+            result = event.chain_result([Image.fromBytes(image)])
         except Exception as e:
-            yield event.plain_result(f"帮助图片生成失败：{e}\n\n{fallback_text}").stop_event()
-        finally:
-            if os.path.exists(temp_image_path):
-                try:
-                    os.remove(temp_image_path)
-                except OSError:
-                    pass
-
-    async def _yield_help_command_result(self, event: AstrMessageEvent, query: str):
-        fallback_text, html_content = self._build_help_command_html(query)
-        safe_key = re.sub(r"[^a-z0-9_-]+", "_", query.lower()) or "command"
-        temp_image_path = os.path.join(self.plugin_dir, f"temp_help_cmd_{safe_key}_{int(time.time() * 1000)}.png")
-
-        try:
-            await self.render_help_html_to_image(html_content, temp_image_path)
-            yield event.chain_result([Image.fromFileSystem(temp_image_path)]).stop_event()
-        except Exception as e:
-            yield event.plain_result(f"帮助图片生成失败：{e}\n\n{fallback_text}").stop_event()
-        finally:
-            if os.path.exists(temp_image_path):
-                try:
-                    os.remove(temp_image_path)
-                except OSError:
-                    pass
+            logger.warning(f"帮助图片生成失败：{e}")
+            result = event.plain_result(fallback_text)
+        yield result.stop_event()
 
     def _bot_image_path(self):
         configured = self.config.get("bot_image_path")
@@ -995,8 +1106,8 @@ class DicePlugin(Star):
             return path if os.path.isfile(path) else None
         candidates = [
             os.path.join(PLUGIN_DIR, "data", "bot.png"),
-            os.path.join(SETTINGS_DIR, "bot.png"),
-            os.path.join(SETTINGS_DIR, "bot.jpg"),
+            os.path.join(self.settings_dir, "bot.png"),
+            os.path.join(self.settings_dir, "bot.jpg"),
             os.path.join(PLUGIN_DIR, "bot.png"),
             os.path.join(PLUGIN_DIR, "bot.jpg"),
             os.path.join(PLUGIN_DIR, "assets", "bot.png"),
@@ -1024,21 +1135,19 @@ class DicePlugin(Star):
         return aliases.get(name, name)
 
     
-    # @filter.command("r")
-    async def handle_roll_dice(self, event: AstrMessageEvent, message: str = None, remark : str = None):
-        """普通掷骰：改为直接调用 dice.handle_roll_dice，输出由 get_output 管理（无 fallback）"""
-        
-        message = message.strip() if message else None
-
+    async def handle_roll_dice(self, event: AstrMessageEvent, message: str = None, remark: str = None):
         user_id = event.get_sender_id()
         group_id = event.get_group_id()
-        client = event.bot
-        
-        ret = await get_sender_nickname(client, group_id, user_id)
-        ret = event.get_sender_name() if ret == "" else ret
+        name = await self._event_display_name(event, user_id)
+        result_text = dice_mod.handle_roll_dice(
+            (message or "").strip() or self._default_roll_expr(group_id), name=name, remark=remark
+        )
+        await self.save_log(group_id=group_id, content=result_text, event=event)
 
-        # 让 dice 模块处理表达式并返回由 get_output 格式化好的文本（或错误文本）
-        result_text = dice_mod.handle_roll_dice(message if message else f"1d{dice_mod.DEFAULT_DICE}", name = ret, remark = remark)
+        if event.get_platform_name() != "aiocqhttp":
+            yield event.plain_result(result_text).stop_event()
+            return
+
         message_id = event.message_obj.message_id
         payloads = {
             "group_id": group_id,
@@ -1048,10 +1157,53 @@ class DicePlugin(Star):
                 {"type": "text", "data": {"text": "\n" + result_text}}
             ]
         }
-        
-        await self.save_log(group_id = event.get_group_id(), content = result_text, event=event)
-        
-        await client.api.call_action("send_group_msg", **payloads)
+        await event.bot.api.call_action("send_group_msg", **payloads)
+        self._stop_event(event)
+
+    @filter.llm_tool(name="trpg_roll_dice")
+    async def trpg_roll_dice(
+        self,
+        event: AstrMessageEvent,
+        expression: str = "",
+        label: str = "",
+        dc: Optional[float] = None,
+    ) -> str:
+        """在用户要求掷骰或跑团叙事需要随机判定时调用。使用返回的实际骰点继续叙事。
+
+        Args:
+            expression(string): 插件的数值骰式，如 1d20+5、4d6k3、2d20k-1 或 3#1d6。留空使用当前会话的默认骰。只传骰式，检定难度请传 dc。
+            label(string): 可选的投掷用途，例如「察觉检定」或「火球术伤害」。
+            dc(number): 可选的难度等级。每次投掷的总点数大于或等于 DC 时成功。
+        """
+        if not self._command_enabled(event):
+            return "当前会话已关闭骰子插件，未进行掷骰。"
+        if not isinstance(expression, str) or not isinstance(label, str):
+            return "骰式和用途标签必须是文本。"
+        if dc is not None and (
+            type(dc) not in (int, float) or isinstance(dc, float) and not math.isfinite(dc)
+        ):
+            return "DC 必须是有限数值。"
+
+        expression = expression.strip()
+        label = label.strip()
+        if len(expression) > 200 or len(label) > 100 or "\n" in expression or "\r" in expression:
+            return "骰式须为不超过 200 字符的单行文本，用途标签最多 100 字符。"
+        expression = expression or self._default_roll_expr(self._group_id(event))
+        total, detail = dice_mod.parse_dice_expression(expression, max_roll_times=10, dc=dc)
+        if total is None:
+            return f"掷骰失败：{detail}"
+        if len(detail) > 8000:
+            totals = "\n".join(line.rsplit(" = ", 1)[-1] for line in detail.splitlines())
+            detail = f"明细较长，以下为每次投掷的合计：\n{totals}"
+        title = f"掷骰 {expression}（{label}）" if label else f"掷骰 {expression}"
+        result = f"{title}\n{detail}"
+        group_id = event.get_group_id()
+        if group_id:
+            try:
+                await self.save_log(group_id=group_id, content=result, event=event)
+            except OSError as exc:
+                logger.warning(f"记录 LLM 掷骰结果失败：{exc}")
+        return result
 
     @filter.command("rv")
     async def roll_dice_vampire(self, event: AstrMessageEvent, dice_count: str = "1", difficulty: str = "6"):
@@ -1134,8 +1286,7 @@ class DicePlugin(Star):
 
         if rule_system == "dnd":
             full_expr = " ".join(str(value) for value in (attributes, exp) if value is not None)
-            raw = self._strip_at_text(event.get_message_str())
-            command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+            command = self._strip_at_text(self._command_message(event))
             if re.match(r"^st\s", command, re.I):
                 full_expr = re.sub(r"^st\s+", "", command, count=1, flags=re.I)
             async for result in self._dnd_st(event, "update", full_expr):
@@ -1664,14 +1815,13 @@ class DicePlugin(Star):
     @filter.command("fire")
     async def handle_pistol_fire(self, event: AstrMessageEvent):
         """手枪三次检定，支持模式、技能值和额外奖励/惩罚骰。"""
+        if not self._command_enabled(event):
+            return
         rule_system = self._get_rule_system(self._group_id(event))
         if rule_system != "coc":
             yield event.plain_result("此操作目前仅支持 CoC 人物卡。")
             return
-        if not self._command_enabled(event):
-            return
-        message = self._strip_at_text(event.get_message_str()).strip()
-        command = strip_command_prefix(message, self.wakeup_prefix) or message
+        command = self._strip_at_text(self._command_message(event))
         full_args = re.sub(r"^fire(?:\s+|$)", "", command, count=1).strip()
         user_id = event.get_sender_id()
         group_id = self._group_id(event)
@@ -1804,12 +1954,11 @@ class DicePlugin(Star):
         if self._get_rule_system(self._group_id(event)) != "dnd":
             yield event.plain_result("职业设置只适用于 DnD，请先使用 .ruleset dnd。")
             return
-        raw = re.sub(r"\[CQ:at[^\]]*\]", "", event.get_message_str())
+        raw = re.sub(r"\[CQ:at[^\]]*\]", "", self._command_message(event))
         # Source markers inside subclass parentheses are not player mentions.
         parts = re.split(r"(\([^()\r\n]*\)|（[^（）\r\n]*）|[^\s/():（）：]+@(?:2014|2024|phb2014|phb2024)(?=\s*[:：(（]))", raw, flags=re.I)
-        raw = "".join(part if part.startswith(("(", "（")) or re.search(r"@(?:2014|2024|phb2014|phb2024)$", part, re.I)
-                      else part.split("@", 1)[0] for part in parts)
-        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        command = "".join(part if part.startswith(("(", "（")) or re.search(r"@(?:2014|2024|phb2014|phb2024)$", part, re.I)
+                          else part.split("@", 1)[0] for part in parts)
         match = re.match(r"^pc\s+(?:class|职业)(?:\s+|$)(.*)$", command, re.I | re.S)
         args = (match.group(1) if match else args_str).strip()
         query = re.fullmatch(r"(?:list|列表)(?:\s+(.*))?", args, re.I | re.S)
@@ -1864,8 +2013,7 @@ class DicePlugin(Star):
         if self._get_rule_system(self._group_id(event)) != "dnd":
             yield event.plain_result("版本设置只适用于 DnD，请先使用 .ruleset dnd。")
             return
-        raw = self._strip_at_text(event.get_message_str())
-        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        command = self._strip_at_text(self._command_message(event))
         match = re.match(r"^pc\s+(?:version|版本)(?:\s+|$)(.*)$", command, re.I | re.S)
         args = (match.group(1) if match else args_str).strip()
         group_id = str(event.get_group_id())
@@ -1901,8 +2049,7 @@ class DicePlugin(Star):
         if self._get_rule_system(self._group_id(event)) != "dnd":
             yield event.plain_result("资源操作只适用于 DnD，请先使用 .ruleset dnd。")
             return
-        raw = self._strip_at_text(event.get_message_str())
-        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        command = self._strip_at_text(self._command_message(event))
         match = re.match(r"^(?:pc\s+)?(?:res|resource|资源)(?:\s+|$)(.*)$", command, re.I | re.S)
         args = (match.group(1) if match else args_str).strip()
         group_id = str(event.get_group_id())
@@ -2769,8 +2916,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         # Read the whole message: command argument splitting would truncate free-form requests.
-        message = self._strip_at_text(event.get_message_str()).strip()
-        command = strip_command_prefix(message, self.wakeup_prefix) or message
+        command = self._strip_at_text(self._command_message(event))
         args = re.sub(r"^(?:name|取名)(?:\s+|$)", "", command, count=1).strip()
         try:
             request = parse_name_request(args)
@@ -2847,7 +2993,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         name = parts[2] if len(parts) >= 3 else None
         ok, info = await logger_core.new_session(group, name)
         ob_lines = await logger_core.list_observers(group)
@@ -2878,7 +3024,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         name = parts[2] if len(parts) >= 3 else None
         ok, info = await logger_core.resume_session(group, name)
         ob_lines = await logger_core.list_observers(group)
@@ -2900,7 +3046,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         if len(parts) < 3:
             return event.plain_result(get_output("log.delete_error"))
         name = parts[2]
@@ -2914,7 +3060,7 @@ class DicePlugin(Star):
             return
         
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         if len(parts) < 3:
             return event.plain_result(get_output("log.get_usage"))
 
@@ -2935,7 +3081,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         if len(parts) < 3:
             return event.plain_result(get_output("log.export_usage"))
 
@@ -2959,7 +3105,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         name = parts[2] if len(parts) >= 3 else None
         all_flag = len(parts) >= 4 and parts[3] == "--all"
         lines = await logger_core.stat_sessions(group, name, all_flag)
@@ -2970,7 +3116,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         action = parts[2].lower() if len(parts) >= 3 else "list"
         session_name = parts[-1] if len(parts) >= 5 and not parts[-1].isdigit() else None
 
@@ -3090,8 +3236,6 @@ class DicePlugin(Star):
         if not self._bot_command_targets_self(event):
             return
         action = (action or "").lower()
-        if not self._is_bot_enabled(self._group_id(event), event) and action not in {"on", "quit"}:
-            return
         if not action:
             image_path = self._bot_image_path()
             if image_path:
@@ -3103,36 +3247,47 @@ class DicePlugin(Star):
                 yield event.plain_result(self._bot_info_text(event))
             return
 
-        group_id = self._group_id(event)
-        if action == "on":
-            self._set_bot_enabled(event, True)
-            yield event.plain_result(get_output("bot.enabled"))
-            return
-
-        if action == "off":
-            self._set_bot_enabled(event, False)
-            yield event.plain_result(get_output("bot.disabled"))
-            return
-
-        if action == "quit":
-            if not group_id:
-                yield event.plain_result(get_output("bot.quit_private"))
-                return
-            yield event.plain_result(get_output("bot.quit"))
-            try:
-                await event.bot.api.call_action("set_group_leave", group_id=group_id)
-            except Exception as exc:
-                logger.error(f"退群失败（群 {group_id}）：{exc}")
-                yield event.plain_result(get_output("bot.quit_error", error=exc))
-            return
-
         if action == "status":
             enabled = self._is_bot_enabled(self._group_id(event), event)
             status_key = "bot.status_on" if enabled else "bot.status_off"
             yield event.plain_result(get_output("bot.status", status=get_output(status_key)))
             return
 
-        yield event.plain_result(get_output("bot.usage"))
+        if action not in {"on", "off", "quit"}:
+            yield event.plain_result(get_output("bot.usage"))
+            return
+
+        quit_group = action == "quit"
+        group_id = str(event.get_group_id() or "")
+        if event.is_private_chat() or not group_id:
+            key = "bot.quit_private" if quit_group else "bot.switch_private"
+            yield event.plain_result(get_output(key))
+            return
+        if quit_group and event.get_platform_name() != "aiocqhttp":
+            yield event.plain_result(get_output("bot.quit_unsupported"))
+            return
+        if not await self._can_control_bot(event, group_id, quit_group=quit_group):
+            key = "bot.quit_forbidden" if quit_group else "bot.switch_forbidden"
+            yield event.plain_result(get_output(key))
+            return
+
+        if quit_group:
+            api = getattr(getattr(event, "bot", None), "api", None)
+            call_action = getattr(api, "call_action", None)
+            if not callable(call_action):
+                yield event.plain_result(get_output("bot.quit_unsupported"))
+                return
+            yield event.plain_result(get_output("bot.quit"))
+            try:
+                await call_action("set_group_leave", group_id=group_id, is_dismiss=False)
+            except Exception as exc:
+                logger.error(f"退群失败（群 {group_id}）：{exc}")
+                yield event.plain_result(get_output("bot.quit_error", error="OneBot 请求未成功，详情见 AstrBot 日志。"))
+            return
+
+        enabled = action == "on"
+        self._set_bot_enabled(event, enabled)
+        yield event.plain_result(get_output("bot.enabled" if enabled else "bot.disabled"))
 
     @filter.command("setcoc")
     async def setcoc_cmd(self, event: AstrMessageEvent, command: str = " "):
@@ -3194,15 +3349,13 @@ class DicePlugin(Star):
         dice_count = parsed.dice_count
         roll_times = parsed.roll_times
 
-        if cmd == "r":
-            await self.handle_roll_dice(event, expr, remark)
-        elif cmd == "rd":
-            await self.handle_roll_dice(event, expr, remark)
-        elif cmd in {"radv", "rdis"}:
-            expression = self._advantage_roll_expression(
+        if cmd in {"radv", "rdis"}:
+            expr = self._advantage_roll_expression(
                 self._group_id(event), expr, disadvantage=cmd == "rdis"
             )
-            await self.handle_roll_dice(event, expression, remark)
+        if cmd in {"r", "rd", "radv", "rdis"}:
+            async for result in self.handle_roll_dice(event, expr, remark):
+                yield result
         elif cmd == "rh":
             async for result in self.roll_hidden(event, expr):
                 yield result
@@ -3271,12 +3424,12 @@ class DicePlugin(Star):
                 name=name,
                 remark=remark,
             )
-            yield event.plain_result(result)
+            yield event.plain_result(result).stop_event()
         elif cmd in {"radv", "rdis"}:
             expression = self._advantage_roll_expression(
                 context_id, expr, disadvantage=cmd == "rdis"
             )
-            yield event.plain_result(dice_mod.handle_roll_dice(expression, name=name, remark=remark))
+            yield event.plain_result(dice_mod.handle_roll_dice(expression, name=name, remark=remark)).stop_event()
         elif cmd == "rh":
             yield event.plain_result(dice_mod.roll_hidden(expr))
         elif cmd in {"ra", "rc"}:
@@ -3476,11 +3629,14 @@ class DicePlugin(Star):
         # 在保留完整日志后，把文本里的 CQ 码和 @ 残留抹掉，
         # 确保它们绝对不会掉进下面那个“诡异”的正则解析器里
         message = self._strip_at_text(message)
+        command_text = self._event_command_text(event)
+        if command_text is not None:
+            command_text = self._strip_at_text(command_text)
 
         pending_key = (str(self._group_id(event)), str(event.get_sender_id()))
         pending_until = self.pending_group_posts.get(pending_key)
         if pending_until is not None:
-            if time.time() <= pending_until and not any(message.startswith(prefix) for prefix in self.wakeup_prefix):
+            if time.time() <= pending_until and command_text is None and self._command_enabled(event):
                 self.pending_group_posts.pop(pending_key, None)
                 async for result in self._handle_group_post_command(event, "挂团\n" + message):
                     yield result
@@ -3492,7 +3648,6 @@ class DicePlugin(Star):
 
         # yield event.plain_result(message)
 
-        command_text = strip_command_prefix(message, self.wakeup_prefix)
         if command_text is None:
             return
         if command_text == "挂团" or command_text.startswith("挂团 ") or command_text.startswith("挂团\n"):
@@ -3504,11 +3659,6 @@ class DicePlugin(Star):
             return
         if self._is_native_reset_command(command_text):
             return
-        if re.match(r"^bot(?:\s|$)", command_text, re.IGNORECASE) and not self._bot_command_targets_self(event):
-            return
-        if not self._is_bot_enabled(self._group_id(event), event) and not self._allowed_when_disabled(command_text):
-            self._stop_event(event)
-            return
         help_kind, help_target = self._resolve_help_request(command_text)
         if help_kind:
             if help_kind == "builtin":
@@ -3517,16 +3667,15 @@ class DicePlugin(Star):
             self._stop_event(event)
             if not self._command_enabled(event):
                 return
-            if help_kind == "page":
-                async for result in self._yield_help_result(event, help_target):
-                    yield result
-            else:
-                async for result in self._yield_help_command_result(event, help_target):
-                    yield result
+            async for result in self._yield_help_result(event, help_kind, help_target):
+                yield result
             return
 
         parsed = parse_inline_command(command_text, self._default_roll_expr(self._group_id(event)))
         if parsed is None:
+            return
+        if not self._command_enabled(event):
+            self._stop_event(event)
             return
 
         async for result in self._dispatch_inline_command(event, parsed, target_user_id):
@@ -3535,9 +3684,7 @@ class DicePlugin(Star):
 
     @event_message_type(EventMessageType.PRIVATE_MESSAGE)
     async def identify_private_command(self, event: AstrMessageEvent):
-        message = event.message_obj.message_str
-
-        command_text = strip_command_prefix(message, self.wakeup_prefix)
+        command_text = self._event_command_text(event)
         if command_text is None:
             return
         if self._is_native_reset_command(command_text):
@@ -3550,20 +3697,15 @@ class DicePlugin(Star):
             self._stop_event(event)
             if not self._command_enabled(event):
                 return
-            if help_kind == "page":
-                async for result in self._yield_help_result(event, help_target):
-                    yield result
-            else:
-                async for result in self._yield_help_command_result(event, help_target):
-                    yield result
-            return
-
-        if not self._is_bot_enabled(self._group_id(event), event) and not command_text.lower().startswith("bot"):
-            self._stop_event(event)
+            async for result in self._yield_help_result(event, help_kind, help_target):
+                yield result
             return
 
         parsed = parse_inline_command(command_text, self._default_roll_expr(self._group_id(event)))
         if parsed is None:
+            return
+        if not self._command_enabled(event):
+            self._stop_event(event)
             return
 
         async for result in self._dispatch_private_inline_command(event, parsed):

@@ -65,8 +65,7 @@ def make_editor(key, value, path):
         hint += "使用 丨字段名：内容；可修改提示内容与顺序，请勿删除必需字段或修改字段名。"
     if value:
         hint += "默认模板示例：" + value[:240]
-    return {"type": "text", "description": label, "default": "", "hint": hint,
-            "editor_mode": True, "editor_language": "plaintext"}
+    return {"type": "text", "description": label, "default": "", "hint": hint}
 
 
 def build_schema(schema, outputs):
@@ -76,8 +75,8 @@ def build_schema(schema, outputs):
                                 "description": "旧版 DnD 文案（兼容保留）"}
     result["output"] = {
         "type": "object", "description": "回复文案与模板",
-        "hint": "按功能分类编辑全部输出。填写后优先使用 UI 内容；留空沿用 YAML。"
-                "旧版 DnD UI 文案仍然有效，新界面的非空内容优先。保存后自动重载插件。",
+        "hint": "展开更多配置或使用插件详情里的配置中心编辑文案。填写后优先使用界面内容，留空沿用 YAML。",
+        "collapsed": True,
         "obvious_hint": True,
         "items": {key: make_editor(key, value, (key,)) for key, value in outputs.items()},
     }

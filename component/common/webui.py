@@ -8,6 +8,8 @@ from pathlib import Path
 from string import Formatter
 
 from . import output
+from .bot_permissions import parse_bot_operators
+from ..roll.parser import parse_command_prefixes
 
 
 class ConfigConflict(ValueError):
@@ -67,6 +69,10 @@ class PluginConfigPage:
             raise ValueError("请选择支持的选项。")
         if path == ["group_post_wait_seconds"] and not 1 <= value <= 86400:
             raise ValueError("挂团等待时间须在 1 到 86400 秒之间。")
+        if path == ["command_prefixes"]:
+            parse_command_prefixes(value)
+        if path in (["bot_permissions", "switch_operators"], ["bot_permissions", "quit_operators"]):
+            parse_bot_operators(value)
         if path[0] == "output" and value:
             try:
                 list(Formatter().parse(value))
