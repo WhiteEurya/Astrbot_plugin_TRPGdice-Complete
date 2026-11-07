@@ -73,10 +73,10 @@
 
 ```bash
 curl -fL https://raw.githubusercontent.com/shangzhimingge/Astrbot_plugin_TRPGdice-Complete/main/component/pc/persistence.py -o /tmp/trpgdice-persistence.py &&
-python /tmp/trpgdice-persistence.py 'data/plugins/astrbot_plugin_TRPGdice_Complete'
+python3 /tmp/trpgdice-persistence.py 'data/plugins/astrbot_plugin_TRPGdice_Complete'
 ```
 
-看到「已复制并校验」或「持久目录已包含旧数据」后，再安装此 fork 的新版本。脚本保留原文件。持久目录和旧目录的数据有差异时会停止，请先另外备份旧目录。若首次升级采用保留旧数据的文件覆盖方式，新版首次加载也会自动迁移。
+确认脚本报告的人物卡 JSON 文件数大于 0 后，再安装此 fork 的新版本。卡文件通常在 `chara_data/user_metadata/<用户ID>/vault/` 或 `chara_data/<群ID>/<用户ID>/` 下。如果只有目录或绑定记录，脚本会报错，请先核对 AstrBot 的实际数据目录和容器挂载。脚本保留原文件。持久目录和旧目录的数据有差异时会停止，请先另外备份旧目录。若首次升级采用保留旧数据的文件覆盖方式，新版首次加载也会自动迁移。
 
 跨目录名重装时，把备份的整个 `player_data/` 放到新目录名对应的 `data/plugin_data/` 下，再启用插件。
 
