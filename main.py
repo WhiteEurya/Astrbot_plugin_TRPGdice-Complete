@@ -6,6 +6,9 @@ from astrbot.api import message_components as Comp
 from astrbot.api.all import *
 from astrbot.api import logger
 from astrbot.api.message_components import Image, Plain
+from astrbot.core.star.filter.command import CommandFilter, GreedyStr
+from astrbot.core.star.filter.command_group import CommandGroupFilter
+from astrbot.core.star.star_handler import star_handlers_registry
 
 # ========== SYSTEM IMPORT ========== #
 import re
@@ -17,6 +20,7 @@ import html
 import hashlib
 import math
 from pathlib import Path
+from functools import partial
 from typing import Optional
 from playwright.async_api import Error as PlaywrightError, async_playwright
 
@@ -33,7 +37,9 @@ from .component.coc.rules import modify_coc_great_sf_rule_command
 from .component.coc.checks import parse_difficulty_prefix, parse_versus_check, prepare_skill_check, split_skill_modifier
 from .component.logs.store import JSONLoggerCore
 from .component.combat.init import InitiativeItem, InitiativeManager
-from .component.roll.parser import parse_inline_command, strip_command_prefix
+from .component.roll.parser import (
+    DEFAULT_COMMAND_PREFIXES, parse_command_prefixes, parse_inline_command, strip_command_prefix,
+)
 from .component.pc.view import (
     clean_st_show_words,
     format_all_attributes,
@@ -103,7 +109,7 @@ HELP_PAGE_META = {
 
 DICE_HELP_COMMAND = "掷骰帮助"
 HELP_COMMAND_ALIASES = {
-    DICE_HELP_COMMAND: "dice",
+    DICE_HELP_COMMAND: "index",
     "help": "index",
     "helproll": "dice",
     "helpexpr": "expr",
@@ -167,10 +173,9 @@ async def init():
 @register("astrbot_plugin_TRPG", "shiroling", "TRPG玩家用骰", "v2.3.2")
 class DicePlugin(Star):
     def __init__(self, context: Context, config: dict = None):
-        self.wakeup_prefix = [".", "。", "/", "!", "！"]
         self.uni_cache = {}
         self.initiative_manager = InitiativeManager()
-        self.config = config or {}
+        self.config = config if config is not None else {}
         configure_output(self.config.get("output"), self.config.get("dnd_output"))
         self.pending_group_posts = {}
         self.plugin_dir = os.path.dirname(os.path.abspath(__file__))
@@ -178,6 +183,7 @@ class DicePlugin(Star):
         self.htm_spells_dir = os.path.join(self.plugin_dir, "spellsearcher/HTMSpells")
 
         super().__init__(context)
+        self._install_command_prefix_filters()
         if callable(getattr(context, "register_web_api", None)):
             try:
                 self.config_page = PluginConfigPage(self.config, self.plugin_dir)
@@ -470,10 +476,6 @@ class DicePlugin(Star):
             return True
         return self._is_bot_enabled(group_id, event)
 
-    def _allowed_when_disabled(self, command_text: str) -> bool:
-        command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
-        return command in {"bot on", "bot quit"}
-
     def _is_native_reset_command(self, command_text: str) -> bool:
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
         return command in {"reset", "r eset"}
@@ -531,10 +533,66 @@ class DicePlugin(Star):
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
         return HELP_COMMAND_ALIASES.get(command, "")
 
+    def _prefixed_command_text(self, message: str) -> Optional[str]:
+        value = self.config.get("command_prefixes", DEFAULT_COMMAND_PREFIXES)
+        try:
+            prefixes = parse_command_prefixes(value)
+        except ValueError:
+            prefixes = parse_command_prefixes(DEFAULT_COMMAND_PREFIXES)
+        return strip_command_prefix(message, prefixes)
+
     def _extract_command_text(self, message: str) -> Optional[str]:
-        if message.strip() == DICE_HELP_COMMAND:
+        message = message.strip()
+        if message == DICE_HELP_COMMAND:
             return DICE_HELP_COMMAND
-        return strip_command_prefix(message, self.wakeup_prefix)
+        return self._prefixed_command_text(message)
+
+    def _event_command_text(self, event: AstrMessageEvent) -> Optional[str]:
+        original = re.sub(r"\[CQ:at[^\]]*\]", "", event.message_obj.message_str or "").strip()
+        current = event.get_message_str().strip()
+        command = self._extract_command_text(original)
+        if (event.is_at_or_wake_command and current != original and original.endswith(current)
+                and (command is None or len(current) < len(command))):
+            return current
+        return command
+
+    def _install_command_prefix_filters(self):
+        for handler in star_handlers_registry.get_handlers_by_module_name(__name__):
+            for rule in handler.event_filters:
+                if not isinstance(rule, (CommandFilter, CommandGroupFilter)):
+                    continue
+                original = getattr(rule, "_trpg_original_filter", rule.filter)
+                rule._trpg_original_filter = original
+                rule.filter = partial(self._filter_plugin_command, original)
+                if isinstance(rule, CommandFilter) and "args_str" in rule.handler_params:
+                    rule.handler_params["args_str"] = GreedyStr
+
+    def _filter_plugin_command(self, original, event: AstrMessageEvent, cfg) -> bool:
+        if original(event, cfg):
+            return True
+        command = self._event_command_text(event)
+        if not command or command == event.get_message_str():
+            return False
+        if not event.is_at_or_wake_command and not event.is_private_chat():
+            messages = event.get_messages()
+            if messages and isinstance(messages[0], Comp.At):
+                if str(messages[0].qq) not in {str(event.get_self_id()), "all"}:
+                    return False
+        # Present the stripped text only to this plugin's filter. The framework
+        # keeps the original message and wake state for all other plugins.
+        message, awake = event.message_str, event.is_at_or_wake_command
+        try:
+            event.message_str, event.is_at_or_wake_command = command, True
+            matched = original(event, cfg)
+        finally:
+            event.message_str, event.is_at_or_wake_command = message, awake
+        if matched:
+            event.set_extra("trpg_command_text", command)
+        return matched
+
+    @staticmethod
+    def _command_message(event: AstrMessageEvent) -> str:
+        return event.get_extra("trpg_command_text", event.get_message_str())
 
     def _help_topic_from_command(self, command_text: str) -> str:
         command = re.sub(r"\s+", " ", (command_text or "").strip().lower())
@@ -1177,8 +1235,7 @@ class DicePlugin(Star):
 
         if rule_system == "dnd":
             full_expr = " ".join(str(value) for value in (attributes, exp) if value is not None)
-            raw = self._strip_at_text(event.get_message_str())
-            command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+            command = self._strip_at_text(self._command_message(event))
             if re.match(r"^st\s", command, re.I):
                 full_expr = re.sub(r"^st\s+", "", command, count=1, flags=re.I)
             async for result in self._dnd_st(event, "update", full_expr):
@@ -1707,14 +1764,13 @@ class DicePlugin(Star):
     @filter.command("fire")
     async def handle_pistol_fire(self, event: AstrMessageEvent):
         """手枪三次检定，支持模式、技能值和额外奖励/惩罚骰。"""
+        if not self._command_enabled(event):
+            return
         rule_system = self._get_rule_system(self._group_id(event))
         if rule_system != "coc":
             yield event.plain_result("此操作目前仅支持 CoC 人物卡。")
             return
-        if not self._command_enabled(event):
-            return
-        message = self._strip_at_text(event.get_message_str()).strip()
-        command = strip_command_prefix(message, self.wakeup_prefix) or message
+        command = self._strip_at_text(self._command_message(event))
         full_args = re.sub(r"^fire(?:\s+|$)", "", command, count=1).strip()
         user_id = event.get_sender_id()
         group_id = self._group_id(event)
@@ -1847,12 +1903,11 @@ class DicePlugin(Star):
         if self._get_rule_system(self._group_id(event)) != "dnd":
             yield event.plain_result("职业设置只适用于 DnD，请先使用 .ruleset dnd。")
             return
-        raw = re.sub(r"\[CQ:at[^\]]*\]", "", event.get_message_str())
+        raw = re.sub(r"\[CQ:at[^\]]*\]", "", self._command_message(event))
         # Source markers inside subclass parentheses are not player mentions.
         parts = re.split(r"(\([^()\r\n]*\)|（[^（）\r\n]*）|[^\s/():（）：]+@(?:2014|2024|phb2014|phb2024)(?=\s*[:：(（]))", raw, flags=re.I)
-        raw = "".join(part if part.startswith(("(", "（")) or re.search(r"@(?:2014|2024|phb2014|phb2024)$", part, re.I)
-                      else part.split("@", 1)[0] for part in parts)
-        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        command = "".join(part if part.startswith(("(", "（")) or re.search(r"@(?:2014|2024|phb2014|phb2024)$", part, re.I)
+                          else part.split("@", 1)[0] for part in parts)
         match = re.match(r"^pc\s+(?:class|职业)(?:\s+|$)(.*)$", command, re.I | re.S)
         args = (match.group(1) if match else args_str).strip()
         query = re.fullmatch(r"(?:list|列表)(?:\s+(.*))?", args, re.I | re.S)
@@ -1907,8 +1962,7 @@ class DicePlugin(Star):
         if self._get_rule_system(self._group_id(event)) != "dnd":
             yield event.plain_result("版本设置只适用于 DnD，请先使用 .ruleset dnd。")
             return
-        raw = self._strip_at_text(event.get_message_str())
-        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        command = self._strip_at_text(self._command_message(event))
         match = re.match(r"^pc\s+(?:version|版本)(?:\s+|$)(.*)$", command, re.I | re.S)
         args = (match.group(1) if match else args_str).strip()
         group_id = str(event.get_group_id())
@@ -1944,8 +1998,7 @@ class DicePlugin(Star):
         if self._get_rule_system(self._group_id(event)) != "dnd":
             yield event.plain_result("资源操作只适用于 DnD，请先使用 .ruleset dnd。")
             return
-        raw = self._strip_at_text(event.get_message_str())
-        command = strip_command_prefix(raw, self.wakeup_prefix) or raw
+        command = self._strip_at_text(self._command_message(event))
         match = re.match(r"^(?:pc\s+)?(?:res|resource|资源)(?:\s+|$)(.*)$", command, re.I | re.S)
         args = (match.group(1) if match else args_str).strip()
         group_id = str(event.get_group_id())
@@ -2812,8 +2865,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         # Read the whole message: command argument splitting would truncate free-form requests.
-        message = self._strip_at_text(event.get_message_str()).strip()
-        command = strip_command_prefix(message, self.wakeup_prefix) or message
+        command = self._strip_at_text(self._command_message(event))
         args = re.sub(r"^(?:name|取名)(?:\s+|$)", "", command, count=1).strip()
         try:
             request = parse_name_request(args)
@@ -2890,7 +2942,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         name = parts[2] if len(parts) >= 3 else None
         ok, info = await logger_core.new_session(group, name)
         ob_lines = await logger_core.list_observers(group)
@@ -2921,7 +2973,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         name = parts[2] if len(parts) >= 3 else None
         ok, info = await logger_core.resume_session(group, name)
         ob_lines = await logger_core.list_observers(group)
@@ -2943,7 +2995,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         if len(parts) < 3:
             return event.plain_result(get_output("log.delete_error"))
         name = parts[2]
@@ -2957,7 +3009,7 @@ class DicePlugin(Star):
             return
         
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         if len(parts) < 3:
             return event.plain_result(get_output("log.get_usage"))
 
@@ -2978,7 +3030,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         if len(parts) < 3:
             return event.plain_result(get_output("log.export_usage"))
 
@@ -3002,7 +3054,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         name = parts[2] if len(parts) >= 3 else None
         all_flag = len(parts) >= 4 and parts[3] == "--all"
         lines = await logger_core.stat_sessions(group, name, all_flag)
@@ -3013,7 +3065,7 @@ class DicePlugin(Star):
         if not self._command_enabled(event):
             return
         group = event.message_obj.group_id
-        parts = event.message_str.strip().split()
+        parts = self._command_message(event).split()
         action = parts[2].lower() if len(parts) >= 3 else "list"
         session_name = parts[-1] if len(parts) >= 5 and not parts[-1].isdigit() else None
 
@@ -3517,12 +3569,14 @@ class DicePlugin(Star):
         # 在保留完整日志后，把文本里的 CQ 码和 @ 残留抹掉，
         # 确保它们绝对不会掉进下面那个“诡异”的正则解析器里
         message = self._strip_at_text(message)
-        command_text = self._extract_command_text(message)
+        command_text = self._event_command_text(event)
+        if command_text is not None:
+            command_text = self._strip_at_text(command_text)
 
         pending_key = (str(self._group_id(event)), str(event.get_sender_id()))
         pending_until = self.pending_group_posts.get(pending_key)
         if pending_until is not None:
-            if time.time() <= pending_until and command_text is None:
+            if time.time() <= pending_until and command_text is None and self._command_enabled(event):
                 self.pending_group_posts.pop(pending_key, None)
                 async for result in self._handle_group_post_command(event, "挂团\n" + message):
                     yield result
@@ -3545,11 +3599,6 @@ class DicePlugin(Star):
             return
         if self._is_native_reset_command(command_text):
             return
-        if re.match(r"^bot(?:\s|$)", command_text, re.IGNORECASE) and not self._bot_command_targets_self(event):
-            return
-        if not self._is_bot_enabled(self._group_id(event), event) and not self._allowed_when_disabled(command_text):
-            self._stop_event(event)
-            return
         help_kind, help_target = self._resolve_help_request(command_text)
         if help_kind:
             if help_kind == "builtin":
@@ -3565,6 +3614,9 @@ class DicePlugin(Star):
         parsed = parse_inline_command(command_text, self._default_roll_expr(self._group_id(event)))
         if parsed is None:
             return
+        if not self._command_enabled(event):
+            self._stop_event(event)
+            return
 
         async for result in self._dispatch_inline_command(event, parsed, target_user_id):
             yield result
@@ -3572,9 +3624,7 @@ class DicePlugin(Star):
 
     @event_message_type(EventMessageType.PRIVATE_MESSAGE)
     async def identify_private_command(self, event: AstrMessageEvent):
-        message = event.message_obj.message_str
-
-        command_text = self._extract_command_text(message)
+        command_text = self._event_command_text(event)
         if command_text is None:
             return
         if self._is_native_reset_command(command_text):
@@ -3591,12 +3641,11 @@ class DicePlugin(Star):
                 yield result
             return
 
-        if not self._is_bot_enabled(self._group_id(event), event) and not command_text.lower().startswith("bot"):
-            self._stop_event(event)
-            return
-
         parsed = parse_inline_command(command_text, self._default_roll_expr(self._group_id(event)))
         if parsed is None:
+            return
+        if not self._command_enabled(event):
+            self._stop_event(event)
             return
 
         async for result in self._dispatch_private_inline_command(event, parsed):

@@ -516,10 +516,10 @@ output:
   help:
     index: |
       TRPG 骰子插件帮助
-      示例统一用点号。人物卡、日志等框架注册的指令请使用 AstrBot 已设置的唤醒前缀，例如 /pc list。
+      示例统一用点号。可在插件配置中按行设置多个指令触发词，所有骰子指令共用；AstrBot 全局唤醒词也可用。
       分类帮助也接受 .help roll 或 .dicehelproll 这类写法。
       .dicehelp / .help / .bothelp : 打开帮助总目录。
-      掷骰帮助 / .掷骰帮助 / /掷骰帮助 : 打开基础掷骰与 CoC 检定帮助。
+      掷骰帮助 / .掷骰帮助 / /掷骰帮助 : 打开帮助总目录。
       .dicehelp roll / .help 掷骰 : 掷骰、CoC 检定、暗骰、SAN 和吸血鬼骰。
       .dicehelp expr : 重复掷骰、保留骰、重骰、爆炸骰和保底。
       .dicehelp pc : 建卡、切卡和跨群同步。

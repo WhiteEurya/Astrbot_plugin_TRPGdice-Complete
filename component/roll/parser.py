@@ -1,9 +1,11 @@
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Optional
 
 
 ROLL_EXPRESSION_PATTERN = r"(?:brust\d*d\d+(?:,\d+)?|(?:min|max)\d+|rh(?![\da-zA-Z])|[\d#+\-*/().xXdkvbpBP>=!])+"
+DEFAULT_COMMAND_PREFIXES = ".\n。\n/\n!\n！"
 
 
 @dataclass
@@ -16,10 +18,20 @@ class ParsedInlineCommand:
     roll_times: str = "1"
 
 
-def strip_command_prefix(message: str, prefixes: list[str]) -> Optional[str]:
-    if not any(message.startswith(prefix) for prefix in prefixes):
-        return None
-    return re.sub(r"[ \t]+", " ", message[1:]).strip()
+def parse_command_prefixes(value: str) -> tuple[str, ...]:
+    if not isinstance(value, str):
+        raise ValueError("指令触发词须为文本，每行填写一个。")
+    prefixes = tuple(dict.fromkeys(line.strip() for line in value.splitlines() if line.strip()))
+    if len(prefixes) > 20 or any(len(prefix) > 32 for prefix in prefixes):
+        raise ValueError("指令触发词最多 20 个，每个最长 32 个字符。")
+    return tuple(sorted(prefixes, key=len, reverse=True))
+
+
+def strip_command_prefix(message: str, prefixes: Iterable[str]) -> Optional[str]:
+    for prefix in prefixes:
+        if prefix and message.startswith(prefix):
+            return re.sub(r"[ \t]+", " ", message[len(prefix):]).strip()
+    return None
 
 
 def _split_skill_and_value(expr: str) -> tuple[str, Optional[str]]:
